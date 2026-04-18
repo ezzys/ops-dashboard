@@ -1,11 +1,12 @@
 'use strict';
 
 // R1.3 Agent Health Heartbeat Monitor
-// Tracks agent activity from session DB (falling back to CLI).
+// Tracks agent activity from heartbeat events in the event store (falling back to session DB / CLI).
 // Broadcasts health-update events to the 'health-events' WebSocket room every 30s.
 
 const { getRecentSessions } = require('../sessiondb');
 const { getStatus } = require('./openclaw');
+const { queryEvents } = require('./event-store');
 const { getConfig } = require('../config');
 
 // ── State ─────────────────────────────────────────────────────────────────────
@@ -53,6 +54,19 @@ function check() {
 // ── Agent list builder ────────────────────────────────────────────────────────
 
 function _buildAgentList(cfg) {
+  // Prefer heartbeat events from event store; fall back to session DB
+  const heartbeats = _getAgentHeartbeats();
+  if (heartbeats && heartbeats.length > 0) {
+    return heartbeats.map(agent => {
+      const status    = _computeStatus(agent.lastSeenMs, cfg);
+      const ageMs     = agent.lastSeenMs ? Date.now() - agent.lastSeenMs : null;
+      const lastSeen  = agent.lastSeenMs ? new Date(agent.lastSeenMs).toISOString() : null;
+      const agentCfg  = cfg.agentHealth?.agents?.[agent.id] || {};
+      const autoRestart = agentCfg.autoRestart ?? cfg.agentHealth?.mode ?? 'alert-only';
+      return { ...agent, status, lastSeen, ageMs, autoRestart };
+    });
+  }
+
   const sessions = _getSessions();
   if (sessions.length === 0) return [];
 
@@ -113,7 +127,31 @@ function _computeStatus(lastSeenMs, cfg) {
   return 'healthy';
 }
 
-// ── Session source ────────────────────────────────────────────────────────────
+// ── Heartbeat source ──────────────────────────────────────────────────────────
+
+/**
+ * Build agent list from heartbeat events (primary) falling back to session DB.
+ * Returns array of { id, name, lastSeenMs } objects.
+ */
+function _getAgentHeartbeats() {
+  try {
+    // Query last heartbeat per agent_id from event store
+    const events = queryEvents({ event_type: 'heartbeat', limit: 500 });
+    if (events.length > 0) {
+      const agentMap = new Map();
+      for (const e of events) {
+        const id = e.agent_id || 'agent-unknown';
+        if (!agentMap.has(id) || e.timestamp > agentMap.get(id).lastSeenMs) {
+          agentMap.set(id, { id, name: id, lastSeenMs: e.timestamp, contextPct: 0 });
+        }
+      }
+      return Array.from(agentMap.values());
+    }
+  } catch { /* fall through to legacy source */ }
+  return null;
+}
+
+// ── Session source (legacy fallback) ─────────────────────────────────────────
 
 function _getSessions() {
   const dbSessions = getRecentSessions(100);

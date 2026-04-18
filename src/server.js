@@ -135,7 +135,7 @@ fastify.get('/', { config: { skipAuth: true } }, async (req, reply) => {
 
   for (const p of [canvasPath, localPath]) {
     if (fs.existsSync(p)) {
-      const html = fs.readFileSync(p, 'utf8');
+      const html = fs.readFileSync(p, 'utf8').replace('__NEXUS_TOKEN__', cfg.auth.token);
       reply.type('text/html; charset=utf-8').header('Cache-Control', 'no-cache').send(html);
       return;
     }
@@ -298,6 +298,11 @@ async function start() {
     eventStore.startPruning();
     eventIngest.setBroadcast(broadcast);
     log.info({}, 'Event store initialised (WAL mode, pruning active)');
+
+    // Wire broadcast into openclaw circuit breaker
+    const openclaw = require('./services/openclaw');
+    openclaw.setBroadcast(broadcast);
+    log.info({}, 'OpenClaw circuit breaker broadcast wired');
   } catch (err) {
     log.error({ err: err.message }, 'Failed to start server');
     process.exit(1);
@@ -311,6 +316,7 @@ process.on('SIGTERM', async () => {
   if (wss) wss.close();
   await fastify.close();
   try { require('./services/event-store').close(); } catch { /* */ }
+  try { require('./services/db').closeDb(); } catch { /* */ }
   process.exit(0);
 });
 
@@ -318,6 +324,7 @@ process.on('SIGINT', async () => {
   if (wss) wss.close();
   await fastify.close();
   try { require('./services/event-store').close(); } catch { /* */ }
+  try { require('./services/db').closeDb(); } catch { /* */ }
   process.exit(0);
 });
 

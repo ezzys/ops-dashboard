@@ -26,6 +26,8 @@ const EVENT_TYPE = Object.freeze({
   FUNCTION_INVOKED: 'function_invoked',
   ERROR:            'error',
   RETRY:            'retry',
+  AGENT_HANDOFF:    'agent.handoff',
+  HEARTBEAT:        'heartbeat',
 
   // Contextual surface — external I/O
   HTTP_REQUEST:     'http_request',
@@ -51,6 +53,8 @@ const SURFACE_EVENTS = Object.freeze({
     EVENT_TYPE.FUNCTION_INVOKED,
     EVENT_TYPE.ERROR,
     EVENT_TYPE.RETRY,
+    EVENT_TYPE.AGENT_HANDOFF,
+    EVENT_TYPE.HEARTBEAT,
   ]),
   [SURFACE.CONTEXTUAL]: new Set([
     EVENT_TYPE.HTTP_REQUEST,

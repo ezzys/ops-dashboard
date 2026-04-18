@@ -4,7 +4,8 @@
 // Stores agent handoffs as special events in the event store.
 // Handoff schema: { from_agent, to_agent, context_summary, pending_tasks, artifacts }
 
-const { writeEvent, queryEvents } = require('./event-store');
+const { queryEvents } = require('./event-store');
+const eventIngest    = require('./event-ingest');
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -44,7 +45,7 @@ function executeHandoff(handoff) {
   const trace_id = existingTrace || id;
   const sid      = spanId();
 
-  const eventId = writeEvent({
+  const result = eventIngest.ingestEvent({
     trace_id,
     span_id:        sid,
     parent_span_id: null,
@@ -64,7 +65,9 @@ function executeHandoff(handoff) {
     status: 'success',
   });
 
-  return { id, trace_id, event_id: eventId };
+  if (!result.ok) throw new Error(`Handoff event write failed: ${result.error}`);
+
+  return { id, trace_id, event_id: result.id };
 }
 
 // ── Read ──────────────────────────────────────────────────────────────────────

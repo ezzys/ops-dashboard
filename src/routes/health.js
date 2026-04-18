@@ -3,6 +3,7 @@
 const { spawnSync, execSync } = require('child_process');
 const { getConfig } = require('../config');
 const { circuitState } = require('../services/openclaw');
+const eventIngest = require('../services/event-ingest');
 
 async function routes(fastify) {
   const cfg = getConfig();
@@ -10,6 +11,30 @@ async function routes(fastify) {
   // Unauthenticated basic health check
   fastify.get('/health', { config: { skipAuth: true } }, async (req, reply) => {
     return { ok: true, ts: Date.now() };
+  });
+
+  // R1.3.6 — Agent heartbeat endpoint
+  fastify.post('/api/agents/:id/heartbeat', async (req, reply) => {
+    const agentId = req.params.id;
+    if (!agentId || typeof agentId !== 'string' || agentId.length > 128) {
+      return reply.code(400).send({ ok: false, error: 'Invalid agent id' });
+    }
+
+    const result = eventIngest.ingestEvent({
+      trace_id:   `hb_${agentId}`,
+      span_id:    `hb_${Date.now().toString(36)}`,
+      surface:    'operational',
+      event_type: 'heartbeat',
+      agent_id:   agentId,
+      timestamp:  Date.now(),
+      data:       { type: 'heartbeat' },
+    });
+
+    if (!result.ok) {
+      return reply.code(500).send({ ok: false, error: result.error });
+    }
+
+    return { ok: true, id: result.id, agent_id: agentId, ts: Date.now() };
   });
 
   // R1.3.5 — Agent health grid data

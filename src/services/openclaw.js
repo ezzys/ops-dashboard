@@ -19,6 +19,15 @@ let _cliFailCount = 0;
 let _circuitOpen = false;
 let _circuitOpenSince = 0;
 const _cliCache = new Map();
+let _broadcastFn = null;
+
+/**
+ * Inject the broadcast function from server.js.
+ * @param {Function} fn  broadcast(room, payload)
+ */
+function setBroadcast(fn) {
+  _broadcastFn = fn;
+}
 
 function circuitState() {
   return { open: _circuitOpen, failCount: _cliFailCount };
@@ -76,6 +85,15 @@ function jspawnCli(args, opts = {}) {
     if (_cliFailCount >= (cfg.circuitBreaker?.failThreshold ?? 3)) {
       _circuitOpen = true;
       _circuitOpenSince = Date.now();
+      if (_broadcastFn) {
+        try {
+          _broadcastFn('health-events', {
+            type: 'circuit-breaker-open',
+            ts: _circuitOpenSince,
+            failCount: _cliFailCount,
+          });
+        } catch { /* broadcast errors must not affect CLI logic */ }
+      }
     }
     return { ok: false, data: null, error: r.stderr || 'CLI failed' };
   }
@@ -144,6 +162,7 @@ module.exports = {
   spawnDetached,
   validateCronId,
   circuitState,
+  setBroadcast,
   getStatus,
   getCronList,
   getHealth,

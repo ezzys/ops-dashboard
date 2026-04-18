@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node src/server.js",
     "start:legacy": "node dashboard.v1.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --test test/*.test.js"
   },
   "repository": {
     "type": "git",

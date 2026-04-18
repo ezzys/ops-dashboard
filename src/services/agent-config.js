@@ -3,12 +3,7 @@
 // R3.2.1 — Agent Config Store (SQLite-backed)
 // Stores agent configurations: model, temperature, max_tokens, system_prompt, tools, constraints.
 
-const path = require('path');
-const Database = require('better-sqlite3');
-
-const DB_PATH = path.join(__dirname, '..', '..', 'data', 'events.db');
-
-let db = null;
+const { getDb: _getSharedDb } = require('./db');
 
 // ── Schema ────────────────────────────────────────────────────────────────────
 
@@ -53,10 +48,14 @@ function sessionUid() {
   return `sess_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;
 }
 
+let _schemaApplied = false;
+
 function getDb() {
-  if (db) return db;
-  db = new Database(DB_PATH);
-  db.exec(SCHEMA);
+  const db = _getSharedDb();
+  if (!_schemaApplied) {
+    db.exec(SCHEMA);
+    _schemaApplied = true;
+  }
   return db;
 }
 

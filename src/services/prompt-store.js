@@ -3,12 +3,9 @@
 // R3.1.1 — Prompt Store (SQLite, append-only versioning)
 // Uses the same events.db for colocation, creating prompt_versions table.
 
-const path = require('path');
-const Database = require('better-sqlite3');
+const { getDb: _getSharedDb } = require('./db');
 
-const DB_PATH = path.join(__dirname, '..', '..', 'data', 'events.db');
-
-let db = null;
+let _schemaApplied = false;
 
 // ── Schema ────────────────────────────────────────────────────────────────────
 
@@ -33,9 +30,11 @@ CREATE INDEX IF NOT EXISTS idx_prompt_key ON prompt_versions(prompt_key);
 // ── Lazy init ─────────────────────────────────────────────────────────────────
 
 function getDb() {
-  if (db) return db;
-  db = new Database(DB_PATH);
-  db.exec(SCHEMA);
+  const db = _getSharedDb();
+  if (!_schemaApplied) {
+    db.exec(SCHEMA);
+    _schemaApplied = true;
+  }
   return db;
 }
 

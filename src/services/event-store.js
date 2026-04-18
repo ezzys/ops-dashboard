@@ -3,20 +3,14 @@
 // R2.1.1 — Event Store (SQLite, WAL mode, append-only)
 // Separate DB from sessions.db for performance isolation.
 
-const path = require('path');
-const Database = require('better-sqlite3');
+const { getDb: _getSharedDb } = require('./db');
 const { getConfig } = require('../config');
-
-const DB_PATH = path.join(__dirname, '..', '..', 'data', 'events.db');
 
 let db = null;
 
 // ── Schema ────────────────────────────────────────────────────────────────────
 
 const SCHEMA = `
-PRAGMA journal_mode=WAL;
-PRAGMA synchronous=NORMAL;
-PRAGMA foreign_keys=OFF;
 
 CREATE TABLE IF NOT EXISTS events (
   id            INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -54,7 +48,7 @@ let stmtDeleteOlderThan = null;
  */
 function init() {
   if (db) return; // already initialised
-  db = new Database(DB_PATH);
+  db = _getSharedDb();
   db.exec(SCHEMA);
 
   // Prepare reusable statements
@@ -242,7 +236,8 @@ function getStats() {
 
 function close() {
   if (pruneTimer) { clearInterval(pruneTimer); pruneTimer = null; }
-  if (db) { db.close(); db = null; }
+  // Don't close the shared connection — closeDb() in db.js handles that
+  db = null;
 }
 
 // ── Exports ───────────────────────────────────────────────────────────────────

@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 const { getStatus, getCronList, getHealth, getLogs } = require('../services/openclaw');
-const { aggregateUsage } = require('../services/cost-calculator');
+const { aggregateUsage, sessionCost } = require('../services/cost-calculator');
 const { getSysMetrics } = require('../services/sysmetrics');
 const { getConfig } = require('../config');
 
@@ -96,6 +96,14 @@ async function routes(fastify) {
       status.cron = cron;
     }
 
+    // Annotate each session with server-side cost (uses config model prices)
+    if (status?.sessions?.recent) {
+      status.sessions.recent = status.sessions.recent.map(s => ({
+        ...s,
+        cost: sessionCost(s),
+      }));
+    }
+
     return { status, cron, health, logs, ts: Date.now() };
   });
 
@@ -118,8 +126,9 @@ async function routes(fastify) {
     if (!statusResult.ok || !statusResult.data) {
       return { usage: null, ts: Date.now() };
     }
-    const sessions = statusResult.data.sessions?.recent || [];
-    const { byModel, totals } = aggregateUsage(sessions);
+    const rawSessions = statusResult.data.sessions?.recent || [];
+    const sessions = rawSessions.map(s => ({ ...s, cost: sessionCost(s) }));
+    const { byModel, totals } = aggregateUsage(rawSessions);
     return {
       usage: { sessions, byModel, totals, ts: Date.now() },
       ts: Date.now(),
