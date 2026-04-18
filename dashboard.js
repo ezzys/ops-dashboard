@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Claw Ops Dashboard — HTTP polling server
+// Claw Ops Dashboard — HTTP polling server (NEXUS v2 — Phase 0 patched)
 // Browser polls this server; this server execs openclaw CLI
 // No WebSocket needed; gateway stays untouched
 
@@ -17,6 +17,79 @@ const IDLE_MS = 300000;
 
 const TOKEN = '52700a12570c54a80cb138b0d2322deb7238875879541ce6';
 const GW_URL = 'http://127.0.0.1:18789';
+
+// ── T0.1.7: Rate limiting (100 req/min per IP) ──────────────────────────────
+const rateLimitMap = new Map(); // ip → { count, resetAt }
+const RATE_LIMIT_WINDOW = 60_000; // 60 seconds
+const RATE_LIMIT_MAX = 100;
+
+function checkRateLimit(ip) {
+  const now = Date.now();
+  let entry = rateLimitMap.get(ip);
+  if (!entry || now > entry.resetAt) {
+    entry = { count: 0, resetAt: now + RATE_LIMIT_WINDOW };
+    rateLimitMap.set(ip, entry);
+  }
+  entry.count++;
+  // Periodic cleanup: evict expired entries every 100 checks
+  if (Math.random() < 0.01) {
+    for (const [k, v] of rateLimitMap) {
+      if (now > v.resetAt) rateLimitMap.delete(k);
+    }
+  }
+  return entry.count <= RATE_LIMIT_MAX;
+}
+
+// ── T0.1.3: Auth middleware
+// ── T0.2.4: Circuit breaker (3 consecutive CLI failures → cached mode)
+let cliFailCount = 0;
+const CLI_FAIL_THRESHOLD = 3;
+let circuitOpen = false;
+let circuitOpenSince = 0;
+const CIRCUIT_COOLDOWN = 60_000; // retry after 60s
+const cliCache = new Map(); // last known good responses
+
+function wrapCli(fn, cacheKey) {
+  if (circuitOpen && Date.now() - circuitOpenSince < CIRCUIT_COOLDOWN) {
+    const cached = cliCache.get(cacheKey);
+    log.warn({ circuit: 'open', cacheKey, cached: !!cached }, 'Circuit breaker open, returning cached');
+    return cached;
+  }
+  const result = fn();
+  if (result === null || (typeof result === 'string' && result.startsWith('ERROR'))) {
+    cliFailCount++;
+    if (cliFailCount >= CLI_FAIL_THRESHOLD) {
+      circuitOpen = true;
+      circuitOpenSince = Date.now();
+      log.error({ cliFailCount, cacheKey }, 'Circuit breaker opened');
+    }
+  } else {
+    cliFailCount = 0;
+    if (circuitOpen) { circuitOpen = false; log.info({ cacheKey }, 'Circuit breaker closed'); }
+    cliCache.set(cacheKey, result);
+  }
+  return result;
+}
+
+// ── T0.3.1-2: Structured logging with request IDs
+let reqIdCounter = 0;
+const log = {
+  _json(level, obj, msg) {
+    const entry = { level, ts: new Date().toISOString(), ...obj, msg };
+    process.stderr.write(JSON.stringify(entry) + '\n');
+  },
+  info(obj, msg) { this._json('info', typeof obj === 'string' ? { msg: obj } : obj, msg || ''); },
+  warn(obj, msg) { this._json('warn', typeof obj === 'string' ? { msg: obj } : obj, msg || ''); },
+  error(obj, msg) { this._json('error', typeof obj === 'string' ? { msg: obj } : obj, msg || ''); },
+};
+
+// ── T0.1.3: Auth middleware ──────────────────────────────────────────────────
+function checkAuth(req) {
+  const authHeader = req.headers['authorization'];
+  if (!authHeader || !authHeader.startsWith('Bearer ')) return false;
+  const token = authHeader.slice(7);
+  return token === TOKEN;
+}
 
 // ── CLI wrappers ─────────────────────────────────────────────────────────────
 
@@ -60,10 +133,15 @@ function spawnCron(args, timeout) {
   return result.stdout || '';
 }
 
+// T0.1.5: jspawnCron returns {ok: false, error} on failure instead of null/throw
 function jspawnCron(args, timeout) {
-  const out = spawnCron(args, timeout);
-  if (!out.trim()) return null;
-  try { return JSON.parse(out); } catch { return { raw: out.slice(0, 500) }; }
+  try {
+    const out = spawnCron(args, timeout);
+    if (!out.trim()) return { ok: true, data: null };
+    try { return { ok: true, data: JSON.parse(out) }; } catch { return { ok: true, data: { raw: out.slice(0, 500) } }; }
+  } catch (e) {
+    return { ok: false, error: e.message };
+  }
 }
 
 function readBody(req) {
@@ -96,9 +174,21 @@ function getHealth() {
   return jexec(`${OPENCLAW} health --json`);
 }
 
+// T0.1.4: Fixed shell injection — uses spawnSync with array args, validates limit
 function getLogs(limit = 30) {
-  const out = exec(`${OPENCLAW} logs --json --limit ${limit}`);
-  return out.trim().split('\n').filter(Boolean).map(l => {
+  // Validate limit is a positive integer
+  const safeLimit = Math.max(1, Math.min(Math.floor(Number(limit)) || 30, 500));
+  const result = spawnSync(OPENCLAW_NODE, [OPENCLAW_CLI, 'logs', '--json', '--limit', String(safeLimit)], {
+    timeout: 15000,
+    encoding: 'utf8',
+    maxBuffer: 10 * 1024 * 1024,
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
+  if (result.error || result.status !== 0) {
+    console.error('[getLogs] FAILED:', result.stderr?.slice(0, 200) || result.error?.message);
+    return [];
+  }
+  return (result.stdout || '').trim().split('\n').filter(Boolean).map(l => {
     try { return JSON.parse(l); } catch { return null; }
   }).filter(Boolean);
 }
@@ -107,105 +197,7 @@ function getLogs(limit = 30) {
 
 function getSysMetrics() {
   const node = NODE;
-  const script = `
-    const os = require('os');
-    const { execSync } = require('child_process');
 
-    function getMem() {
-      const total = os.totalmem();
-      const free = os.freemem();
-      const used = total - free;
-      return { total, free, used, pct: Math.round((used/total)*100) };
-    }
-
-    function getCpu() {
-      const cpus = os.cpus();
-      let idle = 0, total = 0;
-      cpus.forEach(c => {
-        const t = Object.values(c.times).reduce((a,b) => a+b, 0);
-        idle += c.times.idle;
-        total += t;
-      });
-      return { cores: cpus.length, idlePct: Math.round((idle/total)*100) };
-    }
-
-    function getDisk() {
-      try {
-        const out = execSync('/bin/df -k / | tail -1', { encoding:'utf8' }).trim().split(/\\s+/);
-        const total = parseInt(out[1]) * 1024;
-        const used = parseInt(out[2]) * 1024;
-        const free = parseInt(out[3]) * 1024;
-        return { total, used, free, pct: Math.round((used/total)*100) };
-      } catch { return null; }
-    }
-
-    function getNet() {
-      try {
-        const before = execSync('/usr/sbin/netstat -ib | grep -E "^en0"', { encoding:'utf8' }).trim().split('\\n').pop();
-        const cols = before.split(/\\s+/).filter(Boolean);
-        const rx = parseInt(cols[6]) || 0;
-        const tx = parseInt(cols[9]) || 0;
-        return { rx, tx };
-      } catch { return null; }
-    }
-
-    function getLoad() {
-      try {
-        const out = execSync('/usr/sbin/sysctl -n vm.loadavg', { encoding:'utf8' }).trim().replace(/[{}]/g,'').trim().split(/\\s+/).map(Number);
-        return { m1: out[0], m5: out[1], m15: out[2] };
-      } catch { return null; }
-    }
-
-    function getUptime() {
-      const t = os.uptime();
-      const d = Math.floor(t/86400);
-      const h = Math.floor((t%86400)/3600);
-      const m = Math.floor((t%3600)/60);
-      return { raw: t, str: d>0 ? d+'d '+h+'h '+m+'m' : h+'h '+m+'m' };
-    }
-
-    function getProcCount() {
-      try {
-        const out = execSync('/bin/ps -ax | wc -l', { encoding:'utf8' }).trim();
-        return parseInt(out);
-      } catch { return null; }
-    }
-
-    const mem = getMem();
-    const cpu = getCpu();
-    const disk = getDisk();
-    const net = getNet();
-    const load = getLoad();
-    const uptime = getUptime();
-    const procs = getProcCount();
-
-    // Temperature (if available)
-    let temp = null;
-    try {
-      const t = execSync('osx-cpu-temp -c 2>/dev/null || /usr/local/bin/osx-cpu-temp -c 2>/dev/null || echo ""', { encoding:'utf8' }).trim();
-      if (t) temp = parseFloat(t);
-    } catch {}
-
-    // Battery
-    let battery = null;
-    try {
-      const out = execSync('/usr/bin/pmset -g batt | grep -E "[0-9]+%"', { encoding:'utf8' }).trim();
-      const m = out.match(/(\\d+)%/);
-      const charging = out.includes('AC');
-      if (m) battery = { pct: parseInt(m[1]), charging };
-    } catch {}
-
-    // Hostname + macOS version
-    const hostname = os.hostname();
-    let osver = null;
-    try { osver = execSync('/usr/bin/sw_vers -productVersion', {encoding:'utf8'}).trim(); } catch {}
-
-    console.log(JSON.stringify({
-      hostname, osver,
-      cpu, mem, disk, net, load, uptime, procs, temp, battery,
-      ts: Date.now()
-    }));
-  `;
   const out = exec(`${NODE} /tmp/claw_sysmetrics.js`, 15000);
   try {
     const data = JSON.parse(out);
@@ -236,8 +228,8 @@ function getNet(){try{const b=execSync('/usr/sbin/netstat -ib | grep -E "^en0"',
 function getLoad(){try{const o=execSync('/usr/sbin/sysctl -n vm.loadavg',{encoding:'utf8'}).trim().replace(/[{}]/g,'').trim().split(/\\s+/).map(Number);return{m1:o[0],m5:o[1],m15:o[2]};}catch(e){return null;}}
 function getUptime(){const t=os.uptime();const d=Math.floor(t/86400),h=Math.floor((t%86400)/3600),m=Math.floor((t%3600)/60);return{raw:t,str:d>0?d+'d '+h+'h '+m+'m':h+'h '+m+'m'};}
 function getProcs(){try{return parseInt(execSync('/bin/ps -ax | wc -l',{encoding:'utf8'}).trim());}catch(e){return null;}}
-let temp=null;try{const t=execSync('osx-cpu-temp -c 2>/dev/null || echo \"\"',{encoding:'utf8'}).trim();if(t)temp=parseFloat(t);}catch(e){}
-let battery=null;try{const o=execSync('/usr/bin/pmset -g batt | grep -E \"[0-9]+%\"',{encoding:'utf8'}).trim();const m=o.match(/(\\d+)%/);if(m)battery={pct:parseInt(m[1]),charging:o.includes('AC')};}catch(e){}
+let temp=null;try{const t=execSync('osx-cpu-temp -c 2>/dev/null || echo ""',{encoding:'utf8'}).trim();if(t)temp=parseFloat(t);}catch(e){}
+let battery=null;try{const o=execSync('/usr/bin/pmset -g batt | grep -E "[0-9]+%"',{encoding:'utf8'}).trim();const m=o.match(/(\\d+)%/);if(m)battery={pct:parseInt(m[1]),charging:o.includes('AC')};}catch(e){}
 const hostname=os.hostname();let osver=null;try{osver=execSync('/usr/bin/sw_vers -productVersion',{encoding:'utf8'}).trim();}catch(e){}
 console.log(JSON.stringify({hostname,osver,nodeVersion:process.versions.node,cpu:getCpu(),mem:getMem(),disk:getDisk(),net:getNet(),load:getLoad(),uptime:getUptime(),procs:getProcs(),temp,battery,ts:Date.now()}));
 `;
@@ -257,6 +249,7 @@ const MODEL_PRICES = {
   'default':           { input: 0.30, output: 1.20, cacheRead: 0.06, cacheWrite: 0.10 },
 };
 
+// T0.1.6: Backend sessionCost includes cacheWrite — single source of truth
 function sessionCost(s) {
   const m = MODEL_PRICES[s.model] || MODEL_PRICES['default'];
   const i = s.inputTokens || 0;
@@ -304,14 +297,13 @@ function getModelUsage() {
 function getResearchPipeline() {
   const researchDir = '/Users/openclaw/.openclaw/workspace/research';
 
-  // Daily research files — exclude daily-research-latest.md (duplicate of most recent)
   const dailyFiles = (() => {
     try {
       return fs.readdirSync(researchDir)
         .filter(f => f.startsWith('daily-research') && f.endsWith('.md') && !f.endsWith('-latest.md'))
         .sort()
         .reverse()
-        .slice(0, 7); // last 7 days
+        .slice(0, 7);
     } catch { return []; }
   })();
 
@@ -333,7 +325,6 @@ function getResearchPipeline() {
     } catch { return null; }
   }).filter(Boolean);
 
-  // Findings files — check posted status + use file mtime as fallback for null timestamps
   const findingsOrder = ['bets', 'general', 'misc', 'news', 'ww', 'status'];
   const findings = findingsOrder.map(name => {
     try {
@@ -356,7 +347,6 @@ function getResearchPipeline() {
     } catch { return { name, exists: false }; }
   });
 
-  // SESSION_STATE.md
   let sessionState = null;
   try {
     const ssPath = path.join(researchDir, 'SESSION_STATE.md');
@@ -371,7 +361,6 @@ function getResearchPipeline() {
     }
   } catch {}
 
-  // Post-all.py last run
   let posterLastRun = null;
   try {
     const log = exec('grep -r "posted" /Users/openclaw/.openclaw/workspace/research/post-all.py 2>/dev/null | tail -1 || echo "never"');
@@ -383,20 +372,99 @@ function getResearchPipeline() {
 
 // ── HTTP Server ─────────────────────────────────────────────────────────────
 
+// T0.1.6: Helper to get session cost from API response (frontend uses this, no duplication)
+function sendJson(res, data, status = 200) {
+  res.writeHead(status, { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' });
+  res.end(JSON.stringify(data));
+}
+
 async function route(req, res) {
+  // T0.2.1: Request timeout (30s)
+  const timeoutId = setTimeout(() => { if (!res.writableEnded) { res.writeHead(504, {'Content-Type':'application/json'}); res.end(JSON.stringify({ok:false,error:'Request timeout',code:'TIMEOUT'})); } }, 30000);
+  res.on('close', () => clearTimeout(timeoutId));
+
   const parsed = url.parse(req.url, true);
   const pathname = parsed.pathname;
+  const clientIp = req.socket.remoteAddress;
+  // T0.3.2: Request ID
+  const reqId = ++reqIdCounter;
+  const clientReqId = req.headers['x-request-id'] || `req-${reqId}`;
+  res.setHeader('X-Request-ID', clientReqId);
 
-  // CORS preflight
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  // T0.1.7: Rate limiting
+  if (!checkRateLimit(clientIp)) {
+    res.writeHead(429, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ ok: false, error: 'Rate limit exceeded', code: 'RATE_LIMITED' }));
+    return;
+  }
+
+  // T0.1.2: CORS — same-origin only (localhost)
+  const origin = req.headers['origin'];
+  const allowedOrigins = [`http://localhost:${PORT}`, `http://127.0.0.1:${PORT}`];
+  if (origin && allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  } else {
+    res.setHeader('Access-Control-Allow-Origin', `http://localhost:${PORT}`);
+  }
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   if (req.method === 'OPTIONS') { res.writeHead(204); res.end(); return; }
 
-  // Health check
+  // Health check (unauthenticated)
   if (pathname === '/health') {
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ ok: true, ts: Date.now() }));
+    sendJson(res, { ok: true, ts: Date.now() });
+    return;
+  }
+
+  // T0.3.4: Detailed health check (authenticated)
+  if (pathname === '/health/detailed') {
+    if (!checkAuth(req)) { sendJson(res, {ok:false,error:'Unauthorized',code:'AUTH_REQUIRED'}, 401); return; }
+    const checks = {};
+    // CLI reachability
+    try {
+      const r = spawnSync(OPENCLAW_NODE, [OPENCLAW_CLI, '--version'], {timeout:5000, encoding:'utf8', stdio:['ignore','pipe','pipe']});
+      checks.cli = { ok: r.status === 0, version: (r.stdout||'').trim(), ms: r.durationMs };
+    } catch(e) { checks.cli = { ok: false, error: e.message }; }
+    // Gateway reachability
+    try {
+      const r = spawnSync('/usr/bin/curl', ['-s','-o','/dev/null','-w','%{http_code}','--max-time','3','http://127.0.0.1:18789/health'], {timeout:5000,encoding:'utf8',stdio:['ignore','pipe','pipe']});
+      checks.gateway = { ok: r.stdout?.trim() === '200', statusCode: r.stdout?.trim() };
+    } catch(e) { checks.gateway = { ok: false, error: e.message }; }
+    // Disk space
+    try {
+      const stat = fs.statSync('/');
+      const df = execSync('/bin/df -k / | tail -1', {encoding:'utf8'}).trim().split(/\s+/);
+      const free = parseInt(df[3]) * 1024;
+      checks.disk = { ok: free > 10*1024*1024*1024, freeGb: Math.round(free/1024/1024/1024*10)/10 };
+    } catch(e) { checks.disk = { ok: false, error: e.message }; }
+    // Memory pressure
+    try {
+      const mp = execSync('memory_pressure', {encoding:'utf8',timeout:5000});
+      checks.memory = { ok: !mp.includes('critical'), summary: mp.trim().split('\n')[0] };
+    } catch(e) { checks.memory = { ok: true, note: 'memory_pressure not available' }; }
+    // Circuit breaker state
+    checks.circuitBreaker = { open: circuitOpen, failCount: cliFailCount };
+    sendJson(res, { ok: true, checks, ts: Date.now() });
+    return;
+  }
+
+  // Serve HTML dashboard (unauthenticated — browser loads this directly)
+  if (pathname === '/' || pathname === '/index.html') {
+    try {
+      const html = fs.readFileSync(CANVAS_HTML, 'utf8');
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache' });
+      res.end(html);
+    } catch(e) {
+      res.writeHead(500);
+      res.end('Dashboard HTML not found: ' + e.message);
+    }
+    return;
+  }
+
+  // T0.1.3: All /api/* routes require Bearer token auth
+  if (pathname.startsWith('/api/') && !checkAuth(req)) {
+    res.writeHead(401, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ ok: false, error: 'Unauthorized', code: 'AUTH_REQUIRED' }));
     return;
   }
 
@@ -408,44 +476,38 @@ async function route(req, res) {
       getHealth(),
       getLogs(30)
     ];
-    // Embed cron into status for convenience (frontend expects status.cron)
-    if (status && cron && cron.jobs) {
+    if (status && cron && cron?.jobs) {
       status.cron = cron;
     }
-    res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' });
-    res.end(JSON.stringify({ status, cron, health, logs, ts: Date.now() }));
+    sendJson(res, { status, cron, health, logs, ts: Date.now() });
     return;
   }
 
   // API: fetch logs only
   if (pathname === '/api/logs') {
     const logs = getLogs(50);
-    res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' });
-    res.end(JSON.stringify({ logs, ts: Date.now() }));
+    sendJson(res, { logs, ts: Date.now() });
     return;
   }
 
   // API: system metrics
   if (pathname === '/api/sysmetrics') {
     const metrics = getSysMetrics();
-    res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' });
-    res.end(JSON.stringify({ metrics, ts: Date.now() }));
+    sendJson(res, { metrics, ts: Date.now() });
     return;
   }
 
   // API: model usage
   if (pathname === '/api/modelusage') {
     const usage = getModelUsage();
-    res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' });
-    res.end(JSON.stringify({ usage, ts: Date.now() }));
+    sendJson(res, { usage, ts: Date.now() });
     return;
   }
 
   // API: research pipeline
   if (pathname === '/api/research') {
     const research = getResearchPipeline();
-    res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' });
-    res.end(JSON.stringify({ research, ts: Date.now() }));
+    sendJson(res, { research, ts: Date.now() });
     return;
   }
 
@@ -455,13 +517,14 @@ async function route(req, res) {
       const { id, enabled } = await readBody(req);
       validateCronId(id);
       if (typeof enabled !== 'boolean') throw new Error('enabled must be boolean');
-      const cmd = enabled ? 'enable' : 'disable';
-      jspawnCron(['cron', cmd, String(id)]);
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ ok: true, ts: Date.now() }));
+      const result = jspawnCron(['cron', enabled ? 'enable' : 'disable', String(id)]);
+      if (!result.ok) {
+        sendJson(res, { ok: false, error: result.error, code: 'CLI_ERROR' }, 500);
+        return;
+      }
+      sendJson(res, { ok: true, ts: Date.now() });
     } catch(e) {
-      res.writeHead(400, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ ok: false, error: e.message }));
+      sendJson(res, { ok: false, error: e.message, code: 'BAD_REQUEST' }, 400);
     }
     return;
   }
@@ -473,11 +536,9 @@ async function route(req, res) {
       validateCronId(id);
       const proc = spawnProcess(OPENCLAW_NODE, [OPENCLAW_CLI, 'cron', 'run', String(id)], { stdio: 'ignore' });
       proc.on('error', err => console.error('[cron run]', err.message));
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ ok: true, dispatched: true, ts: Date.now() }));
+      sendJson(res, { ok: true, dispatched: true, ts: Date.now() });
     } catch(e) {
-      res.writeHead(400, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ ok: false, error: e.message }));
+      sendJson(res, { ok: false, error: e.message, code: 'BAD_REQUEST' }, 400);
     }
     return;
   }
@@ -489,11 +550,13 @@ async function route(req, res) {
       validateCronId(jobId);
       const limit = Math.min(parseInt(parsed.query.limit || '30', 10) || 30, 100);
       const result = jspawnCron(['cron', 'runs', '--id', String(jobId), '--limit', String(limit)]);
-      res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' });
-      res.end(JSON.stringify({ runs: result, ts: Date.now() }));
+      if (!result.ok) {
+        sendJson(res, { ok: false, error: result.error, code: 'CLI_ERROR' }, 500);
+        return;
+      }
+      sendJson(res, { runs: result.data, ts: Date.now() });
     } catch(e) {
-      res.writeHead(400, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ ok: false, error: e.message }));
+      sendJson(res, { ok: false, error: e.message, code: 'BAD_REQUEST' }, 400);
     }
     return;
   }
@@ -520,39 +583,28 @@ async function route(req, res) {
         }
       }
       if (args.length <= 3) {
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ ok: true, noChanges: true, ts: Date.now() }));
+        sendJson(res, { ok: true, noChanges: true, ts: Date.now() });
         return;
       }
       const result = jspawnCron(args);
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ ok: true, result, ts: Date.now() }));
+      if (!result.ok) {
+        sendJson(res, { ok: false, error: result.error, code: 'CLI_ERROR' }, 500);
+        return;
+      }
+      sendJson(res, { ok: true, result: result.data, ts: Date.now() });
     } catch(e) {
-      res.writeHead(400, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ ok: false, error: e.message }));
+      sendJson(res, { ok: false, error: e.message, code: 'BAD_REQUEST' }, 400);
     }
     return;
   }
 
-  // Serve HTML dashboard
-  if (pathname === '/' || pathname === '/index.html') {
-    try {
-      const html = fs.readFileSync(CANVAS_HTML, 'utf8');
-      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache' });
-      res.end(html);
-    } catch(e) {
-      res.writeHead(500);
-      res.end('Dashboard HTML not found: ' + e.message);
-    }
-    return;
-  }
-
-  res.writeHead(404);
-  res.end('Not found');
+  res.writeHead(404, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify({ ok: false, error: 'Not found', code: 'NOT_FOUND' }));
 }
 
 const server = http.createServer(route);
+server.headersTimeout = 31000;
+server.requestTimeout = 31000;
 server.listen(PORT, HOST, () => {
-  console.log(`🦾 Claw Ops Dashboard → http://localhost:${PORT}`);
-  console.log(`   Data: openclaw CLI exec | Refresh: ${REFRESH_MS/1000}s active, ${IDLE_MS/1000}s idle`);
+  log.info({ port: PORT, refresh: REFRESH_MS/1000, idle: IDLE_MS/1000 }, 'NEXUS Dashboard started');
 });

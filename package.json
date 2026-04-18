@@ -1,0 +1,29 @@
+{
+  "name": "ops-dashboard",
+  "version": "1.0.0",
+  "description": "> **Status:** Legacy | **Date:** 2026-04-18 | **Files:** 3 source files (~108KB)   > **Repo:** `~/projects/ops-dashboard/` | **Live:** `http://192.168.1.201:18790/`   > **Reviewed by:** Claude Code (x2 parallel tasks) + Gemini CLI research",
+  "main": "dashboard.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ezzys/ops-dashboard.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/ezzys/ops-dashboard/issues"
+  },
+  "homepage": "https://github.com/ezzys/ops-dashboard#readme",
+  "dependencies": {
+    "@fastify/cors": "^11.2.0",
+    "@fastify/static": "^9.1.1",
+    "@fastify/websocket": "^11.2.0",
+    "better-sqlite3": "^12.9.0",
+    "fastify": "^5.8.5",
+    "ws": "^8.20.0"
+  }
+}
