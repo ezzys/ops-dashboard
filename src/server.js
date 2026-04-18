@@ -154,6 +154,7 @@ fastify.register(require('./routes/data'));
 fastify.register(require('./routes/cron'));
 fastify.register(require('./routes/cost'));
 fastify.register(require('./routes/recovery'));
+fastify.register(require('./routes/intervention'));
 
 // ── 404 handler ───────────────────────────────────────────────────────────────
 
@@ -272,6 +273,11 @@ async function start() {
     const costAggregator = require('./services/cost-aggregator');
     costAggregator.init(broadcast);
     log.info({}, 'Cost Shield aggregator started');
+
+    // R1.3: Start agent health monitor — broadcasts to health-events room
+    const healthMonitor = require('./services/health-monitor');
+    healthMonitor.init(broadcast);
+    log.info({}, 'Agent health monitor started');
   } catch (err) {
     log.error({ err: err.message }, 'Failed to start server');
     process.exit(1);

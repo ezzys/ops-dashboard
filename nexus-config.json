@@ -41,5 +41,9 @@
   },
   "websocket": {
     "rooms": ["cost-events", "health-events", "logs"]
+  },
+  "agentHealth": {
+    "mode": "alert-only",
+    "agents": {}
   }
 }

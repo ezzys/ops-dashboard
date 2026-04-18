@@ -12,6 +12,21 @@ async function routes(fastify) {
     return { ok: true, ts: Date.now() };
   });
 
+  // R1.3.5 — Agent health grid data
+  fastify.get('/api/health/agents', async (req, reply) => {
+    const healthMonitor = require('../services/health-monitor');
+    const summary = healthMonitor.getHealthSummary();
+    if (!summary) {
+      return {
+        ok: true,
+        agents: [],
+        counts: { healthy: 0, warning: 0, stuck: 0, offline: 0 },
+        ts: Date.now(),
+      };
+    }
+    return { ok: true, ...summary };
+  });
+
   // Authenticated detailed health check
   fastify.get('/health/detailed', async (req, reply) => {
     const checks = {};

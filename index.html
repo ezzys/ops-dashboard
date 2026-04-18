@@ -360,6 +360,102 @@ select.form-ctrl option{background:#161b22}
 .cs-ws-pill.live{border-color:rgba(63,185,80,.4);color:#3fb950;background:rgba(63,185,80,.07)}
 .cs-ws-pill.live .cs-ws-dot{background:#3fb950;box-shadow:0 0 5px rgba(63,185,80,.5);animation:pulse 2s ease-in-out infinite}
 .cs-ws-dot{width:5px;height:5px;border-radius:50%;background:#30363d;flex-shrink:0;transition:background .3s}
+
+/* ── AGENT HEALTH GRID ──────────────────────────────────── */
+.ah-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:16px}
+@media(min-width:680px){.ah-grid{gap:12px}}
+
+.ah-card{background:#161b22;border:1px solid #21262d;border-radius:10px;padding:13px 14px 11px;position:relative;overflow:hidden;transition:border-color .2s,transform .15s;display:flex;flex-direction:column;gap:6px}
+.ah-card:hover{border-color:#30363d;transform:translateY(-1px)}
+.ah-card.ah-healthy{border-color:rgba(63,185,80,.25)}
+.ah-card.ah-warning{border-color:rgba(210,153,34,.35)}
+.ah-card.ah-stuck{border-color:rgba(248,81,73,.4)}
+.ah-card.ah-offline{border-color:#21262d;opacity:.65}
+
+.ah-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:10px 10px 0 0}
+.ah-card.ah-healthy::before{background:#3fb950}
+.ah-card.ah-warning::before{background:#d29922}
+.ah-card.ah-stuck::before{background:#f85149;animation:pulse 1.5s ease-in-out infinite}
+.ah-card.ah-offline::before{background:#30363d}
+
+.ah-top{display:flex;align-items:flex-start;justify-content:space-between;gap:6px}
+.ah-icon{font-size:16px;line-height:1;flex-shrink:0;margin-top:1px}
+.ah-status-badge{font-size:8px;font-weight:700;padding:2px 7px;border-radius:10px;text-transform:uppercase;letter-spacing:.05em;flex-shrink:0;white-space:nowrap}
+.ahs-healthy{background:rgba(63,185,80,.12);color:#3fb950;border:1px solid rgba(63,185,80,.2)}
+.ahs-warning{background:rgba(210,153,34,.12);color:#d29922;border:1px solid rgba(210,153,34,.25)}
+.ahs-stuck{background:rgba(248,81,73,.12);color:#f85149;border:1px solid rgba(248,81,73,.25)}
+.ahs-offline{background:rgba(72,79,88,.1);color:#484f58;border:1px solid #21262d}
+
+.ah-name{font-size:13px;font-weight:700;color:#e6edf3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ah-meta{font-size:10px;color:#484f58;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.ah-ctx{display:flex;align-items:center;gap:4px;min-width:0}
+.ah-ctx-label{font-size:9px;color:#484f58;white-space:nowrap}
+
+.ah-footer{display:flex;align-items:center;justify-content:space-between;margin-top:2px;gap:6px}
+.ah-intervene-btn{background:none;border:1px solid #30363d;color:#484f58;border-radius:5px;padding:3px 9px;cursor:pointer;font-size:9px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;transition:all .15s;font-family:inherit;line-height:1.6;white-space:nowrap}
+.ah-intervene-btn:hover{color:#79c0ff;border-color:#58a6ff;background:rgba(88,166,255,.07)}
+.ah-ar-toggle{font-size:9px;color:#484f58;font-weight:600;text-transform:uppercase;letter-spacing:.04em;flex-shrink:0}
+
+.ah-empty{text-align:center;padding:40px 20px;color:#484f58;font-size:12px}
+.ah-empty .ae-icon{font-size:28px;display:block;margin-bottom:8px}
+.ah-summary-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.ah-sum-pill{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;background:#161b22;border:1px solid #21262d;color:#484f58}
+.ah-sum-pill .pval{font-size:11px}
+.ah-sum-pill.c-healthy{border-color:rgba(63,185,80,.25);color:#3fb950}
+.ah-sum-pill.c-warning{border-color:rgba(210,153,34,.3);color:#d29922}
+.ah-sum-pill.c-stuck{border-color:rgba(248,81,73,.35);color:#f85149}
+.ah-ws-pill{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:600;padding:2px 7px;border-radius:20px;border:1px solid #30363d;color:#484f58;vertical-align:middle}
+.ah-ws-pill.live{border-color:rgba(63,185,80,.4);color:#3fb950;background:rgba(63,185,80,.07)}
+.ah-ws-pill.live .ah-ws-dot{background:#3fb950;box-shadow:0 0 5px rgba(63,185,80,.5);animation:pulse 2s ease-in-out infinite}
+.ah-ws-dot{width:5px;height:5px;border-radius:50%;background:#30363d;flex-shrink:0;transition:background .3s}
+
+/* ── HITL SLIDE-OVER ─────────────────────────────────────── */
+.hitl-overlay{position:fixed;inset:0;background:rgba(1,4,9,.6);z-index:250;display:none;justify-content:flex-end;backdrop-filter:blur(2px)}
+.hitl-overlay.open{display:flex}
+.hitl-panel{background:#161b22;border-left:1px solid #30363d;width:100%;max-width:420px;height:100%;display:flex;flex-direction:column;animation:slideInRight .18s ease;box-shadow:-8px 0 32px rgba(0,0,0,.5);overflow:hidden}
+@keyframes slideInRight{from{transform:translateX(100%)}to{transform:translateX(0)}}
+.hitl-hdr{padding:14px 16px;border-bottom:1px solid #21262d;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:8px}
+.hitl-title{font-size:13px;font-weight:700;color:#e6edf3;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hitl-subtitle{font-size:10px;color:#484f58;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hitl-close{background:none;border:none;color:#484f58;cursor:pointer;font-size:20px;padding:0 2px;line-height:1;transition:color .15s;font-family:inherit;flex-shrink:0}
+.hitl-close:hover{color:#e6edf3}
+.hitl-body{padding:16px;overflow-y:auto;flex:1;min-height:0;display:flex;flex-direction:column;gap:10px}
+.hitl-session-info{background:#0d1117;border:1px solid #21262d;border-radius:8px;padding:10px 12px;font-size:11px}
+.hitl-session-info .si-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.hitl-session-info .si-row:last-child{margin-bottom:0}
+.hitl-session-info .si-key{color:#484f58;font-size:10px}
+.hitl-session-info .si-val{color:#8b949e;font-weight:600}
+.hitl-actions{display:flex;flex-direction:column;gap:8px}
+.hitl-action-card{background:#0d1117;border:1px solid #21262d;border-radius:8px;padding:12px 14px;transition:border-color .15s}
+.hitl-action-card:hover{border-color:#30363d}
+.hitl-action-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px}
+.hitl-action-icon{font-size:15px;line-height:1;flex-shrink:0;margin-top:1px}
+.hitl-action-name{font-size:12px;font-weight:700;color:#e6edf3;margin-bottom:2px}
+.hitl-action-desc{font-size:10px;color:#484f58;line-height:1.4}
+.hitl-action-btn{border-radius:6px;padding:4px 12px;cursor:pointer;font-size:10px;font-weight:600;border:1px solid;transition:all .15s;font-family:inherit;white-space:nowrap;flex-shrink:0}
+.hitl-action-btn:disabled{opacity:.35;cursor:not-allowed}
+.hab-safe{background:rgba(63,185,80,.1);border-color:rgba(63,185,80,.3);color:#3fb950}
+.hab-safe:hover:not(:disabled){background:rgba(63,185,80,.2)}
+.hab-moderate{background:rgba(210,153,34,.1);border-color:rgba(210,153,34,.3);color:#d29922}
+.hab-moderate:hover:not(:disabled){background:rgba(210,153,34,.2)}
+.hab-destructive{background:rgba(248,81,73,.1);border-color:rgba(248,81,73,.3);color:#f85149}
+.hab-destructive:hover:not(:disabled){background:rgba(248,81,73,.2)}
+.hitl-inject-wrap{margin-top:6px;display:none}
+.hitl-inject-wrap.show{display:block}
+.hitl-term-wrap{margin-top:6px;display:none}
+.hitl-term-wrap.show{display:block}
+.hitl-result{font-size:11px;margin-top:6px;padding:5px 9px;border-radius:5px;display:none}
+.hitl-result.show{display:block}
+.hr-ok{background:rgba(63,185,80,.08);color:#3fb950}
+.hr-fail{background:rgba(248,81,73,.08);color:#f85149}
+.hitl-audit{margin-top:4px}
+.hitl-audit-title{font-size:9px;font-weight:700;color:#484f58;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
+.hitl-audit-row{display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid #21262d;font-size:10px}
+.hitl-audit-row:last-child{border-bottom:none}
+.ha-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.ha-ok{background:#3fb950}.ha-fail{background:#f85149}
+.ha-action{color:#e6edf3;font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ha-time{color:#484f58;white-space:nowrap;font-variant-numeric:tabular-nums}
 </style>
 </head>
 <body>
@@ -418,6 +514,11 @@ select.form-ctrl option{background:#161b22}
     🛠️<span class="tab-label"> Recovery</span>
     <span class="tab-badge" id="dtab-recovery">—</span>
   </button>
+  <button class="dtab" data-tab="agents" onclick="switchTab('agents')" role="tab" aria-selected="false" aria-controls="tab-agents" id="dtab-btn-agents" tabindex="-1">
+    🤖<span class="tab-label"> Agents</span>
+    <span class="tab-badge" id="dtab-agents">—</span>
+    <span class="dot red" id="dtab-agents-dot"></span>
+  </button>
 </div>
 
 <div class="wrap">
@@ -429,6 +530,7 @@ select.form-ctrl option{background:#161b22}
   <div id="tab-cost" class="tab-content" role="tabpanel" aria-labelledby="dtab-btn-cost"></div>
   <div id="tab-logs" class="tab-content" role="tabpanel" aria-labelledby="dtab-btn-logs"></div>
   <div id="tab-recovery" class="tab-content" role="tabpanel" aria-labelledby="dtab-btn-recovery"></div>
+  <div id="tab-agents"   class="tab-content" role="tabpanel" aria-labelledby="dtab-btn-agents"></div>
 </div>
 
 <!-- Mobile nav -->
@@ -464,6 +566,10 @@ select.form-ctrl option{background:#161b22}
   <button class="mtab" data-tab="recovery" onclick="switchTab('recovery')" aria-label="Recovery">
     <span class="m-icon">🛠️</span><span class="m-label">Recovery</span>
     <span class="m-badge" id="mtab-recovery">—</span>
+  </button>
+  <button class="mtab" data-tab="agents" onclick="switchTab('agents')" aria-label="Agents">
+    <span class="m-icon">🤖</span><span class="m-label">Agents</span>
+    <span class="m-badge" id="mtab-agents">—</span>
   </button>
 </div>
 
@@ -585,12 +691,102 @@ select.form-ctrl option{background:#161b22}
   </div>
 </div>
 
+<!-- HITL Intervention Slide-Over -->
+<div class="hitl-overlay" id="hitl-overlay" onclick="if(event.target===this)closeHitl()">
+  <div class="hitl-panel">
+    <div class="hitl-hdr">
+      <div style="min-width:0">
+        <div class="hitl-title" id="hitl-title">Intervene</div>
+        <div class="hitl-subtitle" id="hitl-subtitle">Session —</div>
+      </div>
+      <button class="hitl-close" onclick="closeHitl()">✕</button>
+    </div>
+    <div class="hitl-body">
+      <!-- Session summary -->
+      <div class="hitl-session-info" id="hitl-session-info"></div>
+
+      <!-- Actions -->
+      <div class="hitl-actions">
+
+        <!-- Pause -->
+        <div class="hitl-action-card">
+          <div class="hitl-action-top">
+            <div>
+              <div class="hitl-action-name">⏸ Pause</div>
+              <div class="hitl-action-desc">Halt new model calls. Session stays alive and can be resumed.</div>
+            </div>
+            <button class="hitl-action-btn hab-moderate" id="hitl-btn-pause" onclick="hitlPause()">Pause</button>
+          </div>
+          <div class="hitl-result" id="hitl-res-pause"></div>
+        </div>
+
+        <!-- Resume -->
+        <div class="hitl-action-card">
+          <div class="hitl-action-top">
+            <div>
+              <div class="hitl-action-name">▶ Resume</div>
+              <div class="hitl-action-desc">Unblock a paused session and allow model calls to proceed.</div>
+            </div>
+            <button class="hitl-action-btn hab-safe" id="hitl-btn-resume" onclick="hitlResume()">Resume</button>
+          </div>
+          <div class="hitl-result" id="hitl-res-resume"></div>
+        </div>
+
+        <!-- Inject Message -->
+        <div class="hitl-action-card">
+          <div class="hitl-action-top">
+            <div>
+              <div class="hitl-action-name">💬 Inject Message</div>
+              <div class="hitl-action-desc">Insert a user message into the running session.</div>
+            </div>
+            <button class="hitl-action-btn hab-moderate" id="hitl-btn-inject-toggle" onclick="hitlToggleInject()">Compose</button>
+          </div>
+          <div class="hitl-inject-wrap" id="hitl-inject-wrap">
+            <textarea id="hitl-inject-msg" class="form-ctrl" rows="3" placeholder="Type message to inject…" style="resize:vertical;font-size:11px;min-height:60px"></textarea>
+            <div style="display:flex;justify-content:flex-end;gap:6px;margin-top:6px">
+              <button class="btn-secondary" style="font-size:10px;padding:4px 10px" onclick="hitlCancelInject()">Cancel</button>
+              <button class="hitl-action-btn hab-moderate" id="hitl-btn-inject-send" onclick="hitlInject()">Send</button>
+            </div>
+          </div>
+          <div class="hitl-result" id="hitl-res-inject"></div>
+        </div>
+
+        <!-- Terminate -->
+        <div class="hitl-action-card">
+          <div class="hitl-action-top">
+            <div>
+              <div class="hitl-action-name">⛔ Terminate</div>
+              <div class="hitl-action-desc">Hard-kill session. Requires typed confirmation. Irreversible.</div>
+            </div>
+            <button class="hitl-action-btn hab-destructive" id="hitl-btn-term-toggle" onclick="hitlToggleTerm()">Terminate</button>
+          </div>
+          <div class="hitl-term-wrap" id="hitl-term-wrap">
+            <div class="form-hint" style="margin-bottom:5px">Type <code id="hitl-term-phrase" style="font-size:9px;background:#0d1117;padding:1px 4px;border-radius:3px"></code> to confirm</div>
+            <input id="hitl-term-input" class="form-ctrl" type="text" autocomplete="off" spellcheck="false" placeholder="TERMINATE-…" style="font-size:11px">
+            <div style="display:flex;justify-content:flex-end;gap:6px;margin-top:6px">
+              <button class="btn-secondary" style="font-size:10px;padding:4px 10px" onclick="hitlCancelTerm()">Cancel</button>
+              <button class="hitl-action-btn hab-destructive" id="hitl-btn-term-exec" onclick="hitlTerminate()">Execute Termination</button>
+            </div>
+          </div>
+          <div class="hitl-result" id="hitl-res-terminate"></div>
+        </div>
+      </div>
+
+      <!-- Recent intervention audit for this session -->
+      <div class="hitl-audit" id="hitl-audit" style="display:none">
+        <div class="hitl-audit-title">Recent actions</div>
+        <div id="hitl-audit-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 'use strict';
 // T0.1.3: Auth token for API calls
 const AUTH_TOKEN='52700a12570c54a80cb138b0d2322deb7238875879541ce6';
 const POLL_ACTIVE=30_000, POLL_HIDDEN=300_000, TZ='Europe/Vilnius';
-const S={current:'health',loaded:{},data:{},timers:{},visible:true,connected:false,issues:[],clockInt:null,lastUpdated:null,refreshSpin:false,costWs:null,costWsLive:false,costAlerts:[]};
+const S={current:'health',loaded:{},data:{},timers:{},visible:true,connected:false,issues:[],clockInt:null,lastUpdated:null,refreshSpin:false,costWs:null,costWsLive:false,costAlerts:[],healthWs:null,healthWsLive:false};
 
 const fmt={
   num(n){if(!n&&n!==0)return'—';if(n>=1e9)return(n/1e9).toFixed(1)+'B';if(n>=1e6)return(n/1e6).toFixed(1)+'M';if(n>=1e3)return(n/1e3).toFixed(0)+'K';return String(n)},
@@ -646,6 +842,7 @@ async function doManualRefresh(){
 async function refreshAllActive(){
   const tab=S.current;
   if(tab==='health'||tab==='research'||tab==='schedule'||tab==='sessions') await fetchData();
+  else if(tab==='agents') await fetchAgentHealth();
   else if(tab==='logs') await fetchLogs();
   else if(tab==='system') await fetchSysMetrics();
   else if(tab==='cost'){await fetchCostSummary();await fetchModelUsage();}
@@ -677,6 +874,7 @@ function scheduleTabRefresh(tab){
   clearInterval(S.timers[tab]);
   S.timers[tab]=setInterval(()=>{
     if(tab==='health'||tab==='research'||tab==='schedule'||tab==='sessions') fetchData();
+    else if(tab==='agents') fetchAgentHealth();
     else if(tab==='logs') fetchLogs();
     else if(tab==='system') fetchSysMetrics();
     else if(tab==='cost'){fetchCostSummary();fetchModelUsage();}
@@ -684,9 +882,9 @@ function scheduleTabRefresh(tab){
   },S.visible?POLL_ACTIVE:POLL_HIDDEN);
 }
 document.addEventListener('visibilitychange',()=>{S.visible=!document.hidden;if(S.current){clearInterval(S.timers[S.current]);scheduleTabRefresh(S.current)}});
-const TABS=['health','research','schedule','system','sessions','cost','logs','recovery'];
+const TABS=['health','research','schedule','system','sessions','cost','logs','recovery','agents'];
 document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'){closeCronModals();closeRcModal();return}
+  if(e.key==='Escape'){closeCronModals();closeRcModal();closeHitl();return}
   if((e.key==='r'||e.key==='R')&&!e.ctrlKey&&!e.metaKey&&document.activeElement?.tagName!=='INPUT'){e.preventDefault();doManualRefresh()}
   if(e.key==='ArrowRight'||e.key==='ArrowLeft'){
     const cur=TABS.indexOf(S.current),dir=e.key==='ArrowRight'?1:-1,next=TABS[(cur+dir+TABS.length)%TABS.length];
@@ -721,6 +919,9 @@ function doInitialFetch(tab){
       break;
     case'recovery':
       fetchAudit();
+      break;
+    case'agents':
+      fetchAgentHealth();
       break;
   }
 }
@@ -1630,6 +1831,7 @@ function renderTab(tab){
     case'cost':renderCost();break;
     case'logs':renderLogs();break;
     case'recovery':renderRecovery();break;
+    case'agents':renderAgentHealth();break;
   }
 }
 
@@ -1918,7 +2120,277 @@ function showRcResult(action,ok,msg){
   setTimeout(()=>{resEl.className='rc-result';resEl.textContent=''},8000);
 }
 
-function boot(){tickClock();S.clockInt=setInterval(tickClock,1000);connectCostWs();switchTab('health')}
+// ── AGENT HEALTH ─────────────────────────────────────────────
+async function fetchAgentHealth(){
+  try{
+    const r=await fetch('/api/health/agents',{headers:{'Authorization':'Bearer '+AUTH_TOKEN}});
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const d=await r.json();
+    S.data.agents=d;
+    renderAgentHealth();
+    const counts=d.counts||{};
+    const stuck=counts.stuck||0,warn=counts.warning||0,total=(counts.healthy||0)+warn+stuck+(counts.offline||0);
+    setBadge('agents',total||'0');
+    setWarn('agents',stuck>0);
+  }catch(e){
+    document.getElementById('tab-agents').innerHTML=`<div class="error-state"><div class="e-icon">⚠</div><div>Failed to load agent health.</div><div style="font-size:11px;color:#8b949e;margin-top:4px">${esc(e.message)}</div></div>`;
+  }
+}
+
+function _statusIcon(s){
+  if(s==='healthy')return'🟢';
+  if(s==='warning')return'🟡';
+  if(s==='stuck')return'🔴';
+  return'⚫';
+}
+function _statusLabel(s){
+  if(s==='healthy')return'Healthy';
+  if(s==='warning')return'Warning';
+  if(s==='stuck')return'Stuck';
+  return'Offline';
+}
+function _agentAgeStr(ageMs){
+  if(ageMs==null)return'never';
+  if(ageMs<0)return'just now';
+  return fmt.age(ageMs)+' ago';
+}
+
+function renderAgentHealth(){
+  const d=S.data.agents;
+  const el=document.getElementById('tab-agents');
+  if(!d){el.innerHTML=lu()+`<div class="skel-card"><div class="skel skel-line" style="width:40%"></div><div class="skel skel-block" style="margin-top:8px"></div></div>`;return}
+
+  const counts=d.counts||{healthy:0,warning:0,stuck:0,offline:0};
+  const agents=d.agents||[];
+
+  const summaryHtml=`<div class="ah-summary-row">
+    <span class="ah-sum-pill c-healthy"><span class="pval">${counts.healthy}</span>Healthy</span>
+    <span class="ah-sum-pill c-warning"><span class="pval">${counts.warning}</span>Warning</span>
+    <span class="ah-sum-pill c-stuck"><span class="pval">${counts.stuck}</span>Stuck</span>
+    <span class="ah-sum-pill"><span class="pval">${counts.offline}</span>Offline</span>
+    <span class="ah-ws-pill ${S.healthWsLive?'live':''}">
+      <span class="ah-ws-dot"></span>
+      <span>${S.healthWsLive?'Live':'Polling'}</span>
+    </span>
+  </div>`;
+
+  let gridHtml='';
+  if(agents.length===0){
+    gridHtml=`<div class="ah-empty"><span class="ae-icon">🤖</span>No agent sessions found. Sessions will appear here once the OpenClaw session database is available.</div>`;
+  }else{
+    gridHtml=`<div class="ah-grid">${agents.map(a=>{
+      const cls='ah-card ah-'+a.status;
+      const icon=_statusIcon(a.status);
+      const badgeCls='ah-status-badge ahs-'+a.status;
+      const ctxPct=a.contextPct||0;
+      const ctxCls=ctxPct>=90?'v-err':ctxPct>=70?'v-warn':'';
+      return`<div class="${esc(cls)}">
+        <div class="ah-top">
+          <span class="ah-icon">${icon}</span>
+          <span class="${badgeCls}">${esc(_statusLabel(a.status))}</span>
+        </div>
+        <div class="ah-name" title="${esc(a.id)}">${esc(a.name)}</div>
+        <div class="ah-meta">
+          <span>Last: ${esc(_agentAgeStr(a.ageMs))}</span>
+          ${ctxPct>0?`<span class="ah-ctx"><span class="ah-ctx-label">Ctx</span><span class="${ctxCls}">${ctxPct}%</span></span>`:''}
+        </div>
+        <div class="ah-footer">
+          <button class="ah-intervene-btn" onclick='openHitl(${JSON.stringify({id:a.id,name:a.name,status:a.status,lastSeen:a.lastSeen,contextPct:a.contextPct})})'>INTERVENE</button>
+          <span class="ah-ar-toggle">${esc(a.autoRestart||'alert-only')}</span>
+        </div>
+      </div>`;
+    }).join('')}</div>`;
+  }
+
+  el.innerHTML=lu()+summaryHtml+`<div class="card"><div class="card-head">Agent Health Grid</div><div class="card-body" style="padding:10px">${gridHtml}</div></div>`;
+}
+
+// ── Health WebSocket ──────────────────────────────────────────
+function connectHealthWs(){
+  if(S.healthWs&&S.healthWs.readyState<=1)return;
+  try{
+    const proto=location.protocol==='https:'?'wss:':'ws:';
+    const ws=new WebSocket(`${proto}//${location.host}/ws?room=health-events&token=${AUTH_TOKEN}`);
+    S.healthWs=ws;
+    ws.onopen=()=>{S.healthWsLive=true;_updateHealthWsPill()};
+    ws.onclose=()=>{S.healthWsLive=false;_updateHealthWsPill();setTimeout(connectHealthWs,8000)};
+    ws.onerror=()=>{S.healthWsLive=false;_updateHealthWsPill()};
+    ws.onmessage=e=>{
+      let msg;try{msg=JSON.parse(e.data)}catch{return}
+      if(msg.type==='health-update'){
+        S.data.agents=msg.data;
+        const counts=msg.data.counts||{};
+        const stuck=counts.stuck||0,total=(counts.healthy||0)+(counts.warning||0)+stuck+(counts.offline||0);
+        setBadge('agents',total||'0');
+        setWarn('agents',stuck>0);
+        if(S.current==='agents')renderAgentHealth();
+      }
+    };
+  }catch(_){}
+}
+function _updateHealthWsPill(){
+  document.querySelectorAll('.ah-ws-pill').forEach(el=>{
+    el.classList.toggle('live',S.healthWsLive);
+    el.querySelector('span:last-child').textContent=S.healthWsLive?'Live':'Polling';
+    const dot=el.querySelector('.ah-ws-dot');if(dot)dot.style.background=S.healthWsLive?'':'';
+  });
+}
+
+// ── HITL State + Functions ────────────────────────────────────
+const HITL={sessionId:null,busy:false};
+
+function openHitl(agent){
+  HITL.sessionId=agent.id;
+  HITL.busy=false;
+
+  document.getElementById('hitl-title').textContent='Intervene: '+agent.name;
+  document.getElementById('hitl-subtitle').textContent='Session '+agent.id;
+
+  // Session summary
+  document.getElementById('hitl-session-info').innerHTML=`
+    <div class="si-row"><span class="si-key">ID</span><code style="font-size:10px">${esc(agent.id)}</code></div>
+    <div class="si-row"><span class="si-key">Status</span><span class="si-val">${_statusIcon(agent.status)} ${esc(_statusLabel(agent.status))}</span></div>
+    <div class="si-row"><span class="si-key">Last seen</span><span class="si-val">${esc(agent.lastSeen||'—')}</span></div>
+    <div class="si-row"><span class="si-key">Context</span><span class="si-val">${agent.contextPct||0}%</span></div>
+  `;
+
+  // Reset form state
+  hitlCancelInject();
+  hitlCancelTerm();
+  ['pause','resume','inject','terminate'].forEach(a=>{
+    const r=document.getElementById('hitl-res-'+a);
+    if(r){r.className='hitl-result';r.textContent=''}
+  });
+  _resetHitlButtons();
+
+  // Set terminate phrase
+  document.getElementById('hitl-term-phrase').textContent='TERMINATE-'+agent.id;
+  document.getElementById('hitl-term-input').placeholder='TERMINATE-'+agent.id;
+
+  // Load recent audit
+  _loadHitlAudit(agent.id);
+
+  document.getElementById('hitl-overlay').classList.add('open');
+}
+function closeHitl(){
+  document.getElementById('hitl-overlay').classList.remove('open');
+  HITL.sessionId=null;
+  HITL.busy=false;
+}
+function _resetHitlButtons(){
+  ['pause','resume'].forEach(a=>{
+    const b=document.getElementById('hitl-btn-'+a);
+    if(b){b.disabled=false;b.textContent=a.charAt(0).toUpperCase()+a.slice(1)}
+  });
+}
+function hitlToggleInject(){
+  const w=document.getElementById('hitl-inject-wrap');
+  w.classList.toggle('show');
+  const open=w.classList.contains('show');
+  document.getElementById('hitl-btn-inject-toggle').textContent=open?'Cancel':'Compose';
+  if(open)document.getElementById('hitl-inject-msg').focus();
+}
+function hitlCancelInject(){
+  document.getElementById('hitl-inject-wrap').classList.remove('show');
+  document.getElementById('hitl-btn-inject-toggle').textContent='Compose';
+  document.getElementById('hitl-inject-msg').value='';
+}
+function hitlToggleTerm(){
+  const w=document.getElementById('hitl-term-wrap');
+  w.classList.toggle('show');
+  const open=w.classList.contains('show');
+  document.getElementById('hitl-btn-term-toggle').textContent=open?'Cancel':'Terminate';
+  if(open)document.getElementById('hitl-term-input').focus();
+}
+function hitlCancelTerm(){
+  document.getElementById('hitl-term-wrap').classList.remove('show');
+  document.getElementById('hitl-btn-term-toggle').textContent='Terminate';
+  document.getElementById('hitl-term-input').value='';
+}
+
+async function _hitlPost(action,body,resultId){
+  if(HITL.busy)return;
+  HITL.busy=true;
+  const resEl=document.getElementById('hitl-res-'+resultId);
+  if(resEl){resEl.className='hitl-result';resEl.textContent=''}
+  try{
+    const r=await fetch('/api/intervention/'+action,{
+      method:'POST',
+      headers:{'Authorization':'Bearer '+AUTH_TOKEN,'Content-Type':'application/json'},
+      body:JSON.stringify(body),
+    });
+    const d=await r.json();
+    if(resEl){
+      resEl.className='hitl-result show '+(d.ok?'hr-ok':'hr-fail');
+      resEl.textContent=(d.ok?'✓ Done':(d.error||'Failed'));
+      setTimeout(()=>{resEl.className='hitl-result';resEl.textContent=''},8000);
+    }
+    if(d.ok)_loadHitlAudit(HITL.sessionId);
+  }catch(e){
+    if(resEl){resEl.className='hitl-result show hr-fail';resEl.textContent='✗ '+e.message}
+  }
+  HITL.busy=false;
+  _resetHitlButtons();
+}
+
+async function hitlPause(){
+  const sid=HITL.sessionId;if(!sid)return;
+  const b=document.getElementById('hitl-btn-pause');
+  if(b){b.disabled=true;b.textContent='Pausing…'}
+  await _hitlPost('pause',{sessionId:sid,confirmed:true},'pause');
+}
+async function hitlResume(){
+  const sid=HITL.sessionId;if(!sid)return;
+  const b=document.getElementById('hitl-btn-resume');
+  if(b){b.disabled=true;b.textContent='Resuming…'}
+  await _hitlPost('resume',{sessionId:sid,confirmed:true},'resume');
+}
+async function hitlInject(){
+  const sid=HITL.sessionId;if(!sid)return;
+  const msg=document.getElementById('hitl-inject-msg').value.trim();
+  if(!msg){document.getElementById('hitl-inject-msg').focus();return}
+  const b=document.getElementById('hitl-btn-inject-send');
+  if(b){b.disabled=true;b.textContent='Sending…'}
+  await _hitlPost('inject',{sessionId:sid,message:msg},'inject');
+  hitlCancelInject();
+  if(b){b.disabled=false;b.textContent='Send'}
+}
+async function hitlTerminate(){
+  const sid=HITL.sessionId;if(!sid)return;
+  const val=document.getElementById('hitl-term-input').value.trim();
+  const required='TERMINATE-'+sid;
+  if(val!==required){
+    document.getElementById('hitl-res-terminate').className='hitl-result show hr-fail';
+    document.getElementById('hitl-res-terminate').textContent='✗ Must type exactly: '+required;
+    return;
+  }
+  const b=document.getElementById('hitl-btn-term-exec');
+  if(b){b.disabled=true;b.textContent='Terminating…'}
+  await _hitlPost('terminate',{sessionId:sid,confirmation:val},'terminate');
+  hitlCancelTerm();
+  if(b){b.disabled=false;b.textContent='Execute Termination'}
+}
+
+async function _loadHitlAudit(sid){
+  try{
+    const r=await fetch('/api/intervention/audit?limit=10',{headers:{'Authorization':'Bearer '+AUTH_TOKEN}});
+    if(!r.ok)return;
+    const d=await r.json();
+    const relevant=d.entries.filter(e=>e.target===sid);
+    const auditEl=document.getElementById('hitl-audit');
+    const listEl=document.getElementById('hitl-audit-list');
+    if(!relevant.length){auditEl.style.display='none';return}
+    auditEl.style.display='';
+    listEl.innerHTML=relevant.slice(0,5).map(e=>`
+      <div class="hitl-audit-row">
+        <span class="ha-dot ${e.ok?'ha-ok':'ha-fail'}"></span>
+        <span class="ha-action">${esc(e.action)}</span>
+        <span class="ha-time">${esc(e.ts?new Date(e.ts).toLocaleTimeString('en-GB',{hour12:false}):'—')}</span>
+      </div>`).join('');
+  }catch(_){}
+}
+
+function boot(){tickClock();S.clockInt=setInterval(tickClock,1000);connectCostWs();connectHealthWs();switchTab('health')}
 boot();
 </script>
 </body>
