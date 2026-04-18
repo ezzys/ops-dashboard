@@ -164,6 +164,11 @@ fastify.register(require('./routes/intelligence'));
 fastify.register(require('./routes/bookmarks'));
 fastify.register(require('./routes/metrics'));
 fastify.register(require('./routes/compliance').complianceRoutes);
+fastify.register(require('./routes/diff'));
+fastify.register(require('./routes/annotations'));
+fastify.register(require('./routes/model-analytics'));
+fastify.register(require('./routes/grafana'));
+fastify.register(require('./routes/agent-analytics'));
 
 // ── 404 handler ───────────────────────────────────────────────────────────────
 
