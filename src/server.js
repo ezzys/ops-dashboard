@@ -75,6 +75,7 @@ fastify.addHook('onResponse', async (req, reply) => {
 const allowedOrigins = [
   `http://localhost:${cfg.port}`,
   `http://127.0.0.1:${cfg.port}`,
+  `http://0.0.0.0:${cfg.port}`,
 ];
 
 fastify.addHook('onRequest', async (req, reply) => {
@@ -82,7 +83,7 @@ fastify.addHook('onRequest', async (req, reply) => {
   if (origin && allowedOrigins.includes(origin)) {
     reply.header('Access-Control-Allow-Origin', origin);
   } else {
-    reply.header('Access-Control-Allow-Origin', `http://localhost:${cfg.port}`);
+    reply.header('Access-Control-Allow-Origin', origin || `http://localhost:${cfg.port}`);
   }
   reply.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   reply.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
