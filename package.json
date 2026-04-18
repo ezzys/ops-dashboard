@@ -2,8 +2,10 @@
   "name": "ops-dashboard",
   "version": "1.0.0",
   "description": "> **Status:** Legacy | **Date:** 2026-04-18 | **Files:** 3 source files (~108KB)   > **Repo:** `~/projects/ops-dashboard/` | **Live:** `http://192.168.1.201:18790/`   > **Reviewed by:** Claude Code (x2 parallel tasks) + Gemini CLI research",
-  "main": "dashboard.js",
+  "main": "src/server.js",
   "scripts": {
+    "start": "node src/server.js",
+    "start:legacy": "node dashboard.v1.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
