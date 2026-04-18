@@ -544,6 +544,77 @@ select.form-ctrl option{background:#161b22}
 .lq-results{font-size:11px;color:#484f58;margin-bottom:6px}
 .lq-event-row{display:flex;align-items:flex-start;gap:8px;padding:6px 10px;background:#161b22;border:1px solid #21262d;border-radius:6px;margin-bottom:5px;cursor:pointer;transition:border-color .15s}
 .lq-event-row:hover{border-color:#30363d}
+
+/* ── PROMPT VERSIONING ───────────────────────────────────────────────────────*/
+.pv-layout{display:grid;grid-template-columns:220px 1fr;gap:14px}
+@media(max-width:700px){.pv-layout{grid-template-columns:1fr}}
+.pv-key-list{background:#161b22;border:1px solid #21262d;border-radius:10px;overflow:hidden}
+.pv-key-item{padding:9px 12px;cursor:pointer;border-bottom:1px solid #21262d;transition:background .1s;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.pv-key-item:last-child{border-bottom:none}
+.pv-key-item:hover{background:rgba(255,255,255,.025)}
+.pv-key-item.active{background:rgba(88,166,255,.08);border-left:2px solid #58a6ff}
+.pv-key-name{font-size:12px;font-weight:600;color:#e6edf3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pv-key-ver{font-size:9px;color:#484f58;flex-shrink:0}
+.pv-editor{background:#161b22;border:1px solid #21262d;border-radius:10px;overflow:hidden}
+.pv-editor-head{padding:9px 13px;border-bottom:1px solid #21262d;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.pv-editor-key{font-size:13px;font-weight:700;color:#e6edf3}
+.pv-editor-actions{display:flex;gap:6px;flex-shrink:0}
+.pv-textarea{width:100%;min-height:220px;background:#0d1117;border:none;border-bottom:1px solid #21262d;color:#e6edf3;padding:12px 14px;font-family:'SF Mono',ui-monospace,monospace;font-size:12px;line-height:1.6;resize:vertical;outline:none;box-sizing:border-box}
+.pv-textarea:focus{background:#0a0f15}
+.pv-history{padding:10px 13px}
+.pv-hist-row{display:grid;grid-template-columns:30px 1fr auto auto;gap:8px;align-items:center;padding:6px 9px;border-radius:6px;cursor:pointer;transition:background .1s;font-size:11px}
+.pv-hist-row:hover{background:rgba(255,255,255,.03)}
+.pv-hist-row.active-ver{background:rgba(88,166,255,.07)}
+.pv-hist-ver{font-size:10px;font-weight:700;color:#58a6ff;text-align:center}
+.pv-hist-desc{color:#8b949e;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pv-hist-ts{color:#484f58;font-size:10px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.pv-new-key-row{padding:9px 12px;border-top:1px solid #21262d;display:flex;gap:6px}
+.pv-new-key-input{flex:1;background:#0d1117;border:1px solid #30363d;border-radius:5px;color:#e6edf3;padding:4px 9px;font-size:11px;font-family:inherit;outline:none}
+.pv-new-key-input:focus{border-color:#58a6ff}
+
+/* ── SKILLS ──────────────────────────────────────────────────────────────────*/
+.sk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-bottom:16px}
+.sk-card{background:#161b22;border:1px solid #21262d;border-radius:10px;padding:13px 14px;cursor:pointer;transition:border-color .2s,transform .15s;display:flex;flex-direction:column;gap:8px}
+.sk-card:hover{border-color:#30363d;transform:translateY(-1px)}
+.sk-card.selected{border-color:#58a6ff;background:rgba(88,166,255,.04)}
+.sk-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:6px}
+.sk-name{font-size:13px;font-weight:700;color:#e6edf3}
+.sk-desc{font-size:11px;color:#8b949e;line-height:1.4}
+.sk-triggers{display:flex;flex-wrap:wrap;gap:4px;margin-top:2px}
+.sk-trigger-chip{font-size:9px;padding:2px 7px;border-radius:10px;background:rgba(88,166,255,.08);color:#79c0ff;border:1px solid rgba(88,166,255,.15)}
+.sk-detail{background:#161b22;border:1px solid #21262d;border-radius:10px;overflow:hidden}
+.sk-detail-head{padding:9px 13px;border-bottom:1px solid #21262d;display:flex;align-items:center;justify-content:space-between}
+.sk-detail-name{font-size:13px;font-weight:700;color:#e6edf3}
+.sk-md-body{padding:12px 14px;font-size:12px;color:#8b949e;font-family:'SF Mono',ui-monospace,monospace;white-space:pre-wrap;word-break:break-word;max-height:340px;overflow-y:auto;line-height:1.6}
+.sk-exec-form{padding:10px 13px;border-top:1px solid #21262d;display:flex;gap:8px;align-items:center}
+.sk-exec-input{flex:1;background:#0d1117;border:1px solid #30363d;border-radius:5px;color:#e6edf3;padding:5px 9px;font-size:11px;font-family:inherit;outline:none}
+.sk-exec-input:focus{border-color:#58a6ff}
+.sk-exec-result{padding:8px 14px;font-size:11px;border-top:1px solid #21262d;display:none;color:#8b949e;font-family:monospace;white-space:pre-wrap;word-break:break-word;max-height:180px;overflow-y:auto}
+.sk-exec-result.show{display:block}
+
+/* ── ORCHESTRATION ───────────────────────────────────────────────────────────*/
+.orch-layout{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:700px){.orch-layout{grid-template-columns:1fr}}
+.oc-agent-card{background:#161b22;border:1px solid #21262d;border-radius:10px;padding:13px 14px;display:flex;flex-direction:column;gap:8px;transition:border-color .2s}
+.oc-agent-card:hover{border-color:#30363d}
+.oc-agent-top{display:flex;align-items:flex-start;justify-content:space-between;gap:6px}
+.oc-agent-name{font-size:13px;font-weight:700;color:#e6edf3}
+.oc-agent-model{font-size:10px;color:#484f58;margin-top:2px}
+.oc-agent-desc{font-size:11px;color:#8b949e;line-height:1.4}
+.oc-agent-actions{display:flex;gap:6px;margin-top:4px}
+.handoff-row{display:grid;grid-template-columns:28px 1fr auto;gap:8px;align-items:flex-start;padding:8px 0;border-bottom:1px solid #21262d;font-size:11px}
+.handoff-row:last-child{border-bottom:none}
+.handoff-arrow{font-size:13px;text-align:center;padding-top:2px;color:#58a6ff}
+.handoff-from{font-size:10px;color:#484f58}
+.handoff-to{font-size:12px;font-weight:600;color:#e6edf3}
+.handoff-summary{font-size:11px;color:#8b949e;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.handoff-tasks{display:flex;flex-wrap:wrap;gap:3px;margin-top:4px}
+.handoff-task-chip{font-size:9px;padding:1px 6px;border-radius:8px;background:#21262d;color:#8b949e}
+.oc-new-agent-form{background:#161b22;border:1px solid #21262d;border-radius:10px;padding:14px;margin-bottom:14px;display:none}
+.oc-new-agent-form.open{display:block}
+.oc-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:560px){.oc-form-grid{grid-template-columns:1fr}}
+.oc-handoff-form{background:#161b22;border:1px solid #21262d;border-radius:10px;padding:14px;margin-bottom:14px}
 </style>
 </head>
 <body>
@@ -611,6 +682,18 @@ select.form-ctrl option{background:#161b22}
     🎬<span class="tab-label"> Replay</span>
     <span class="tab-badge" id="dtab-replay">—</span>
   </button>
+  <button class="dtab" data-tab="prompts" onclick="switchTab('prompts')" role="tab" aria-selected="false" aria-controls="tab-prompts" id="dtab-btn-prompts" tabindex="-1">
+    📝<span class="tab-label"> Prompts</span>
+    <span class="tab-badge" id="dtab-prompts">—</span>
+  </button>
+  <button class="dtab" data-tab="skills" onclick="switchTab('skills')" role="tab" aria-selected="false" aria-controls="tab-skills" id="dtab-btn-skills" tabindex="-1">
+    ⚡<span class="tab-label"> Skills</span>
+    <span class="tab-badge" id="dtab-skills">—</span>
+  </button>
+  <button class="dtab" data-tab="orchestration" onclick="switchTab('orchestration')" role="tab" aria-selected="false" aria-controls="tab-orchestration" id="dtab-btn-orchestration" tabindex="-1">
+    🔗<span class="tab-label"> Orchestrate</span>
+    <span class="tab-badge" id="dtab-orchestration">—</span>
+  </button>
 </div>
 
 <div class="wrap">
@@ -622,8 +705,11 @@ select.form-ctrl option{background:#161b22}
   <div id="tab-cost" class="tab-content" role="tabpanel" aria-labelledby="dtab-btn-cost"></div>
   <div id="tab-logs" class="tab-content" role="tabpanel" aria-labelledby="dtab-btn-logs"></div>
   <div id="tab-recovery" class="tab-content" role="tabpanel" aria-labelledby="dtab-btn-recovery"></div>
-  <div id="tab-agents"   class="tab-content" role="tabpanel" aria-labelledby="dtab-btn-agents"></div>
-  <div id="tab-replay"   class="tab-content" role="tabpanel" aria-labelledby="dtab-btn-replay"></div>
+  <div id="tab-agents"        class="tab-content" role="tabpanel" aria-labelledby="dtab-btn-agents"></div>
+  <div id="tab-replay"        class="tab-content" role="tabpanel" aria-labelledby="dtab-btn-replay"></div>
+  <div id="tab-prompts"       class="tab-content" role="tabpanel" aria-labelledby="dtab-btn-prompts"></div>
+  <div id="tab-skills"        class="tab-content" role="tabpanel" aria-labelledby="dtab-btn-skills"></div>
+  <div id="tab-orchestration" class="tab-content" role="tabpanel" aria-labelledby="dtab-btn-orchestration"></div>
 </div>
 
 <!-- Mobile nav -->
@@ -667,6 +753,18 @@ select.form-ctrl option{background:#161b22}
   <button class="mtab" data-tab="replay" onclick="switchTab('replay')" aria-label="Replay">
     <span class="m-icon">🎬</span><span class="m-label">Replay</span>
     <span class="m-badge" id="mtab-replay">—</span>
+  </button>
+  <button class="mtab" data-tab="prompts" onclick="switchTab('prompts')" aria-label="Prompts">
+    <span class="m-icon">📝</span><span class="m-label">Prompts</span>
+    <span class="m-badge" id="mtab-prompts">—</span>
+  </button>
+  <button class="mtab" data-tab="skills" onclick="switchTab('skills')" aria-label="Skills">
+    <span class="m-icon">⚡</span><span class="m-label">Skills</span>
+    <span class="m-badge" id="mtab-skills">—</span>
+  </button>
+  <button class="mtab" data-tab="orchestration" onclick="switchTab('orchestration')" aria-label="Orchestrate">
+    <span class="m-icon">🔗</span><span class="m-label">Orchestrate</span>
+    <span class="m-badge" id="mtab-orchestration">—</span>
   </button>
 </div>
 
@@ -1022,6 +1120,15 @@ function doInitialFetch(tab){
       break;
     case'replay':
       renderReplayTab();
+      break;
+    case'prompts':
+      fetchPrompts();
+      break;
+    case'skills':
+      fetchSkills();
+      break;
+    case'orchestration':
+      fetchOrchestration();
       break;
   }
 }
@@ -1933,6 +2040,9 @@ function renderTab(tab){
     case'recovery':renderRecovery();break;
     case'agents':renderAgentHealth();break;
     case'replay':renderReplayTab();break;
+    case'prompts':renderPrompts();break;
+    case'skills':renderSkills();break;
+    case'orchestration':renderOrchestration();break;
   }
 }
 
@@ -3031,6 +3141,490 @@ function rpShowLqDetail(eventJson) {
 }
 
 // renderReplayTab() is called via doInitialFetch/renderTab case 'replay' above.
+
+// ═══════════════════════════════════════════════════════════════════════════
+// R3.1 — PROMPT VERSIONING UI
+// ═══════════════════════════════════════════════════════════════════════════
+
+const PV = { prompts:[], activeKey:null, history:[], busy:false };
+
+async function fetchPrompts() {
+  try {
+    const r = await fetch('/api/prompts', { headers: { 'Authorization': 'Bearer ' + AUTH_TOKEN } });
+    const d = await r.json();
+    PV.prompts = d.prompts || [];
+    setBadge('prompts', PV.prompts.length || '—');
+    if (S.current === 'prompts') renderPrompts();
+  } catch(e) {
+    if (S.current === 'prompts') renderPrompts();
+  }
+}
+
+async function pvSelectKey(key) {
+  PV.activeKey = key;
+  renderPrompts();
+  try {
+    const [rp, rh] = await Promise.all([
+      fetch(`/api/prompts/${encodeURIComponent(key)}`, { headers: { 'Authorization': 'Bearer ' + AUTH_TOKEN } }),
+      fetch(`/api/prompts/${encodeURIComponent(key)}/history`, { headers: { 'Authorization': 'Bearer ' + AUTH_TOKEN } }),
+    ]);
+    const p = await rp.json();
+    const h = await rh.json();
+    PV.activePrompt = p.prompt || null;
+    PV.history = h.history || [];
+  } catch(e) {
+    PV.activePrompt = null; PV.history = [];
+  }
+  renderPrompts();
+}
+
+async function pvSave() {
+  if (PV.busy) return;
+  const key = PV.activeKey; if (!key) return;
+  const ta  = document.getElementById('pv-textarea'); if (!ta) return;
+  const desc = document.getElementById('pv-desc-input')?.value || '';
+  PV.busy = true; renderPrompts();
+  try {
+    const r = await fetch(`/api/prompts/${encodeURIComponent(key)}`, {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + AUTH_TOKEN, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: ta.value, description: desc }),
+    });
+    const d = await r.json();
+    if (d.ok) { pvSelectKey(key); fetchPrompts(); }
+    else pvFlash('Save failed: ' + (d.error || '?'), true);
+  } catch(e) { pvFlash('Save error: ' + e.message, true); }
+  PV.busy = false; renderPrompts();
+}
+
+async function pvRollback() {
+  if (!PV.activeKey || PV.busy) return;
+  if (!confirm('Roll back to previous version?')) return;
+  PV.busy = true;
+  try {
+    const r = await fetch(`/api/prompts/${encodeURIComponent(PV.activeKey)}/rollback`, {
+      method: 'POST', headers: { 'Authorization': 'Bearer ' + AUTH_TOKEN },
+    });
+    const d = await r.json();
+    if (d.ok) pvSelectKey(PV.activeKey);
+    else pvFlash('Rollback failed: ' + (d.error || '?'), true);
+  } catch(e) { pvFlash('Error: ' + e.message, true); }
+  PV.busy = false;
+}
+
+async function pvActivateVersion(version) {
+  if (!PV.activeKey) return;
+  try {
+    const r = await fetch(`/api/prompts/${encodeURIComponent(PV.activeKey)}/activate`, {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + AUTH_TOKEN, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ version }),
+    });
+    const d = await r.json();
+    if (d.ok) pvSelectKey(PV.activeKey);
+    else pvFlash('Activate failed: ' + (d.error || '?'), true);
+  } catch(e) { pvFlash('Error: ' + e.message, true); }
+}
+
+async function pvCreateKey() {
+  const inp = document.getElementById('pv-new-key-input'); if (!inp) return;
+  const k = inp.value.trim(); if (!k) return;
+  await fetch(`/api/prompts/${encodeURIComponent(k)}`, {
+    method: 'POST',
+    headers: { 'Authorization': 'Bearer ' + AUTH_TOKEN, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ content: '# New prompt\n\nAdd your prompt here.', description: 'Initial version' }),
+  });
+  inp.value = '';
+  await fetchPrompts();
+  pvSelectKey(k);
+}
+
+function pvFlash(msg, err) {
+  const el = document.getElementById('pv-flash');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.color = err ? '#f85149' : '#3fb950';
+  el.style.display = 'block';
+  setTimeout(() => { if (el) el.style.display = 'none'; }, 3000);
+}
+
+function renderPrompts() {
+  const el = document.getElementById('tab-prompts'); if (!el) return;
+  const prompts = PV.prompts;
+  const ak = PV.activeKey;
+  const ap = PV.activePrompt;
+
+  const keyList = prompts.length
+    ? prompts.map(p => `
+      <div class="pv-key-item ${p.prompt_key === ak ? 'active' : ''}" onclick="pvSelectKey(${JSON.stringify(p.prompt_key)})">
+        <span class="pv-key-name">${esc(p.prompt_key)}</span>
+        <span class="pv-key-ver">v${p.version}</span>
+      </div>`).join('')
+    : '<div class="empty-state" style="padding:20px 12px"><span class="e-icon">📝</span>No prompts yet</div>';
+
+  const histRows = (PV.history || []).map(h => `
+    <div class="pv-hist-row ${h.is_active ? 'active-ver' : ''}" title="Click to activate v${h.version}">
+      <span class="pv-hist-ver">v${h.version}</span>
+      <span class="pv-hist-desc">${esc(h.description || '—')}</span>
+      <span class="pv-hist-ts">${new Date(h.created_at).toLocaleDateString()}</span>
+      ${h.is_active
+        ? '<span class="badge b-ok">active</span>'
+        : `<button class="act-btn" style="font-size:9px;padding:1px 7px" onclick="pvActivateVersion(${h.version})">Activate</button>`}
+    </div>`).join('');
+
+  el.innerHTML = `
+    <div class="last-updated">Prompts · ${prompts.length} key${prompts.length===1?'':'s'}</div>
+    <div class="pv-layout">
+      <!-- Key list -->
+      <div>
+        <div class="pv-key-list">
+          ${keyList}
+          <div class="pv-new-key-row">
+            <input id="pv-new-key-input" class="pv-new-key-input" placeholder="new-key-name" onkeydown="if(event.key==='Enter')pvCreateKey()">
+            <button class="act-btn act-run" onclick="pvCreateKey()">+ New</button>
+          </div>
+        </div>
+      </div>
+      <!-- Editor -->
+      <div>
+        ${ak && ap ? `
+          <div class="pv-editor">
+            <div class="pv-editor-head">
+              <span class="pv-editor-key">${esc(ak)} <span class="badge b-blue">v${ap.version}</span></span>
+              <div class="pv-editor-actions">
+                <span id="pv-flash" style="display:none;font-size:10px;margin-right:6px"></span>
+                <button class="act-btn" onclick="pvRollback()" ${PV.busy?'disabled':''}>↩ Rollback</button>
+                <button class="btn-primary" style="padding:4px 12px;font-size:11px" onclick="pvSave()" ${PV.busy?'disabled':''}>Save New Version</button>
+              </div>
+            </div>
+            <div style="padding:8px 13px;border-bottom:1px solid #21262d;display:flex;gap:8px;align-items:center">
+              <label style="font-size:10px;color:#484f58;white-space:nowrap">Description:</label>
+              <input id="pv-desc-input" class="form-ctrl" style="height:28px;font-size:11px" placeholder="What changed?" value="${esc(ap.description||'')}">
+            </div>
+            <textarea id="pv-textarea" class="pv-textarea">${esc(ap.content||'')}</textarea>
+            ${PV.history.length ? `
+              <div class="pv-history">
+                <div class="rc-section-title" style="margin-bottom:8px">Version History</div>
+                ${histRows}
+              </div>` : ''}
+          </div>
+        ` : ak ? `
+          <div class="card"><div class="card-body empty-state"><span class="e-icon">⏳</span>Loading…</div></div>
+        ` : `
+          <div class="card"><div class="card-body empty-state"><span class="e-icon">👈</span>Select a prompt key to edit</div></div>
+        `}
+      </div>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// R3.3 — SKILLS UI
+// ═══════════════════════════════════════════════════════════════════════════
+
+const SK = { skills:[], selectedSkill:null, execResult:null, execBusy:false };
+
+async function fetchSkills() {
+  try {
+    const r = await fetch('/api/skills', { headers: { 'Authorization': 'Bearer ' + AUTH_TOKEN } });
+    const d = await r.json();
+    SK.skills = d.skills || [];
+    setBadge('skills', SK.skills.length || '—');
+    if (S.current === 'skills') renderSkills();
+  } catch(e) {
+    if (S.current === 'skills') renderSkills();
+  }
+}
+
+async function skSelect(name) {
+  SK.selectedSkill = null; SK.execResult = null;
+  renderSkills();
+  try {
+    const r = await fetch(`/api/skills/${encodeURIComponent(name)}`, { headers: { 'Authorization': 'Bearer ' + AUTH_TOKEN } });
+    const d = await r.json();
+    SK.selectedSkill = d.skill || null;
+  } catch(e) { SK.selectedSkill = null; }
+  renderSkills();
+}
+
+async function skExecute() {
+  if (SK.execBusy || !SK.selectedSkill) return;
+  const args = document.getElementById('sk-args-input')?.value || '';
+  if (!confirm(`Execute skill "${SK.selectedSkill.name}"?`)) return;
+  SK.execBusy = true; SK.execResult = '⏳ Running…';
+  renderSkillDetail();
+  try {
+    const r = await fetch('/api/skills/execute', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + AUTH_TOKEN, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: SK.selectedSkill.name, args }),
+    });
+    const d = await r.json();
+    SK.execResult = d.ok
+      ? ('stdout: ' + (d.stdout || '(no output)') + (d.stderr ? '\nstderr: ' + d.stderr : ''))
+      : 'Error: ' + (d.error || 'unknown');
+  } catch(e) { SK.execResult = 'Error: ' + e.message; }
+  SK.execBusy = false;
+  renderSkillDetail();
+}
+
+function renderSkillDetail() {
+  const panel = document.getElementById('sk-detail-panel'); if (!panel) return;
+  const s = SK.selectedSkill;
+  if (!s) { panel.innerHTML = '<div class="empty-state"><span class="e-icon">👈</span>Select a skill</div>'; return; }
+  panel.innerHTML = `
+    <div class="sk-detail">
+      <div class="sk-detail-head">
+        <span class="sk-detail-name">${esc(s.display_name || s.name)}</span>
+        <span class="badge b-dim">${esc(s.name)}</span>
+      </div>
+      ${s.content ? `<div class="sk-md-body">${esc(s.content)}</div>` : '<div class="sk-md-body" style="color:#484f58">No SKILL.md found</div>'}
+      <div class="sk-exec-form">
+        <input id="sk-args-input" class="sk-exec-input" placeholder="Optional args…" ${SK.execBusy?'disabled':''}>
+        <button class="btn-primary" style="padding:5px 14px;font-size:11px;white-space:nowrap" onclick="skExecute()" ${SK.execBusy?'disabled':''}>
+          ${SK.execBusy ? '⏳ Running…' : '▶ Execute'}
+        </button>
+      </div>
+      ${SK.execResult ? `<div class="sk-exec-result show">${esc(SK.execResult)}</div>` : ''}
+    </div>`;
+}
+
+function renderSkills() {
+  const el = document.getElementById('tab-skills'); if (!el) return;
+  const skills = SK.skills;
+
+  el.innerHTML = `
+    <div class="last-updated">Skills · ${skills.length} found <button class="act-btn" style="margin-left:6px;font-size:9px" onclick="fetchSkills()">↻ Refresh</button></div>
+    <div class="two-col">
+      <div>
+        ${skills.length ? `<div class="sk-grid">
+          ${skills.map(s => `
+            <div class="sk-card ${SK.selectedSkill?.name===s.name?'selected':''}" onclick="skSelect(${JSON.stringify(s.name)})">
+              <div class="sk-card-top">
+                <span class="sk-name">${esc(s.display_name||s.name)}</span>
+                ${s.has_skill_md ? '<span class="badge b-dim">SKILL.md</span>' : ''}
+              </div>
+              ${s.description ? `<div class="sk-desc">${esc(s.description.slice(0,120))}</div>` : ''}
+              ${s.triggers.length ? `<div class="sk-triggers">${s.triggers.slice(0,3).map(t=>`<span class="sk-trigger-chip">${esc(t)}</span>`).join('')}</div>` : ''}
+            </div>`).join('')}
+        </div>` : '<div class="empty-state"><span class="e-icon">⚡</span>No skills found in ~/.claude/skills or ~/.openclaw/skills</div>'}
+      </div>
+      <div id="sk-detail-panel">
+        <div class="empty-state"><span class="e-icon">👈</span>Select a skill to view details</div>
+      </div>
+    </div>`;
+
+  if (SK.selectedSkill) renderSkillDetail();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// R3.2 — ORCHESTRATION UI (Agents + Handoffs)
+// ═══════════════════════════════════════════════════════════════════════════
+
+const OC = { agents:[], handoffs:[], agentFormOpen:false, busy:false, handoffFormOpen:false };
+
+async function fetchOrchestration() {
+  try {
+    const [ra, rh] = await Promise.all([
+      fetch('/api/agents',   { headers: { 'Authorization': 'Bearer ' + AUTH_TOKEN } }),
+      fetch('/api/handoffs', { headers: { 'Authorization': 'Bearer ' + AUTH_TOKEN } }),
+    ]);
+    const da = await ra.json(); OC.agents   = da.agents   || [];
+    const dh = await rh.json(); OC.handoffs = dh.handoffs || [];
+    setBadge('orchestration', OC.agents.length || '—');
+    if (S.current === 'orchestration') renderOrchestration();
+  } catch(e) {
+    if (S.current === 'orchestration') renderOrchestration();
+  }
+}
+
+async function ocCreateAgent() {
+  const name  = document.getElementById('oc-new-name')?.value.trim();
+  const model = document.getElementById('oc-new-model')?.value || 'claude-sonnet-4-6';
+  const sp    = document.getElementById('oc-new-sysprompt')?.value || '';
+  const desc  = document.getElementById('oc-new-desc')?.value || '';
+  if (!name) { alert('Name required'); return; }
+  OC.busy = true;
+  try {
+    const r = await fetch('/api/agents', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + AUTH_TOKEN, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, model, system_prompt: sp, description: desc }),
+    });
+    const d = await r.json();
+    if (d.ok) { OC.agentFormOpen = false; fetchOrchestration(); }
+    else alert('Error: ' + (d.error || '?'));
+  } catch(e) { alert('Error: ' + e.message); }
+  OC.busy = false;
+}
+
+async function ocLaunchAgent(id) {
+  if (!confirm('Launch agent session?')) return;
+  try {
+    const r = await fetch(`/api/agents/${encodeURIComponent(id)}/launch`, {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + AUTH_TOKEN, 'Content-Type': 'application/json' },
+      body: JSON.stringify({}),
+    });
+    const d = await r.json();
+    if (d.ok) alert('Session created: ' + d.session_id);
+    else alert('Launch failed: ' + (d.error || '?'));
+  } catch(e) { alert('Error: ' + e.message); }
+}
+
+async function ocDeleteAgent(id, name) {
+  if (!confirm(`Delete agent "${name}"?`)) return;
+  try {
+    const r = await fetch(`/api/agents/${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': 'Bearer ' + AUTH_TOKEN },
+    });
+    const d = await r.json();
+    if (d.ok) fetchOrchestration();
+    else alert('Delete failed: ' + (d.error || '?'));
+  } catch(e) { alert('Error: ' + e.message); }
+}
+
+async function ocExecuteHandoff() {
+  const from = document.getElementById('oc-hoff-from')?.value.trim();
+  const to   = document.getElementById('oc-hoff-to')?.value.trim();
+  const ctx  = document.getElementById('oc-hoff-ctx')?.value.trim();
+  const tasks= document.getElementById('oc-hoff-tasks')?.value.trim();
+  if (!from || !to || !ctx) { alert('From, To, and Summary are required'); return; }
+  OC.busy = true;
+  try {
+    const r = await fetch('/api/handoffs', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + AUTH_TOKEN, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        from_agent: from, to_agent: to, context_summary: ctx,
+        pending_tasks: tasks ? tasks.split('\n').map(t=>t.trim()).filter(Boolean) : [],
+      }),
+    });
+    const d = await r.json();
+    if (d.ok) { OC.handoffFormOpen = false; fetchOrchestration(); }
+    else alert('Handoff failed: ' + (d.error || '?'));
+  } catch(e) { alert('Error: ' + e.message); }
+  OC.busy = false;
+}
+
+function renderOrchestration() {
+  const el = document.getElementById('tab-orchestration'); if (!el) return;
+  const agents   = OC.agents;
+  const handoffs = OC.handoffs;
+
+  const agentCards = agents.map(a => `
+    <div class="oc-agent-card">
+      <div class="oc-agent-top">
+        <div>
+          <div class="oc-agent-name">${esc(a.name)}</div>
+          <div class="oc-agent-model">${esc(a.model)}</div>
+        </div>
+        <span class="badge b-dim">${esc(a.id)}</span>
+      </div>
+      ${a.description ? `<div class="oc-agent-desc">${esc(a.description)}</div>` : ''}
+      ${a.system_prompt ? `<div style="font-size:10px;color:#484f58;font-family:monospace;background:#0d1117;border-radius:4px;padding:5px 8px;overflow:hidden;max-height:40px;white-space:nowrap;text-overflow:ellipsis">${esc(a.system_prompt.slice(0,120))}</div>` : ''}
+      <div class="oc-agent-actions">
+        <button class="act-btn act-run" onclick="ocLaunchAgent(${JSON.stringify(a.id)})">▶ Launch</button>
+        <button class="act-btn" onclick="window.location.href='#'" style="display:none">Sessions</button>
+        <button class="act-btn" style="color:#f85149;border-color:rgba(248,81,73,.3)" onclick="ocDeleteAgent(${JSON.stringify(a.id)},${JSON.stringify(a.name)})">Delete</button>
+      </div>
+    </div>`).join('');
+
+  const handoffRows = handoffs.length
+    ? handoffs.slice(0,20).map(h => `
+      <div class="handoff-row">
+        <div class="handoff-arrow">→</div>
+        <div>
+          <div><span class="handoff-from">${esc(h.from_agent)}</span> <span style="color:#484f58;font-size:9px">→</span> <span class="handoff-to">${esc(h.to_agent)}</span></div>
+          <div class="handoff-summary">${esc(h.context_summary)}</div>
+          ${h.pending_tasks.length ? `<div class="handoff-tasks">${h.pending_tasks.slice(0,3).map(t=>`<span class="handoff-task-chip">${esc(t)}</span>`).join('')}</div>` : ''}
+        </div>
+        <span style="font-size:9px;color:#484f58;white-space:nowrap">${new Date(h.timestamp).toLocaleDateString()}</span>
+      </div>`).join('')
+    : '<div class="empty-state" style="padding:20px"><span class="e-icon">🔗</span>No handoffs yet</div>';
+
+  el.innerHTML = `
+    <div class="last-updated">Agents: ${agents.length} · Handoffs: ${handoffs.length}</div>
+
+    <!-- Agent section -->
+    <div class="card">
+      <div class="card-head">
+        Configured Agents
+        <button class="act-btn act-run" onclick="OC.agentFormOpen=!OC.agentFormOpen;renderOrchestration()">${OC.agentFormOpen?'✕ Cancel':'+ New Agent'}</button>
+      </div>
+      ${OC.agentFormOpen ? `
+        <div class="oc-new-agent-form open">
+          <div class="oc-form-grid">
+            <div class="form-group">
+              <label class="form-label">Name *</label>
+              <input id="oc-new-name" class="form-ctrl" placeholder="My Agent">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Model</label>
+              <select id="oc-new-model" class="form-ctrl">
+                <option value="claude-sonnet-4-6">claude-sonnet-4-6</option>
+                <option value="claude-opus-4-6">claude-opus-4-6</option>
+                <option value="claude-haiku-4-5-20251001">claude-haiku-4-5</option>
+              </select>
+            </div>
+            <div class="form-group" style="grid-column:1/-1">
+              <label class="form-label">Description</label>
+              <input id="oc-new-desc" class="form-ctrl" placeholder="What this agent does">
+            </div>
+            <div class="form-group" style="grid-column:1/-1">
+              <label class="form-label">System Prompt</label>
+              <textarea id="oc-new-sysprompt" class="form-ctrl" style="min-height:80px;resize:vertical" placeholder="You are…"></textarea>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px">
+            <button class="btn-secondary" onclick="OC.agentFormOpen=false;renderOrchestration()">Cancel</button>
+            <button class="btn-primary" onclick="ocCreateAgent()" ${OC.busy?'disabled':''}>Create Agent</button>
+          </div>
+        </div>` : ''}
+      <div class="card-body">
+        ${agents.length
+          ? `<div class="orch-layout">${agentCards}</div>`
+          : '<div class="empty-state"><span class="e-icon">🤖</span>No agent configs yet — create one above</div>'}
+      </div>
+    </div>
+
+    <!-- Handoff section -->
+    <div class="card">
+      <div class="card-head">
+        Agent Handoffs
+        <button class="act-btn act-run" onclick="OC.handoffFormOpen=!OC.handoffFormOpen;renderOrchestration()">${OC.handoffFormOpen?'✕ Cancel':'+ New Handoff'}</button>
+      </div>
+      ${OC.handoffFormOpen ? `
+        <div class="oc-handoff-form">
+          <div class="oc-form-grid">
+            <div class="form-group">
+              <label class="form-label">From Agent *</label>
+              <input id="oc-hoff-from" class="form-ctrl" placeholder="agent-id or name" list="oc-agent-names">
+            </div>
+            <div class="form-group">
+              <label class="form-label">To Agent *</label>
+              <input id="oc-hoff-to" class="form-ctrl" placeholder="agent-id or name" list="oc-agent-names">
+            </div>
+            <div class="form-group" style="grid-column:1/-1">
+              <label class="form-label">Context Summary *</label>
+              <input id="oc-hoff-ctx" class="form-ctrl" placeholder="What the receiving agent needs to know">
+            </div>
+            <div class="form-group" style="grid-column:1/-1">
+              <label class="form-label">Pending Tasks (one per line)</label>
+              <textarea id="oc-hoff-tasks" class="form-ctrl" style="min-height:60px;resize:vertical" placeholder="Task 1&#10;Task 2"></textarea>
+            </div>
+          </div>
+          <datalist id="oc-agent-names">${agents.map(a=>`<option value="${esc(a.id)}">${esc(a.name)}</option>`).join('')}</datalist>
+          <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px">
+            <button class="btn-secondary" onclick="OC.handoffFormOpen=false;renderOrchestration()">Cancel</button>
+            <button class="btn-primary" onclick="ocExecuteHandoff()" ${OC.busy?'disabled':''}>Execute Handoff</button>
+          </div>
+        </div>` : ''}
+      <div class="card-body">
+        ${handoffRows}
+      </div>
+    </div>`;
+}
 
 function boot(){tickClock();S.clockInt=setInterval(tickClock,1000);connectCostWs();connectHealthWs();switchTab('health')}
 boot();

@@ -84,7 +84,7 @@ fastify.addHook('onRequest', async (req, reply) => {
   } else {
     reply.header('Access-Control-Allow-Origin', `http://localhost:${cfg.port}`);
   }
-  reply.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  reply.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   reply.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 });
 
@@ -157,6 +157,9 @@ fastify.register(require('./routes/recovery'));
 fastify.register(require('./routes/intervention'));
 fastify.register(require('./routes/replay'));
 fastify.register(require('./routes/logs'));
+fastify.register(require('./routes/prompts'));
+fastify.register(require('./routes/orchestration'));
+fastify.register(require('./routes/skills'));
 
 // ── 404 handler ───────────────────────────────────────────────────────────────
 
