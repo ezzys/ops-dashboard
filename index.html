@@ -5,12 +5,44 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>🦾 Claw Ops</title>
 <style>
+/* ── DARK MODE VARIABLES ─────────────────────────────────── */
+:root{
+  --bg:       #0d1117;
+  --bg2:      #161b22;
+  --bg3:      #1c2128;
+  --border:   #21262d;
+  --border2:  #30363d;
+  --text:     #c9d1d9;
+  --text2:    #8b949e;
+  --text3:    #484f58;
+  --accent:   #58a6ff;
+  --ok:       #3fb950;
+  --warn:     #d29922;
+  --err:      #f85149;
+  --head-bg:  rgba(13,17,23,.92);
+}
+[data-theme="light"]{
+  --bg:       #ffffff;
+  --bg2:      #f6f8fa;
+  --bg3:      #eaeef2;
+  --border:   #d0d7de;
+  --border2:  #afb8c1;
+  --text:     #24292f;
+  --text2:    #57606a;
+  --text3:    #8c959f;
+  --accent:   #0969da;
+  --ok:       #1a7f37;
+  --warn:     #9a6700;
+  --err:      #cf222e;
+  --head-bg:  rgba(255,255,255,.92);
+}
+
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-text-size-adjust:100%}
-body{background:#0d1117;color:#c9d1d9;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',ui-sans-serif,system-ui,sans-serif;font-size:13px;line-height:1.5;min-height:100vh;padding:0 0 calc(70px + env(safe-area-inset-bottom,0px)) 0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',ui-sans-serif,system-ui,sans-serif;font-size:13px;line-height:1.5;min-height:100vh;padding:0 0 calc(70px + env(safe-area-inset-bottom,0px)) 0}
 
 /* ── HEADER ─────────────────────────────────────────────── */
-.hdr{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:rgba(13,17,23,.92);backdrop-filter:blur(12px);border-bottom:1px solid #21262d;gap:10px}
+.hdr{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:var(--head-bg);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);gap:10px}
 .hdr-left{display:flex;align-items:center;gap:8px;min-width:0}
 .hdr h1{font-size:13px;font-weight:700;color:#e6edf3;white-space:nowrap}
 .hdr-right{display:flex;align-items:center;gap:7px;flex-shrink:0}
@@ -615,6 +647,91 @@ select.form-ctrl option{background:#161b22}
 .oc-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(max-width:560px){.oc-form-grid{grid-template-columns:1fr}}
 .oc-handoff-form{background:#161b22;border:1px solid #21262d;border-radius:10px;padding:14px;margin-bottom:14px}
+
+/* ── INTELLIGENCE TAB ────────────────────────────────────────────────────────*/
+.intel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin-bottom:14px}
+@media(min-width:900px){.intel-grid{gap:10px;margin-bottom:16px}}
+
+/* Leaderboard */
+.lb-row{display:grid;grid-template-columns:24px 1fr auto auto auto;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid #161b22;font-size:11px;transition:background .1s}
+.lb-row:last-child{border-bottom:none}
+.lb-row:hover{background:rgba(255,255,255,.02)}
+.lb-rank{font-size:11px;font-weight:700;color:#484f58;text-align:center}
+.lb-rank.gold{color:#d29922}.lb-rank.silver{color:#8b949e}.lb-rank.bronze{color:#9a6300}
+.lb-name{font-weight:600;color:#e6edf3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb-model{font-size:9px;color:#484f58;margin-top:1px}
+.lb-sr{font-size:11px;font-weight:700;font-variant-numeric:tabular-nums;min-width:40px;text-align:right}
+.lb-dur{font-size:10px;color:#484f58;font-variant-numeric:tabular-nums;min-width:45px;text-align:right}
+.lb-evts{font-size:10px;color:#484f58;min-width:30px;text-align:right}
+
+/* Skill bar chart */
+.skill-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:7px;font-size:11px}
+.skill-bar-row:last-child{margin-bottom:0}
+.skill-bar-name{width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#8b949e;flex-shrink:0}
+@media(min-width:500px){.skill-bar-name{width:140px}}
+.skill-bar-track{flex:1;height:10px;background:#21262d;border-radius:5px;overflow:hidden;min-width:40px}
+.skill-bar-fill{height:10px;border-radius:5px;background:#58a6ff;transition:width .4s ease}
+.skill-bar-fill.sr-ok{background:#3fb950}
+.skill-bar-fill.sr-warn{background:#d29922}
+.skill-bar-fill.sr-err{background:#f85149}
+.skill-bar-count{font-size:10px;color:#484f58;font-variant-numeric:tabular-nums;min-width:28px;text-align:right;flex-shrink:0}
+
+/* Predictive alert cards */
+.pred-alert{display:flex;align-items:flex-start;gap:9px;padding:9px 12px;border-radius:8px;margin-bottom:7px;font-size:12px;line-height:1.5;position:relative}
+.pred-alert:last-child{margin-bottom:0}
+.pa-crit{background:rgba(248,81,73,.08);border-left:3px solid #f85149;color:#f85149}
+.pa-warn{background:rgba(210,153,34,.08);border-left:3px solid #d29922;color:#d29922}
+.pa-info{background:rgba(88,166,255,.08);border-left:3px solid #58a6ff;color:#79c0ff}
+.pred-alert .pa-icon{font-size:13px;flex-shrink:0;margin-top:1px}
+.pred-alert .pa-body{flex:1;min-width:0}
+.pred-alert .pa-msg{font-weight:600}
+.pred-alert .pa-conf{font-size:10px;opacity:.7;margin-top:2px}
+
+/* Recommendation cards */
+.rec-card{background:#161b22;border:1px solid #21262d;border-radius:8px;padding:11px 13px;margin-bottom:8px;display:flex;align-items:flex-start;gap:10px;transition:border-color .15s}
+.rec-card:last-child{margin-bottom:0}
+.rec-card:hover{border-color:#30363d}
+.rec-card.dismissed{opacity:.4;pointer-events:none}
+.rec-icon{font-size:18px;line-height:1;flex-shrink:0;margin-top:1px}
+.rec-body{flex:1;min-width:0}
+.rec-title{font-size:12px;font-weight:700;color:#e6edf3;margin-bottom:3px}
+.rec-detail{font-size:11px;color:#8b949e;line-height:1.4}
+.rec-dismiss{background:none;border:1px solid #30363d;color:#484f58;border-radius:5px;padding:2px 8px;cursor:pointer;font-size:9px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;transition:all .15s;font-family:inherit;flex-shrink:0;white-space:nowrap;margin-top:2px}
+.rec-dismiss:hover{border-color:#484f58;color:#8b949e}
+
+/* Cost forecast mini-chart */
+.forecast-chart{height:56px;position:relative;margin-bottom:8px}
+.forecast-svg{width:100%;height:56px;display:block}
+
+/* Overview quick-link cards */
+.ov-links{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px}
+@media(min-width:480px){.ov-links{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:900px){.ov-links{grid-template-columns:repeat(4,1fr)}}
+.ov-link{background:#161b22;border:1px solid #21262d;border-radius:9px;padding:11px 12px;cursor:pointer;transition:border-color .2s,transform .15s;display:flex;align-items:center;gap:9px;font-size:12px;font-weight:600;color:#8b949e;text-decoration:none}
+.ov-link:hover{border-color:#30363d;color:#e6edf3;transform:translateY(-1px)}
+.ov-link .ol-icon{font-size:18px;line-height:1;flex-shrink:0}
+
+/* Recent activity feed */
+.feed-row{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid #161b22;font-size:11px}
+.feed-row:last-child{border-bottom:none}
+.feed-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:3px}
+.fd-cog{background:#3fb950}.fd-ops{background:#d29922}.fd-ctx{background:#a371f7}
+.feed-type{color:#8b949e;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.feed-agent{font-size:9px;color:#484f58;white-space:nowrap}
+.feed-ts{font-size:9px;color:#30363d;white-space:nowrap;font-variant-numeric:tabular-nums}
+
+/* Confidence badge */
+.conf-badge{display:inline-block;font-size:8px;font-weight:700;padding:1px 5px;border-radius:4px;text-transform:uppercase;letter-spacing:.04em;vertical-align:middle;margin-left:5px}
+.cb-high{background:rgba(63,185,80,.12);color:#3fb950}
+.cb-medium{background:rgba(210,153,34,.12);color:#d29922}
+.cb-low{background:rgba(72,79,88,.15);color:#484f58}
+
+/* Mobile stacking helpers */
+@media(max-width:499px){
+  .intel-grid{grid-template-columns:repeat(2,1fr)}
+  .lb-dur,.lb-evts{display:none}
+  .skill-bar-name{width:90px}
+}
 </style>
 </head>
 <body>
@@ -630,6 +747,7 @@ select.form-ctrl option{background:#161b22}
   <div class="hdr-right">
     <span id="gstatus" style="display:none" role="status" aria-live="assertive"></span>
     <span class="clock" id="clock">—</span>
+    <button class="refresh-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle dark/light mode" aria-label="Toggle theme" style="font-size:12px">🌙</button>
     <button class="refresh-btn" id="refreshBtn" onclick="doManualRefresh()" title="Refresh (R)" aria-label="Refresh dashboard">
       <span class="refresh-icon">↻</span>
     </button>
@@ -638,8 +756,12 @@ select.form-ctrl option{background:#161b22}
 
 <!-- Desktop tabs -->
 <div class="desktop-tabs" id="dtabs" role="tablist">
+  <button class="dtab" data-tab="overview" onclick="switchTab('overview')" role="tab" aria-selected="false" aria-controls="tab-overview" id="dtab-btn-overview" tabindex="-1">
+    🏠<span class="tab-label"> Overview</span>
+    <span class="tab-badge" id="dtab-overview">—</span>
+  </button>
   <button class="dtab active" data-tab="health" onclick="switchTab('health')" role="tab" aria-selected="true" aria-controls="tab-health" id="dtab-btn-health" tabindex="0">
-    🏠<span class="tab-label"> Health</span>
+    🩺<span class="tab-label"> Health</span>
     <span class="tab-badge" id="dtab-health">—</span>
     <span class="dot red" id="dtab-health-dot"></span>
   </button>
@@ -694,9 +816,15 @@ select.form-ctrl option{background:#161b22}
     🔗<span class="tab-label"> Orchestrate</span>
     <span class="tab-badge" id="dtab-orchestration">—</span>
   </button>
+  <button class="dtab" data-tab="intelligence" onclick="switchTab('intelligence')" role="tab" aria-selected="false" aria-controls="tab-intelligence" id="dtab-btn-intelligence" tabindex="-1">
+    📊<span class="tab-label"> Intelligence</span>
+    <span class="tab-badge" id="dtab-intelligence">—</span>
+    <span class="dot red" id="dtab-intelligence-dot"></span>
+  </button>
 </div>
 
 <div class="wrap">
+  <div id="tab-overview" class="tab-content" role="tabpanel" aria-labelledby="dtab-btn-overview"></div>
   <div id="tab-health" class="tab-content active" role="tabpanel" aria-labelledby="dtab-btn-health"></div>
   <div id="tab-research" class="tab-content" role="tabpanel" aria-labelledby="dtab-btn-research"></div>
   <div id="tab-schedule" class="tab-content" role="tabpanel" aria-labelledby="dtab-btn-schedule"></div>
@@ -710,12 +838,17 @@ select.form-ctrl option{background:#161b22}
   <div id="tab-prompts"       class="tab-content" role="tabpanel" aria-labelledby="dtab-btn-prompts"></div>
   <div id="tab-skills"        class="tab-content" role="tabpanel" aria-labelledby="dtab-btn-skills"></div>
   <div id="tab-orchestration" class="tab-content" role="tabpanel" aria-labelledby="dtab-btn-orchestration"></div>
+  <div id="tab-intelligence" class="tab-content" role="tabpanel" aria-labelledby="dtab-btn-intelligence"></div>
 </div>
 
 <!-- Mobile nav -->
 <div class="mob-nav" id="mobnav" role="navigation" aria-label="Dashboard sections">
+  <button class="mtab" data-tab="overview" onclick="switchTab('overview')" aria-label="Overview">
+    <span class="m-icon">🏠</span><span class="m-label">Overview</span>
+    <span class="m-badge" id="mtab-overview">—</span>
+  </button>
   <button class="mtab active" data-tab="health" onclick="switchTab('health')" aria-label="Health">
-    <span class="m-icon">🏠</span><span class="m-label">Health</span>
+    <span class="m-icon">🩺</span><span class="m-label">Health</span>
     <span class="m-badge" id="mtab-health">—</span>
   </button>
   <button class="mtab" data-tab="research" onclick="switchTab('research')" aria-label="Research">
@@ -765,6 +898,10 @@ select.form-ctrl option{background:#161b22}
   <button class="mtab" data-tab="orchestration" onclick="switchTab('orchestration')" aria-label="Orchestrate">
     <span class="m-icon">🔗</span><span class="m-label">Orchestrate</span>
     <span class="m-badge" id="mtab-orchestration">—</span>
+  </button>
+  <button class="mtab" data-tab="intelligence" onclick="switchTab('intelligence')" aria-label="Intelligence">
+    <span class="m-icon">📊</span><span class="m-label">Intel</span>
+    <span class="m-badge" id="mtab-intelligence">—</span>
   </button>
 </div>
 
@@ -1042,6 +1179,8 @@ async function refreshAllActive(){
   else if(tab==='system') await fetchSysMetrics();
   else if(tab==='cost'){await fetchCostSummary();await fetchModelUsage();}
   else if(tab==='recovery') await fetchAudit();
+  else if(tab==='overview') await fetchOverview();
+  else if(tab==='intelligence') await fetchIntelligence();
   S.lastUpdated=Date.now();
 }
 function setRefreshSpinner(on){
@@ -1074,10 +1213,12 @@ function scheduleTabRefresh(tab){
     else if(tab==='system') fetchSysMetrics();
     else if(tab==='cost'){fetchCostSummary();fetchModelUsage();}
     else if(tab==='recovery') fetchAudit();
+    else if(tab==='overview') fetchOverview();
+    else if(tab==='intelligence') fetchIntelligence();
   },S.visible?POLL_ACTIVE:POLL_HIDDEN);
 }
 document.addEventListener('visibilitychange',()=>{S.visible=!document.hidden;if(S.current){clearInterval(S.timers[S.current]);scheduleTabRefresh(S.current)}});
-const TABS=['health','research','schedule','system','sessions','cost','logs','recovery','agents'];
+const TABS=['overview','health','research','schedule','system','sessions','cost','logs','recovery','agents','replay','prompts','skills','orchestration','intelligence'];
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){closeCronModals();closeRcModal();closeHitl();return}
   if((e.key==='r'||e.key==='R')&&!e.ctrlKey&&!e.metaKey&&document.activeElement?.tagName!=='INPUT'){e.preventDefault();doManualRefresh()}
@@ -1129,6 +1270,12 @@ function doInitialFetch(tab){
       break;
     case'orchestration':
       fetchOrchestration();
+      break;
+    case'overview':
+      if(!S.data.overview) fetchOverview(); else renderOverview();
+      break;
+    case'intelligence':
+      if(!S.data.intelligence) fetchIntelligence(); else renderIntelligence();
       break;
   }
 }
@@ -3626,7 +3773,279 @@ function renderOrchestration() {
     </div>`;
 }
 
-function boot(){tickClock();S.clockInt=setInterval(tickClock,1000);connectCostWs();connectHealthWs();switchTab('health')}
+// ── DARK / LIGHT THEME ──────────────────────────────────────
+function toggleTheme(){
+  const isLight=document.documentElement.getAttribute('data-theme')==='light';
+  const next=isLight?'dark':'light';
+  if(next==='dark'){document.documentElement.removeAttribute('data-theme')}
+  else{document.documentElement.setAttribute('data-theme','light')}
+  document.getElementById('themeBtn').textContent=next==='dark'?'🌙':'☀️';
+  try{localStorage.setItem('nexus-theme',next)}catch{}
+}
+function initTheme(){
+  let t='dark';
+  try{t=localStorage.getItem('nexus-theme')||'dark'}catch{}
+  if(t==='light'){document.documentElement.setAttribute('data-theme','light');document.getElementById('themeBtn').textContent='☀️'}
+}
+
+// ── OVERVIEW TAB ─────────────────────────────────────────────
+async function fetchOverview(){
+  try{
+    const r=await fetch('/api/intelligence/overview',{headers:{'Authorization':'Bearer '+AUTH_TOKEN}});
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const d=await r.json();
+    S.data.overview=d;
+    if(S.current==='overview')renderOverview();
+    // Update intelligence badge with alert count
+    const total=(d.alertCount||0)+(d.warnCount||0);
+    setBadge('intelligence',total>0?total+' alerts':'✓');
+    setWarn('intelligence',(d.alertCount||0)>0);
+  }catch(e){if(S.current==='overview')document.getElementById('tab-overview').innerHTML=`<div class="error-state"><div class="e-icon">⚠</div><div>Overview unavailable</div><div style="font-size:11px;color:#8b949e;margin-top:4px">${esc(e.message)}</div></div>`}
+}
+
+function renderOverview(){
+  const d=S.data.overview;
+  if(!d){document.getElementById('tab-overview').innerHTML=lu()+skeleton();return}
+
+  const costSummary=S.data.costSummary;
+  const totalCost=d.totalCost||costSummary?.totalCost||0;
+  const budgetPct=d.budgetStatus?.daily?.pct??0;
+  const pctClass=budgetPct>=95?'v-err':budgetPct>=80?'v-warn':budgetPct>=50?'v-warn':'v-ok';
+
+  const quickLinks=[
+    {tab:'health',icon:'🩺',label:'Health'},
+    {tab:'agents',icon:'🤖',label:'Agents'},
+    {tab:'cost',icon:'💰',label:'Cost'},
+    {tab:'logs',icon:'📋',label:'Logs'},
+    {tab:'schedule',icon:'📅',label:'Schedule'},
+    {tab:'replay',icon:'🎬',label:'Replay'},
+    {tab:'skills',icon:'⚡',label:'Skills'},
+    {tab:'intelligence',icon:'📊',label:'Intelligence'},
+  ];
+
+  const recentFeed=(d.recentEvents||[]).map(evt=>{
+    const surfCls={'cognitive':'fd-cog','operational':'fd-ops','contextual':'fd-ctx'}[evt.surface]||'fd-ops';
+    return`<div class="feed-row">
+      <span class="feed-dot ${surfCls}"></span>
+      <span class="feed-type">${esc(evt.event_type||'event')}</span>
+      <span class="feed-agent">${esc(evt.agent_id||'')}</span>
+      <span class="feed-ts">${fmt.ts(evt.timestamp)}</span>
+    </div>`;
+  }).join('')||'<div class="empty-state"><span class="e-icon">📭</span>No recent events</div>';
+
+  const alertBanner=((d.alertCount||0)+(d.warnCount||0))>0
+    ?`<div class="alert ${d.alertCount>0?'a-crit':'a-warn'}" style="margin-bottom:10px">
+        <span class="alert-icon">${d.alertCount>0?'✗':'⚠'}</span>
+        <span>${d.alertCount>0?d.alertCount+' critical alert(s)':d.warnCount+' warning(s)'} — check the <a href="javascript:switchTab('intelligence')" style="color:inherit;text-decoration:underline">Intelligence tab</a></span>
+      </div>`:'';
+
+  document.getElementById('tab-overview').innerHTML=`
+  ${lu()}
+  ${alertBanner}
+  <div class="intel-grid">
+    <div class="scard ${d.alertCount>0?'s-err':d.warnCount>0?'s-warn':'s-ok'}">
+      <div class="sc-label">Alerts</div>
+      <div class="sc-val ${d.alertCount>0?'v-err':d.warnCount>0?'v-warn':'v-ok'}">${(d.alertCount||0)+(d.warnCount||0)||'0'}</div>
+      <div class="sc-sub">${d.alertCount>0?d.alertCount+' critical':'all clear'}</div>
+    </div>
+    <div class="scard">
+      <div class="sc-label">Active Agents</div>
+      <div class="sc-val v-neutral">${d.activeAgents||0}</div>
+      <div class="sc-sub">of ${d.totalAgents||0} known</div>
+    </div>
+    <div class="scard ${pctClass==='v-err'?'s-err':pctClass==='v-warn'?'s-warn':'s-ok'}">
+      <div class="sc-label">Cost Today</div>
+      <div class="sc-val ${pctClass}">${fmt.cost(totalCost)}</div>
+      <div class="sc-sub">${budgetPct>0?budgetPct.toFixed(0)+'% of daily budget':'budget clear'}</div>
+    </div>
+    <div class="scard">
+      <div class="sc-label">Skills</div>
+      <div class="sc-val v-neutral">${d.skillCount||0}</div>
+      <div class="sc-sub">tracked in 7d</div>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-head">Quick Nav</div>
+    <div class="card-body" style="padding:10px 12px">
+      <div class="ov-links">
+        ${quickLinks.map(l=>`<a class="ov-link" href="javascript:switchTab('${l.tab}')"><span class="ol-icon">${l.icon}</span>${l.label}</a>`).join('')}
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head">Recent Activity <span style="font-size:10px;font-weight:400;color:#484f58">(last 10 events)</span></div>
+    <div class="card-body" style="padding:8px 12px">
+      ${recentFeed}
+    </div>
+  </div>`;
+}
+
+// ── INTELLIGENCE TAB ──────────────────────────────────────────
+async function fetchIntelligence(){
+  try{
+    const r=await fetch('/api/intelligence',{headers:{'Authorization':'Bearer '+AUTH_TOKEN}});
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const d=await r.json();
+    S.data.intelligence=d;
+    if(S.current==='intelligence')renderIntelligence();
+    const total=(d.predictions?.alertCount||0)+(d.predictions?.warnCount||0);
+    setBadge('intelligence',total>0?total+' alerts':'✓');
+    setWarn('intelligence',(d.predictions?.alertCount||0)>0);
+  }catch(e){if(S.current==='intelligence')document.getElementById('tab-intelligence').innerHTML=`<div class="error-state"><div class="e-icon">⚠</div><div>Intelligence unavailable</div><div style="font-size:11px;color:#8b949e;margin-top:4px">${esc(e.message)}</div></div>`}
+}
+
+// Dismissed recs stored locally per session
+const _dismissedRecs=new Set();
+
+function renderIntelligence(){
+  const d=S.data.intelligence;
+  if(!d){document.getElementById('tab-intelligence').innerHTML=lu()+skeleton();return}
+
+  const agents=d.agents||[];
+  const skills=d.skills||[];
+  const pred=d.predictions||{};
+  const alerts=pred.alerts||[];
+  const recs=pred.recommendations||[];
+  const forecast=pred.costForecast||{};
+
+  // ── Leaderboard ──────────────────────────────────────────
+  const rankEmoji=['🥇','🥈','🥉'];
+  const rankClass=['gold','silver','bronze'];
+  const lbRows=agents.slice(0,10).map((a,i)=>{
+    const sr=a.success_rate_24h??a.success_rate_7d;
+    const srText=sr!=null?`${(sr*100).toFixed(0)}%`:'—';
+    const srClass=sr==null?'v-dim':sr>=0.9?'v-ok':sr>=0.7?'v-warn':'v-err';
+    const dur=a.avg_duration_ms!=null?`${a.avg_duration_ms>=1000?(a.avg_duration_ms/1000).toFixed(1)+'s':a.avg_duration_ms+'ms'}`:'—';
+    const modelShort=(a.primary_model||'').replace('claude-','').replace('-4-6','').replace('-4-5-20251001','');
+    return`<div class="lb-row">
+      <span class="lb-rank ${rankClass[i]||''}">${rankEmoji[i]||'#'+(i+1)}</span>
+      <div><div class="lb-name">${esc(a.agent_id)}</div><div class="lb-model">${esc(modelShort||'—')}</div></div>
+      <span class="lb-sr ${srClass}">${srText}</span>
+      <span class="lb-dur">${dur}</span>
+      <span class="lb-evts">${a.events_24h}</span>
+    </div>`;
+  }).join('')||'<div class="empty-state"><span class="e-icon">🤖</span>No agent events in event store yet</div>';
+
+  // ── Skill chart (top 10) ──────────────────────────────────
+  const topSkills=skills.slice(0,10);
+  const maxUses=topSkills.reduce((m,s)=>Math.max(m,s.uses),1);
+  const skillRows=topSkills.map(s=>{
+    const pct=Math.round(s.uses/maxUses*100);
+    const sr=s.success_rate;
+    const fillCls=sr==null?'':sr>=0.9?'sr-ok':sr>=0.6?'sr-warn':'sr-err';
+    return`<div class="skill-bar-row">
+      <span class="skill-bar-name" title="${esc(s.name)}">${esc(s.name)}</span>
+      <div class="skill-bar-track"><div class="skill-bar-fill ${fillCls}" style="width:${pct}%"></div></div>
+      <span class="skill-bar-count">${s.uses}</span>
+    </div>`;
+  }).join('')||'<div class="empty-state"><span class="e-icon">⚡</span>No skill events in event store yet</div>';
+
+  // ── Predictive alerts ─────────────────────────────────────
+  const alertHtml=alerts.map(a=>{
+    const cls=a.level==='critical'?'pa-crit':a.level==='warn'?'pa-warn':'pa-info';
+    const icon=a.level==='critical'?'✗':a.level==='warn'?'⚠':'ℹ';
+    const confBadge=a.confidence?`<span class="conf-badge cb-${a.confidence}">${a.confidence}</span>`:'';
+    return`<div class="pred-alert ${cls}">
+      <span class="pa-icon">${icon}</span>
+      <div class="pa-body">
+        <div class="pa-msg">${esc(a.msg||a.type||'Alert')}${confBadge}</div>
+      </div>
+    </div>`;
+  }).join('')||'<div class="alert a-ok"><span class="alert-icon">✓</span><span>No predictive alerts — all patterns nominal</span></div>';
+
+  // ── Recommendations ───────────────────────────────────────
+  const recHtml=recs.filter(r=>!_dismissedRecs.has(r.title)).map(r=>`
+    <div class="rec-card" id="rec-${esc(r.title.replace(/\s+/g,'-'))}">
+      <span class="rec-icon">${r.icon||'💡'}</span>
+      <div class="rec-body">
+        <div class="rec-title">${esc(r.title)}</div>
+        <div class="rec-detail">${esc(r.detail)}</div>
+      </div>
+      <button class="rec-dismiss" onclick="dismissRec(${JSON.stringify(r.title)},this)">Dismiss</button>
+    </div>`).join('')||'<div class="empty-state"><span class="e-icon">💡</span>No recommendations</div>';
+
+  // ── Cost forecast mini-chart ──────────────────────────────
+  let forecastHtml='';
+  if(forecast.ready){
+    const history=forecast.history||[];
+    const vals=history.map(h=>h.cost);
+    const projLine=history.length>0?[...vals,forecast.projectedDaily]:[forecast.totalCost,forecast.projectedDaily];
+    const spark=vals.length>=2?sparkline(vals,'#58a6ff',200,44):'';
+    const dailyPctBar=Math.min(forecast.dailyPct||0,100);
+    const barCls=dailyPctBar>=95?'b-crit':dailyPctBar>=80?'b-warn':'b-ok';
+    forecastHtml=`
+      <div class="cs-vel-wrap" style="margin-bottom:10px">
+        <span class="cs-vel-icon">📈</span>
+        <div class="cs-vel-main">
+          <div class="cs-vel-rate">${fmt.cost(forecast.projectedDaily||0)}</div>
+          <div class="cs-vel-sub">projected end-of-day · ${esc(forecast.confidence||'low')} confidence</div>
+        </div>
+        <div class="cs-vel-right">
+          <div class="cs-vel-proj ${(forecast.dailyPct||0)>=80?'v-warn':'v-dim'}">${(forecast.dailyPct||0).toFixed(0)}%</div>
+          <div class="cs-vel-proj-label">of daily budget</div>
+        </div>
+      </div>
+      <div class="cs-budget-row">
+        <span class="cs-budget-label">Today</span>
+        <div class="cs-budget-bar-outer"><div class="cs-budget-bar ${barCls}" style="width:${dailyPctBar}%"></div></div>
+        <span class="cs-budget-meta">${fmt.cost(forecast.totalCost||0)} / ${fmt.cost(forecast.dailyBudget||0)}</span>
+      </div>
+      ${spark?`<div style="margin-top:8px">${spark}</div>`:''}`;
+  }else{
+    forecastHtml='<div class="empty-state"><span class="e-icon">📊</span>Insufficient data for forecast</div>';
+  }
+
+  document.getElementById('tab-intelligence').innerHTML=`
+  ${lu()}
+  <div class="two-col">
+    <div>
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-head">
+          Agent Leaderboard
+          <span style="font-size:9px;font-weight:400;color:#30363d">SR% · Avg Dur · 24h Events</span>
+        </div>
+        ${lbRows.includes('empty-state')?`<div class="card-body">${lbRows}</div>`:`<div style="padding:4px 0">${lbRows}</div>`}
+      </div>
+      <div class="card">
+        <div class="card-head">Predictive Alerts</div>
+        <div class="card-body">${alertHtml}</div>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-head">Skill Usage <span style="font-size:9px;font-weight:400;color:#30363d">7d · top 10</span></div>
+        <div class="card-body">${skillRows}</div>
+      </div>
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-head">Cost Forecast</div>
+        <div class="card-body">${forecastHtml}</div>
+      </div>
+      <div class="card">
+        <div class="card-head">Recommendations <span class="badge b-dim" style="margin-left:4px">${recs.filter(r=>!_dismissedRecs.has(r.title)).length}</span></div>
+        <div class="card-body" id="intel-recs">${recHtml}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function dismissRec(title,btn){
+  _dismissedRecs.add(title);
+  const row=btn.closest('.rec-card');
+  if(row){row.classList.add('dismissed');setTimeout(()=>row.remove(),300)}
+  const card=document.getElementById('intel-recs');
+  const remaining=card?card.querySelectorAll('.rec-card:not(.dismissed)').length:0;
+  const head=document.querySelector('#tab-intelligence .card-head .badge');
+  if(head)head.textContent=remaining;
+}
+
+function boot(){
+  initTheme();
+  tickClock();
+  S.clockInt=setInterval(tickClock,1000);
+  connectCostWs();
+  connectHealthWs();
+  switchTab('health');
+}
 boot();
 </script>
 </body>
