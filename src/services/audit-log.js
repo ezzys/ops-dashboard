@@ -169,4 +169,21 @@ function getStatus() {
   };
 }
 
-module.exports = { logAction, getRecentActions, getStatus, init };
+
+/**
+ * Query audit log with filters.
+ * @param {{ from?: number, to?: number, limit?: number }} opts
+ */
+function query(opts = {}) {
+  const { from = 0, to = Date.now(), limit = 1000 } = opts;
+  if (!_db) return [];
+  try {
+    return _db.prepare(
+      'SELECT * FROM audit_log WHERE timestamp BETWEEN ? AND ? ORDER BY timestamp DESC LIMIT ?'
+    ).all(from, to, limit);
+  } catch {
+    return _jsonlFallback.slice(-limit).filter(e => e.timestamp >= from && e.timestamp <= to);
+  }
+}
+
+module.exports = { logAction, getRecentActions, getStatus, query, init };

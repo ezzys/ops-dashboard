@@ -173,4 +173,4 @@ function stop() {
   }
 }
 
-module.exports = { init, check, getHealthSummary, stop };
+module.exports = { init, check, getHealthSummary, getAgentStatus: () => check().agents || [], stop };

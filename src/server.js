@@ -161,6 +161,9 @@ fastify.register(require('./routes/prompts'));
 fastify.register(require('./routes/orchestration'));
 fastify.register(require('./routes/skills'));
 fastify.register(require('./routes/intelligence'));
+fastify.register(require('./routes/bookmarks'));
+fastify.register(require('./routes/metrics'));
+fastify.register(require('./routes/compliance').complianceRoutes);
 
 // ── 404 handler ───────────────────────────────────────────────────────────────
 
