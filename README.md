@@ -82,7 +82,7 @@ openclaw CLI  →  openclaw gateway (:18789)
 | B2 | Wildcard CORS (`*`) — any origin can trigger cron mutations | L391–394 | 🔴 CRITICAL |
 | B3 | Shell injection in `getLogs()` — `limit` interpolated into exec string | L100 | 🔴 CRITICAL |
 | B4 | Unauthenticated cron toggle/edit — no ownership check | L453–534 | 🔴 CRITICAL |
-| B5 | Arbitrary file read via grep — `exec()` on hardcoded path every API call | L377 | 🔴 CRITICAL |
+| B5 | Shell exec on hardcoded research script path — `grep -r` on fixed `post-all.py` path; exec on every `/api/research` call adds latency | L377 | 🟡 MEDIUM |
 | B6 | `exec()` swallows exit codes — returns error string, passes to `JSON.parse()` | L23–31 | 🟠 HIGH |
 | B7 | Detached spawn with no exit tracking — caller gets `dispatched: true` regardless | L474 | 🟠 HIGH |
 | B8 | No request timeouts — slow client attack possible | L69–76 | 🟠 HIGH |
@@ -142,27 +142,23 @@ Uses: `os.cpus()`, `os.totalmem()`, `df -k /`, `netstat -ib`, `sysctl vm.loadavg
 | F1 | `esc()` defined but NEVER USED — all render functions interpolate raw user data | L836, 1070, 813, 1205, 1297 | 🔴 CRITICAL |
 | F2 | Memory leak — tab timers not cleared on switch, only one cleared | L583 | 🔴 CRITICAL |
 | F3 | Duplicate sysmetrics fetch — fetched twice per 30s cycle | L608, L627 | 🟠 HIGH |
-| F4 | Race condition — `deriveIssues()` runs before `rd.research` is set | L614, 618–619 | 🟠 HIGH |
-| F5 | Fragile DOM assumption — `.grid` selector for cron job insertion | L1041 | 🟠 HIGH |
+| F4 | Fragile DOM assumption — `.grid` selector for cron job insertion | L1041 | 🟠 HIGH |
 | F6 | `fmt.num` truncates ≥1K to integer — 1500→`1K`, 9999→`10K` | L482 | 🟡 MEDIUM |
 | F7 | No request deduplication — concurrent refreshes possible | — | 🟡 MEDIUM |
 | F8 | No ARIA live regions for toast announcements | L839–848 | 🟡 MEDIUM |
 | F9 | `accent-color` on checkbox — patchy browser support | L271 | 🟡 MEDIUM |
-| F10 | `sessionId` not coerced to string before `.slice()` | L1205, L1253 | 🟡 MEDIUM |
-| F11 | `fmt.ts` returns `'Invalid Date'` string instead of `'—'` on invalid dates | L487 | 🟢 LOW |
+| F10 | `fmt.ts` returns `'Invalid Date'` string instead of `'—'` on invalid dates | L487 | 🟢 LOW |
 
 ### XSS Attack Vector (Critical — F1)
 
-Cron job names, log messages, and research labels are rendered via template literals without `esc()`:
+`esc()` helper is defined at L836 but **never applied anywhere**. Additional unescaped vectors beyond those listed in F1:
 
-```javascript
-// renderSchedule() L1070
-`<td><strong style="color:#e6edf3">${f.lines} ln</strong></td>`
-// should be:
-`<td><strong style="color:#e6edf3">${esc(f.lines)}</strong></td>`
-```
+- `renderResearch()` — daily table `${f.lines}` at L803
+- `renderSchedule()` — disabled jobs `${j.name}` at L1084, overdue comma-list `${j.name}` at L1096, timeline `${j.schedule?.expr}` at L1074, delivery `${j.delivery?.to}` at L1076
+- `renderSessions()` — `${sid}` at L1205, L1253
+- `renderLogs()` — `${short}` at L1297
 
-If a cron job has name `<script>alert('xss')</script>`, it executes in the browser.
+If any cron job name, log message, or research file contains `<script>alert('xss')</script>`, it executes immediately.
 
 ---
 
@@ -172,10 +168,21 @@ If a cron job has name `<script>alert('xss')</script>`, it executes in the brows
 
 | Severity | Count | Description |
 |----------|-------|-------------|
-| 🔴 CRITICAL | 9 | Auth bypass, XSS, shell injection, unauthenticated cron mutations |
-| 🟠 HIGH | 7 | Race conditions, memory leaks, duplicate fetches, swallowed errors |
-| 🟡 MEDIUM | 10 | Fragile DOM, missing ARIA, no request dedup, hardcoded paths |
+| 🔴 CRITICAL | 8 | Auth bypass, XSS (~10 vectors), shell injection, unauthenticated cron mutations |
+| 🟠 HIGH | 6 | Race conditions, memory leaks, duplicate fetches, swallowed errors, fragile DOM |
+| 🟡 MEDIUM | 10 | Hardcoded paths, missing sanitization, no request dedup, sysmetrics script failure |
 | 🟢 LOW | 6 | Logging, invalid date handling, minor UX issues |
+
+### Additional Issues Found (Not in Initial Audit)
+
+| # | Issue | Severity | Location |
+|---|-------|----------|----------|
+| C1 | **`sessionCost` logic duplicated with discrepancy** — Frontend (index.html L491-494) omits `cacheWrite` vs backend (dashboard.js L260-267) includes it. Cost totals disagree between frontend display and backend. | 🔴 CRITICAL | index.html:491, dashboard.js:260 |
+| C2 | **No rate limiting on HTTP server** — `http.createServer` has no per-client request limits; slow-client/dos attack possible | 🟠 HIGH | dashboard.js:554 |
+| C3 | **`/api/cron/toggle` returns `{ok:true}` even if openclaw fails** — result of `jspawnCron` is discarded | 🟠 HIGH | dashboard.js:459 |
+| C4 | **No graceful degradation if `openclaw` CLI is unavailable** — all API endpoints return null/empty with no circuit breaker | 🟡 MEDIUM | dashboard.js:87-104 |
+| C5 | **`/api/cron/edit` — no cron expression validation** — malformed expr passed directly to openclaw CLI | 🟡 MEDIUM | dashboard.js:515-516 |
+| C6 | **No request logging** — no access audit trail for cron mutations | 🟢 LOW | — |
 
 ### Top 5 Immediate Risks
 
@@ -214,15 +221,17 @@ If a cron job has name `<script>alert('xss')</script>`, it executes in the brows
 
 ## 8. Modernization Roadmap
 
-### Phase 1: Quick Security Fixes (1 day)
+### Phase 1: Quick Security Fixes (2–3 days)
 
 | Change | Effort | Impact |
 |--------|--------|--------|
-| Apply `esc()` to all user data interpolation | 30min | Fix XSS |
+| Apply `esc()` to all user data interpolation (~10 vectors) | 1hr | Fix XSS |
 | Replace CORS `*` with same-origin restriction | 5min | Close auth bypass |
 | Add `Authorization: Bearer <token>` check to all API routes | 1hr | Close cron mutations |
 | Fix `getLogs()` to use array-form spawn | 15min | Close shell injection |
 | Clear all tab timers on switch | 15min | Fix memory leak |
+| Move `sessionCost` to backend only (remove from frontend) | 30min | Fix cost total disagreement |
+| Validate `jspawnCron` result before returning `{ok:true}` | 15min | Fix silent failures |
 
 ### Phase 2: Architecture Upgrade (1 week)
 
@@ -230,32 +239,33 @@ If a cron job has name `<script>alert('xss')</script>`, it executes in the brows
 - Migrate from `http` module to **Express** or **Fastify**
 - Add **WebSocket** (via `ws`) for realtime updates — eliminate 30s polling lag
 - Add **Prometheus `/metrics`** endpoint
-- Move cost calculation to backend (remove from frontend)
-- Abstract system metrics behind platform detection (Linux/macOS)
 - Add structured logging (pino)
+- Add circuit breaker for CLI exec failures
 - Read session DB directly (SQLite) instead of CLI exec
 
 **Frontend:**
 - Split `index.html` → `app.js` + `styles.css` + `index.html`
-- Migrate from vanilla JS to **React** (reuse from portfolio-analytics frontend)
+- Migrate from vanilla JS to **React** (reuse patterns from portfolio-analytics frontend)
 - Add `aria-live` regions for toasts/logs
 - Add request deduplication
-- Add `fmt.num` decimal precision for K values
 
-### Phase 3: Multi-Model Support (2 days)
+### Phase 2.5: Multi-Model Cost Fix (2 days)
+
+*Immediately broken — cost display only works for MiniMax M2.7, with duplicate inconsistent logic*
 
 - Dynamic model registry from `openclaw models --json`
-- Per-model pricing from config file or CLI
+- Per-model pricing from config file or CLI (not hardcoded)
 - Support Claude, Gemini, Ollama, and local models
 - Per-session model attribution
+- **Deduplicate cost calculation** — move `sessionCost` to backend, frontend receives pre-calculated totals only
 
-### Phase 4: Portability (2 days)
+### Phase 3: Portability (2 days)
 
 - Add `Dockerfile` + `docker-compose.yml`
-- Abstract macOS-specific metrics to Linux equivalents
-- Environment-based configuration (`.env` file)
+- Abstract macOS-specific metrics to Linux equivalents (`/proc/stat`, `free`, `df`, `/proc/net/dev`)
+- Environment-based configuration (`.env` file for paths, ports, tokens)
 
-### Phase 5: Hermes/OpenClaw Integration (3 days)
+### Phase 4: Hermes/OpenClaw Integration (3 days)
 
 - Expose dashboard as Hermes tools (`claw_ops_health`, `claw_ops_cron_*`)
 - Git-aware cron display (branch, last commit, uncommitted changes)
