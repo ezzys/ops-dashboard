@@ -153,6 +153,7 @@ fastify.register(require('./routes/health'));
 fastify.register(require('./routes/data'));
 fastify.register(require('./routes/cron'));
 fastify.register(require('./routes/cost'));
+fastify.register(require('./routes/recovery'));
 
 // ── 404 handler ───────────────────────────────────────────────────────────────
 
@@ -266,6 +267,11 @@ async function start() {
     setupWebSocket(fastify.server);
     log.info({ port: cfg.port, host: cfg.host, ws: '/ws?room=<room>' }, 'NEXUS Dashboard started');
     log.info({ rooms: [...VALID_ROOMS] }, 'WebSocket rooms available');
+
+    // R1.1: Start cost aggregation loop — must run after broadcast() is available
+    const costAggregator = require('./services/cost-aggregator');
+    costAggregator.init(broadcast);
+    log.info({}, 'Cost Shield aggregator started');
   } catch (err) {
     log.error({ err: err.message }, 'Failed to start server');
     process.exit(1);

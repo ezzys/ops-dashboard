@@ -289,6 +289,77 @@ select.form-ctrl option{background:#161b22}
 .cf-ok{border-color:rgba(63,185,80,.4);color:#3fb950}
 .cf-err{border-color:rgba(248,81,73,.4);color:#f85149}
 .cf-info{border-color:rgba(88,166,255,.3);color:#79c0ff}
+
+/* ── RECOVERY CONSOLE ────────────────────────────────── */
+.rc-section-title{font-size:11px;font-weight:600;color:#484f58;text-transform:uppercase;letter-spacing:.08em;margin:0 0 10px}
+.rc-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:16px}
+@media(min-width:560px){.rc-grid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:900px){.rc-grid{grid-template-columns:repeat(2,1fr)}}
+
+.rc-card{background:#161b22;border:1px solid #21262d;border-radius:10px;padding:14px 14px 12px;display:flex;flex-direction:column;gap:0;position:relative;overflow:hidden;transition:border-color .15s}
+.rc-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:10px 10px 0 0}
+.rc-safe{border-color:rgba(63,185,80,.25)}.rc-safe::before{background:#3fb950}
+.rc-moderate{border-color:rgba(210,153,34,.3)}.rc-moderate::before{background:#d29922}
+.rc-destructive{border-color:rgba(248,81,73,.35)}.rc-destructive::before{background:#f85149}
+
+.rc-card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px}
+.rc-icon{font-size:20px;line-height:1}
+.rc-badge{font-size:8px;font-weight:700;padding:2px 7px;border-radius:10px;text-transform:uppercase;letter-spacing:.06em;flex-shrink:0}
+.rb-safe{background:rgba(63,185,80,.1);color:#3fb950;border:1px solid rgba(63,185,80,.2)}
+.rb-moderate{background:rgba(210,153,34,.1);color:#d29922;border:1px solid rgba(210,153,34,.2)}
+.rb-destructive{background:rgba(248,81,73,.1);color:#f85149;border:1px solid rgba(248,81,73,.2)}
+
+.rc-label{font-size:13px;font-weight:700;color:#e6edf3;margin-bottom:4px}
+.rc-desc{font-size:11px;color:#8b949e;line-height:1.4;margin-bottom:12px;flex:1}
+.rc-actions{display:flex;gap:6px;margin-top:auto}
+.rc-btn{border-radius:6px;padding:5px 12px;cursor:pointer;font-size:11px;font-weight:600;transition:all .15s;font-family:inherit;border:1px solid}
+.rc-btn:disabled{opacity:.35;cursor:not-allowed}
+.rc-cancel{background:none;border-color:#30363d;color:#484f58}
+.rc-cancel:hover:not(:disabled){border-color:#484f58;color:#8b949e}
+.rc-exec-safe{background:rgba(63,185,80,.1);border-color:rgba(63,185,80,.3);color:#3fb950}
+.rc-exec-safe:hover:not(:disabled){background:rgba(63,185,80,.2)}
+.rc-exec-moderate{background:rgba(210,153,34,.1);border-color:rgba(210,153,34,.3);color:#d29922}
+.rc-exec-moderate:hover:not(:disabled){background:rgba(210,153,34,.2)}
+.rc-exec-destructive{background:rgba(248,81,73,.1);border-color:rgba(248,81,73,.3);color:#f85149}
+.rc-exec-destructive:hover:not(:disabled){background:rgba(248,81,73,.2)}
+
+.rc-result{font-size:11px;margin-top:6px;padding:4px 8px;border-radius:5px;display:none}
+.rc-result.show{display:block}
+.rc-ok{background:rgba(63,185,80,.08);color:#3fb950}.rc-fail{background:rgba(248,81,73,.08);color:#f85149}
+
+/* audit table inside recovery */
+.audit-table tr td:first-child{color:#484f58;font-size:10px;width:70px;white-space:nowrap}
+.audit-ok-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#3fb950;vertical-align:middle;margin-right:4px}
+.audit-fail-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#f85149;vertical-align:middle;margin-right:4px}
+.audit-action{font-size:11px;color:#e6edf3;font-weight:600}
+.audit-target{font-size:10px;color:#8b949e;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ── COST SHIELD ─────────────────────────────────────────── */
+.cs-budget-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;min-width:0}
+.cs-budget-label{font-size:10px;font-weight:600;color:#484f58;text-transform:uppercase;letter-spacing:.06em;width:52px;flex-shrink:0}
+.cs-budget-bar-outer{flex:1;height:8px;background:#21262d;border-radius:4px;overflow:hidden;min-width:0}
+.cs-budget-bar{height:8px;border-radius:4px;transition:width .5s ease,background .3s ease}
+.cs-budget-bar.b-ok{background:#3fb950}
+.cs-budget-bar.b-info{background:#58a6ff}
+.cs-budget-bar.b-warn{background:#d29922}
+.cs-budget-bar.b-crit{background:#f85149;animation:pulse 1.5s ease-in-out infinite}
+.cs-budget-meta{font-size:10px;color:#8b949e;white-space:nowrap;font-variant-numeric:tabular-nums;flex-shrink:0;min-width:80px;text-align:right}
+.cs-vel-wrap{display:flex;align-items:center;gap:10px;padding:10px 13px;background:#161b22;border:1px solid #21262d;border-radius:8px;margin-bottom:10px}
+.cs-vel-icon{font-size:18px;flex-shrink:0;line-height:1}
+.cs-vel-main{flex:1;min-width:0}
+.cs-vel-rate{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;color:#e6edf3}
+.cs-vel-sub{font-size:10px;color:#484f58;margin-top:2px}
+.cs-vel-right{text-align:right;flex-shrink:0}
+.cs-vel-proj{font-size:11px;font-weight:600;white-space:nowrap}
+.cs-vel-proj-label{font-size:9px;color:#484f58;white-space:nowrap;margin-top:2px}
+.cs-chart-bars{display:flex;align-items:flex-end;gap:2px;height:44px;padding:0 2px}
+.cs-chart-bar{flex:1;border-radius:2px 2px 0 0;min-width:2px;background:#58a6ff;opacity:.6;transition:height .3s ease}
+.cs-chart-bar:hover{opacity:1}
+.cs-chart-label{display:flex;justify-content:space-between;font-size:9px;color:#30363d;margin-top:3px;padding:0 2px}
+.cs-ws-pill{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:600;padding:2px 7px;border-radius:20px;border:1px solid #30363d;color:#484f58;vertical-align:middle}
+.cs-ws-pill.live{border-color:rgba(63,185,80,.4);color:#3fb950;background:rgba(63,185,80,.07)}
+.cs-ws-pill.live .cs-ws-dot{background:#3fb950;box-shadow:0 0 5px rgba(63,185,80,.5);animation:pulse 2s ease-in-out infinite}
+.cs-ws-dot{width:5px;height:5px;border-radius:50%;background:#30363d;flex-shrink:0;transition:background .3s}
 </style>
 </head>
 <body>
@@ -343,6 +414,10 @@ select.form-ctrl option{background:#161b22}
     📋<span class="tab-label"> Logs</span>
     <span class="tab-badge" id="dtab-logs">—</span>
   </button>
+  <button class="dtab" data-tab="recovery" onclick="switchTab('recovery')" role="tab" aria-selected="false" aria-controls="tab-recovery" id="dtab-btn-recovery" tabindex="-1">
+    🛠️<span class="tab-label"> Recovery</span>
+    <span class="tab-badge" id="dtab-recovery">—</span>
+  </button>
 </div>
 
 <div class="wrap">
@@ -353,6 +428,7 @@ select.form-ctrl option{background:#161b22}
   <div id="tab-sessions" class="tab-content" role="tabpanel" aria-labelledby="dtab-btn-sessions"></div>
   <div id="tab-cost" class="tab-content" role="tabpanel" aria-labelledby="dtab-btn-cost"></div>
   <div id="tab-logs" class="tab-content" role="tabpanel" aria-labelledby="dtab-btn-logs"></div>
+  <div id="tab-recovery" class="tab-content" role="tabpanel" aria-labelledby="dtab-btn-recovery"></div>
 </div>
 
 <!-- Mobile nav -->
@@ -384,6 +460,10 @@ select.form-ctrl option{background:#161b22}
   <button class="mtab" data-tab="logs" onclick="switchTab('logs')" aria-label="Logs">
     <span class="m-icon">📋</span><span class="m-label">Logs</span>
     <span class="m-badge" id="mtab-logs">—</span>
+  </button>
+  <button class="mtab" data-tab="recovery" onclick="switchTab('recovery')" aria-label="Recovery">
+    <span class="m-icon">🛠️</span><span class="m-label">Recovery</span>
+    <span class="m-badge" id="mtab-recovery">—</span>
   </button>
 </div>
 
@@ -459,6 +539,38 @@ select.form-ctrl option{background:#161b22}
   </div>
 </div>
 
+<!-- Recovery Confirmation Modal -->
+<div class="modal-overlay" id="rc-modal" onclick="if(event.target===this)closeRcModal()">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <span class="modal-title" id="rc-modal-title">Confirm Action</span>
+      <button class="modal-close" onclick="closeRcModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="rc-modal-risk-banner" style="padding:9px 12px;border-radius:7px;margin-bottom:14px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:8px"></div>
+      <p id="rc-modal-desc" style="font-size:12px;color:#8b949e;margin-bottom:14px;line-height:1.5"></p>
+      <div id="rc-modal-input-wrap" class="form-group" style="display:none">
+        <label class="form-label" for="rc-modal-input" id="rc-modal-input-label">Confirmation</label>
+        <input id="rc-modal-input" class="form-ctrl" type="text" autocomplete="off" spellcheck="false">
+        <div class="form-hint" id="rc-modal-input-hint"></div>
+      </div>
+      <div id="rc-modal-sid-wrap" class="form-group" style="display:none">
+        <label class="form-label" for="rc-modal-sid">Session ID</label>
+        <input id="rc-modal-sid" class="form-ctrl" type="text" placeholder="Enter session ID" autocomplete="off" spellcheck="false">
+      </div>
+      <div id="rc-modal-pid-wrap" class="form-group" style="display:none">
+        <label class="form-label" for="rc-modal-pid">Process ID (PID)</label>
+        <input id="rc-modal-pid" class="form-ctrl" type="number" placeholder="e.g. 1234" min="2" max="4194304">
+      </div>
+      <div id="rc-modal-error" style="color:#f85149;font-size:11px;min-height:14px;margin-top:2px"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeRcModal()">Cancel</button>
+      <button id="rc-modal-exec" class="btn-primary" onclick="rcModalExecute()">Execute</button>
+    </div>
+  </div>
+</div>
+
 <!-- Cron Runs Modal -->
 <div class="modal-overlay" id="cron-runs-modal" onclick="if(event.target===this)closeCronModals()">
   <div class="modal-box">
@@ -478,7 +590,7 @@ select.form-ctrl option{background:#161b22}
 // T0.1.3: Auth token for API calls
 const AUTH_TOKEN='52700a12570c54a80cb138b0d2322deb7238875879541ce6';
 const POLL_ACTIVE=30_000, POLL_HIDDEN=300_000, TZ='Europe/Vilnius';
-const S={current:'health',loaded:{},data:{},timers:{},visible:true,connected:false,issues:[],clockInt:null,lastUpdated:null,refreshSpin:false};
+const S={current:'health',loaded:{},data:{},timers:{},visible:true,connected:false,issues:[],clockInt:null,lastUpdated:null,refreshSpin:false,costWs:null,costWsLive:false,costAlerts:[]};
 
 const fmt={
   num(n){if(!n&&n!==0)return'—';if(n>=1e9)return(n/1e9).toFixed(1)+'B';if(n>=1e6)return(n/1e6).toFixed(1)+'M';if(n>=1e3)return(n/1e3).toFixed(0)+'K';return String(n)},
@@ -536,7 +648,8 @@ async function refreshAllActive(){
   if(tab==='health'||tab==='research'||tab==='schedule'||tab==='sessions') await fetchData();
   else if(tab==='logs') await fetchLogs();
   else if(tab==='system') await fetchSysMetrics();
-  else if(tab==='cost') await fetchModelUsage();
+  else if(tab==='cost'){await fetchCostSummary();await fetchModelUsage();}
+  else if(tab==='recovery') await fetchAudit();
   S.lastUpdated=Date.now();
 }
 function setRefreshSpinner(on){
@@ -566,13 +679,14 @@ function scheduleTabRefresh(tab){
     if(tab==='health'||tab==='research'||tab==='schedule'||tab==='sessions') fetchData();
     else if(tab==='logs') fetchLogs();
     else if(tab==='system') fetchSysMetrics();
-    else if(tab==='cost') fetchModelUsage();
+    else if(tab==='cost'){fetchCostSummary();fetchModelUsage();}
+    else if(tab==='recovery') fetchAudit();
   },S.visible?POLL_ACTIVE:POLL_HIDDEN);
 }
 document.addEventListener('visibilitychange',()=>{S.visible=!document.hidden;if(S.current){clearInterval(S.timers[S.current]);scheduleTabRefresh(S.current)}});
-const TABS=['health','research','schedule','system','sessions','cost','logs'];
+const TABS=['health','research','schedule','system','sessions','cost','logs','recovery'];
 document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'){closeCronModals();return}
+  if(e.key==='Escape'){closeCronModals();closeRcModal();return}
   if((e.key==='r'||e.key==='R')&&!e.ctrlKey&&!e.metaKey&&document.activeElement?.tagName!=='INPUT'){e.preventDefault();doManualRefresh()}
   if(e.key==='ArrowRight'||e.key==='ArrowLeft'){
     const cur=TABS.indexOf(S.current),dir=e.key==='ArrowRight'?1:-1,next=TABS[(cur+dir+TABS.length)%TABS.length];
@@ -602,7 +716,11 @@ function doInitialFetch(tab){
       if(!S.data.sys) fetchSysMetrics(); else renderSystem();
       break;
     case'cost':
+      fetchCostSummary();
       if(!S.data.cost) fetchModelUsage(); else renderCost();
+      break;
+    case'recovery':
+      fetchAudit();
       break;
   }
 }
@@ -635,7 +753,52 @@ async function fetchSysMetrics(){
   try{const r=await fetch('/api/sysmetrics',{headers:{'Authorization':'Bearer '+AUTH_TOKEN}});if(!r.ok)throw new Error('HTTP '+r.status);const d=await r.json();S.data.sys=d.metrics;if(d.metrics?.cpu){const cpuPct=Math.round(100-d.metrics.cpu.idlePct);setBadge('system',cpuPct+'%')}if(S.current==='system')renderSystem();}catch(e){S.data.sysError=e.message}
 }
 async function fetchModelUsage(){
-  try{const r=await fetch('/api/modelusage',{headers:{'Authorization':'Bearer '+AUTH_TOKEN}});if(!r.ok)throw new Error('HTTP '+r.status);const d=await r.json();S.data.cost=d.usage;if(S.current==='cost')renderCost();const cost=d.usage?.totals?.cost||0;setBadge('cost',cost>0?fmt.cost(cost):'—');}catch(e){S.data.costError=e.message}
+  try{const r=await fetch('/api/modelusage',{headers:{'Authorization':'Bearer '+AUTH_TOKEN}});if(!r.ok)throw new Error('HTTP '+r.status);const d=await r.json();S.data.cost=d.usage;if(S.current==='cost')renderCost();const cost=d.usage?.totals?.cost||0;if(!S.data.costSummary)setBadge('cost',cost>0?fmt.cost(cost):'—');}catch(e){S.data.costError=e.message}
+}
+async function fetchCostSummary(){
+  try{
+    const r=await fetch('/api/cost/summary',{headers:{'Authorization':'Bearer '+AUTH_TOKEN}});
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const d=await r.json();
+    if(d.ready){S.data.costSummary=d;if(S.current==='cost')renderCost();}
+    const c=d.totalCost||0;
+    if(c>0)setBadge('cost',fmt.cost(c));
+  }catch(_){}
+}
+function connectCostWs(){
+  if(S.costWs&&S.costWs.readyState<=1)return;
+  try{
+    const proto=location.protocol==='https:'?'wss:':'ws:';
+    const ws=new WebSocket(`${proto}//${location.host}/ws?room=cost-events&token=${AUTH_TOKEN}`);
+    S.costWs=ws;
+    ws.onopen=()=>{S.costWsLive=true;_updateCsWsPill()};
+    ws.onclose=()=>{S.costWsLive=false;_updateCsWsPill();setTimeout(connectCostWs,8000)};
+    ws.onerror=()=>{S.costWsLive=false;_updateCsWsPill()};
+    ws.onmessage=e=>{
+      let msg;try{msg=JSON.parse(e.data)}catch{return}
+      if(msg.type==='cost-update'){
+        S.data.costSummary=msg.data;
+        const c=msg.data.totalCost||0;
+        setBadge('cost',c>0?fmt.cost(c):'—');
+        if(S.current==='cost')renderCost();
+      }else if(msg.type==='cost-alert'){
+        S.costAlerts.unshift({...msg,receivedAt:Date.now()});
+        if(S.costAlerts.length>20)S.costAlerts.pop();
+        _updateCsAlerts();
+        if(S.current==='cost')renderCost();
+      }
+    };
+  }catch(_){}
+}
+function _updateCsWsPill(){
+  document.querySelectorAll('.cs-ws-pill').forEach(el=>{
+    el.classList.toggle('live',S.costWsLive);
+    el.querySelector('.cs-ws-dot-txt').textContent=S.costWsLive?'Live':'Polling';
+  });
+}
+function _updateCsAlerts(){
+  const wrap=document.getElementById('cs-alert-list');if(!wrap)return;
+  wrap.innerHTML=_renderAlertItems();
 }
 
 function deriveIssues(d){
@@ -1238,20 +1401,158 @@ function renderSessions(){
   `;
 }
 
-// ── RENDER: COST ────────────────────────────────────────────
+// ── RENDER: COST SHIELD ──────────────────────────────────────
+function _budgetBarCls(pct){return pct>=95?'b-crit':pct>=80?'b-warn':pct>=50?'b-info':'b-ok';}
+function _levelCls(level){return level==='blocked'||level==='critical'?'v-err':level==='warning'?'v-warn':level==='info'?'v-neutral':'v-ok';}
+function _levelBadge(level){return level==='blocked'?'b-err':level==='critical'?'b-err':level==='warning'?'b-warn':level==='info'?'b-blue':'b-ok';}
+function _levelLabel(level){return level==='blocked'?'BLOCKED':level==='critical'?'CRITICAL':level==='warning'?'WARNING':level==='info'?'INFO':'OK';}
+function _renderAlertItems(){
+  if(!S.costAlerts.length)return'';
+  return S.costAlerts.slice(0,5).map(a=>{
+    const lvl=a.level==='critical'?'a-crit':a.level==='warn'?'a-warn':'a-info';
+    const icon=a.level==='critical'?'🔴':a.level==='warn'?'⚠':'ℹ';
+    const ago=fmt.age(Date.now()-(a.receivedAt||Date.now()));
+    return`<div class="alert ${lvl}"><span class="alert-icon">${icon}</span><span>${esc(a.data?.msg||'Alert')}<span class="dim" style="margin-left:6px;font-size:10px">${ago} ago</span></span></div>`;
+  }).join('');
+}
 function renderCost(){
-  const u=S.data.cost,html=lu();
-  if(!u){document.getElementById('tab-cost').innerHTML=html+skeleton();return}
-  const t=u.totals||{},sessions=u.sessions||[],byModel=u.byModel||{};
-  const totalCost=t.cost||0;
+  const summary=S.data.costSummary;
+  const legacy=S.data.cost;
+  const html=lu();
+  const tab=document.getElementById('tab-cost');
 
+  // Compose data — prefer live summary, fall back to legacy model usage
+  const totalCost=summary?.totalCost??legacy?.totals?.cost??0;
+  const budgetStatus=summary?.budgetStatus||null;
+  const spendRate=summary?.spendRate??0;
+  const projectedDaily=summary?.projectedDaily??0;
+  const hoursLeft=summary?.hoursLeft??null;
+  const byModel=summary?.byModel||legacy?.byModel||{};
+  const totals=summary?.totals||legacy?.totals||{};
+  const sessions=legacy?.sessions||[];
+  const dailyHistory=summary?.dailyHistory||[];
+  const byAttrib=summary?.byAttrib||{};
+  const anomaly=summary?.anomaly||false;
+
+  if(!summary&&!legacy){tab.innerHTML=html+skeleton();return}
+
+  // Budget bars
+  const dailyPct=budgetStatus?.daily?.pct??0;
+  const monthlyPct=budgetStatus?.monthly?.pct??0;
+  const barCls=_budgetBarCls(dailyPct);
+  const level=budgetStatus?.level||'ok';
+  const budgetBars=`
+  <div class="card">
+    <div class="card-head">
+      Budget
+      <div class="card-head-right">
+        <span class="badge ${_levelBadge(level)}">${_levelLabel(level)}</span>
+        <span class="cs-ws-pill${S.costWsLive?' live':''}"><span class="cs-ws-dot"></span><span class="cs-ws-dot-txt">${S.costWsLive?'Live':'Polling'}</span></span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="cs-budget-row">
+        <span class="cs-budget-label">Daily</span>
+        <div class="cs-budget-bar-outer"><div class="cs-budget-bar ${barCls}" style="width:${Math.min(dailyPct,100)}%"></div></div>
+        <span class="cs-budget-meta">${fmt.cost(totalCost)} / ${fmt.cost(budgetStatus?.daily?.limit??0)} &nbsp;<span class="${_levelCls(level)}">${dailyPct}%</span></span>
+      </div>
+      <div class="cs-budget-row">
+        <span class="cs-budget-label">Monthly</span>
+        <div class="cs-budget-bar-outer"><div class="cs-budget-bar ${_budgetBarCls(monthlyPct)}" style="width:${Math.min(monthlyPct,100)}%"></div></div>
+        <span class="cs-budget-meta">${fmt.cost(totalCost)} / ${fmt.cost(budgetStatus?.monthly?.limit??0)} &nbsp;<span class="v-dim">${monthlyPct}%</span></span>
+      </div>
+    </div>
+  </div>`;
+
+  // Velocity gauge
+  const rateStr=spendRate>0?`$${(spendRate*60).toFixed(4)}/hr`:'$0 /hr';
+  const projStr=projectedDaily>0?fmt.cost(projectedDaily):'—';
+  const hlStr=hoursLeft!=null&&isFinite(hoursLeft)?hoursLeft.toFixed(1)+'h left':'—';
+  const velCls=spendRate>0.001?'v-warn':'v-ok';
+  const velIcon=anomaly?'🚨':spendRate>0.001?'⚡':'💤';
+  const velocityCard=`
+  <div class="cs-vel-wrap${anomaly?' scard s-err':''}" style="${anomaly?'border-color:rgba(248,81,73,.4)':''}">
+    <span class="cs-vel-icon">${velIcon}</span>
+    <div class="cs-vel-main">
+      <div class="cs-vel-rate ${velCls}">${rateStr}</div>
+      <div class="cs-vel-sub">${anomaly?'⚠ Spend rate >3x average — possible token spiral':'Spend velocity (5-min rolling)'}</div>
+    </div>
+    <div class="cs-vel-right">
+      <div class="cs-vel-proj ${projectedDaily>0?'v-warn':'v-dim'}">${projStr}</div>
+      <div class="cs-vel-proj-label">proj. today &nbsp;·&nbsp; ${hlStr}</div>
+    </div>
+  </div>`;
+
+  // Stat grid
+  const statGrid=`
+  <div class="grid">
+    <div class="scard${dailyPct>=95?' s-err':dailyPct>=80?' s-warn':''}">
+      <div class="sc-label">Total Cost</div>
+      <div class="sc-val ${_levelCls(level)}">${fmt.cost(totalCost)}</div>
+      <div class="sc-sub">Daily ${dailyPct}%</div>
+    </div>
+    <div class="scard">
+      <div class="sc-label">Sessions</div>
+      <div class="sc-val v-neutral">${totals.sessionCount||sessions.length||0}</div>
+      <div class="sc-sub">tracked</div>
+    </div>
+    <div class="scard">
+      <div class="sc-label">Input</div>
+      <div class="sc-val v-neutral">${fmt.num(totals.inputTokens||0)}</div>
+      <div class="sc-sub">${fmt.cost((totals.inputTokens||0)/1e6*.30)}</div>
+    </div>
+    <div class="scard">
+      <div class="sc-label">Output</div>
+      <div class="sc-val v-neutral">${fmt.num(totals.outputTokens||0)}</div>
+      <div class="sc-sub">${fmt.cost((totals.outputTokens||0)/1e6*1.20)}</div>
+    </div>
+    <div class="scard">
+      <div class="sc-label">Cache Read</div>
+      <div class="sc-val v-ok">${fmt.num(totals.cacheRead||0)}</div>
+      <div class="sc-sub">${fmt.cost((totals.cacheRead||0)/1e6*.06)}</div>
+    </div>
+    <div class="scard">
+      <div class="sc-label">Total Tokens</div>
+      <div class="sc-val v-neutral">${fmt.num((totals.inputTokens||0)+(totals.outputTokens||0))}</div>
+      <div class="sc-sub">in + out</div>
+    </div>
+  </div>`;
+
+  // Daily cost mini-chart (CSS bars from dailyHistory)
+  let chartHtml='';
+  if(dailyHistory.length>=2){
+    const maxCost=Math.max(...dailyHistory.map(p=>p.totalCost),0.000001);
+    const bars=dailyHistory.slice(-40).map(p=>{
+      const h=Math.max(2,Math.round((p.totalCost/maxCost)*42));
+      const tip=fmt.cost(p.totalCost);
+      return`<div class="cs-chart-bar" style="height:${h}px" title="${tip} @ ${fmt.ts(p.ts)}"></div>`;
+    }).join('');
+    const oldTs=dailyHistory[Math.max(0,dailyHistory.length-40)].ts;
+    chartHtml=`<div class="card">
+      <div class="card-head">Cost Over Time <span class="dim" style="font-size:10px;font-weight:400;text-transform:none">30-min window, 30s samples</span></div>
+      <div class="card-body" style="padding-bottom:8px">
+        <div class="cs-chart-bars">${bars}</div>
+        <div class="cs-chart-label"><span>${fmt.ts(oldTs)}</span><span>Now ${fmt.cost(totalCost)}</span></div>
+      </div>
+    </div>`;
+  }
+
+  // Alert list
+  const alertItems=_renderAlertItems();
+  const alertsSection=alertItems?`<div id="cs-alert-list" class="section-gap">${alertItems}</div>`:`<div id="cs-alert-list"></div>`;
+
+  // By-model table
   const modelRows=Object.entries(byModel).map(([model,m])=>{
     const totalT=(m.inputTokens||0)+(m.outputTokens||0);
-    return`<tr><td><strong>${model}</strong></td><td>${m.sessions}</td><td class="dim">${fmt.num(m.inputTokens)}</td><td class="dim">${fmt.num(m.outputTokens)}</td><td class="dim">${fmt.num(m.cacheRead)}</td><td>${fmt.num(totalT)}</td><td class="cost-col">${fmt.cost(m.cost)}</td></tr>`;
+    return`<tr><td><strong>${esc(model)}</strong></td><td>${m.sessions}</td><td class="dim">${fmt.num(m.inputTokens)}</td><td class="dim">${fmt.num(m.outputTokens)}</td><td class="dim">${fmt.num(m.cacheRead)}</td><td>${fmt.num(totalT)}</td><td class="cost-col">${fmt.cost(m.cost)}</td></tr>`;
   }).join('');
 
+  // Attribution table
+  const attribEntries=Object.entries(byAttrib).filter(([k])=>k!=='unattributed');
+  const attribRows=attribEntries.map(([key,v])=>`<tr><td><code>${esc(key)}</code></td><td>${v.sessions}</td><td class="cost-col">${fmt.cost(v.cost)}</td></tr>`).join('');
+
+  // Session rows (from legacy modelusage)
   const sessRows=sessions.map(ss=>{
-    const total=(ss.inputTokens||0)+(ss.outputTokens||0);
     const pct=ss.percentUsed||0;
     return`<tr><td class="td-name"><code>${(ss.sessionId||'?').slice(0,8)}…</code></td>
       <td>${esc(ss.model||'MiniMax-M2.7')}</td>
@@ -1262,19 +1563,17 @@ function renderCost(){
       <td class="cost-col">${fmt.cost(sessionCost(ss))}</td></tr>`;
   }).join('');
 
-  document.getElementById('tab-cost').innerHTML=`
+  tab.innerHTML=`
   ${html}
-  <div class="grid">
-    <div class="scard"><div class="sc-label">Total Cost</div><div class="sc-val v-warn">${fmt.cost(totalCost)}</div><div class="sc-sub">MiniMax M2.7 rates</div></div>
-    <div class="scard"><div class="sc-label">Input</div><div class="sc-val v-neutral">${fmt.num(t.inputTokens||0)}</div><div class="sc-sub">${fmt.cost((t.inputTokens||0)/1e6*.30)}</div></div>
-    <div class="scard"><div class="sc-label">Output</div><div class="sc-val v-neutral">${fmt.num(t.outputTokens||0)}</div><div class="sc-sub">${fmt.cost((t.outputTokens||0)/1e6*1.20)}</div></div>
-    <div class="scard"><div class="sc-label">Cache Reads</div><div class="sc-val v-ok">${fmt.num(t.cacheRead||0)}</div><div class="sc-sub">${fmt.cost((t.cacheRead||0)/1e6*.06)}</div></div>
-    <div class="scard"><div class="sc-label">Sessions</div><div class="sc-val v-neutral">${t.sessionCount||0}</div><div class="sc-sub">active</div></div>
-    <div class="scard"><div class="sc-label">Total Tokens</div><div class="sc-val v-neutral">${fmt.num((t.inputTokens||0)+(t.outputTokens||0))}</div><div class="sc-sub">in+out</div></div>
-  </div>
+  ${budgetBars}
+  ${velocityCard}
+  ${alertsSection}
+  ${statGrid}
+  ${chartHtml}
   ${modelRows?`<div class="card"><div class="card-head">By Model</div><div class="table-wrap"><table><thead><tr><th>Model</th><th>Sessions</th><th>In</th><th>Out</th><th>Cache</th><th>Total</th><th>Cost</th></tr></thead><tbody>${modelRows}</tbody></table></div></div>`:''}
-  ${sessRows?`<div class="card"><div class="card-head">Session Detail <span class="dim" style="font-size:10px;font-weight:400;text-transform:none">${sessRows?sessions.length+' sessions':''}</span></div><div class="table-wrap"><table><thead><tr><th>ID</th><th>Model</th><th>In</th><th>Out</th><th>Cached%</th><th>Age</th><th>Cost</th></tr></thead><tbody>${sessRows}</tbody></table></div></div>`:''}
-  <div class="alert a-dim">💡 Prices: input $0.30/M · output $1.20/M · cache read $0.06/M (MiniMax M2.7)</div>`;
+  ${attribRows?`<div class="card"><div class="card-head">By Agent / Skill</div><div class="table-wrap"><table><thead><tr><th>Attribution</th><th>Sessions</th><th>Cost</th></tr></thead><tbody>${attribRows}</tbody></table></div></div>`:''}
+  ${sessRows?`<div class="card"><div class="card-head">Session Detail <span class="dim" style="font-size:10px;font-weight:400;text-transform:none">${sessions.length} sessions</span></div><div class="table-wrap"><table><thead><tr><th>ID</th><th>Model</th><th>In</th><th>Out</th><th>Cached%</th><th>Age</th><th>Cost</th></tr></thead><tbody>${sessRows}</tbody></table></div></div>`:''}
+  <div class="alert a-dim">💡 Prices vary by model · Real-time via WebSocket <code>cost-events</code> · Refresh (R) for manual poll</div>`;
 }
 
 // ── RENDER: LOGS ─────────────────────────────────────────────
@@ -1330,12 +1629,296 @@ function renderTab(tab){
     case'sessions':renderSessions();break;
     case'cost':renderCost();break;
     case'logs':renderLogs();break;
+    case'recovery':renderRecovery();break;
   }
 }
 
 
 
-function boot(){tickClock();S.clockInt=setInterval(tickClock,1000);switchTab('health')}
+// ── RECOVERY CONSOLE ─────────────────────────────────────────
+// State for pending modal action
+const RC={action:null,busy:false};
+
+async function fetchAudit(){
+  try{
+    const r=await fetch('/api/recovery/audit?limit=50',{headers:{'Authorization':'Bearer '+AUTH_TOKEN}});
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const d=await r.json();
+    S.data.audit=d.entries||[];
+  }catch(e){
+    S.data.audit=[];
+    S.data.auditError=e.message;
+  }
+  if(S.current==='recovery')renderRecovery();
+  const n=S.data.audit?.length||0;
+  setBadge('recovery',n||'—');
+}
+
+function renderRecovery(){
+  const el=document.getElementById('tab-recovery');
+  if(!el)return;
+  const audit=S.data.audit||[];
+  const auditErr=S.data.auditError||null;
+
+  const auditRows=audit.slice(0,20).map(e=>{
+    const t=e.ts?new Date(e.ts).toLocaleTimeString('en-GB',{timeZone:TZ,hour12:false}):'—';
+    const dot=e.ok?'<span class="audit-ok-dot"></span>':'<span class="audit-fail-dot"></span>';
+    const target=e.target?`<span class="audit-target">${esc(e.target)}</span>`:'';
+    return`<tr>
+      <td>${t}</td>
+      <td>${dot}<span class="audit-action">${esc(e.action)}</span></td>
+      <td>${target}</td>
+      <td>${e.ok?'<span class="v-ok">ok</span>':'<span class="v-err">fail</span>'}</td>
+      ${e.error?`<td class="v-err" style="font-size:10px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(e.error)}">${esc(e.error)}</td>`:'<td></td>'}
+    </tr>`;
+  }).join('');
+
+  el.innerHTML=`
+  ${lu()}
+  <div class="card" style="margin-bottom:14px;border-color:rgba(248,81,73,.15)">
+    <div class="card-body" style="padding:10px 14px">
+      <div class="alert a-warn" style="margin:0"><span class="alert-icon">⚠</span><span>Recovery actions directly affect live systems. All actions are audit-logged and require explicit confirmation.</span></div>
+    </div>
+  </div>
+
+  <div class="rc-section-title">Safe Actions</div>
+  <div class="rc-grid" style="grid-template-columns:1fr;margin-bottom:18px">
+    <div class="rc-card rc-safe" id="rc-card-session-clear">
+      <div class="rc-card-top">
+        <span class="rc-icon">🗑️</span>
+        <span class="rc-badge rb-safe">Safe</span>
+      </div>
+      <div class="rc-label">Clear Session</div>
+      <div class="rc-desc">Remove a specific session by ID. Frees memory and clears conversation context. Targeted — only affects the named session.</div>
+      <div class="rc-actions">
+        <button class="rc-btn rc-exec-safe" onclick="openRcModal('session-clear')">Execute</button>
+      </div>
+      <div class="rc-result" id="rc-result-session-clear"></div>
+    </div>
+  </div>
+
+  <div class="rc-section-title">Moderate Risk</div>
+  <div class="rc-grid" style="margin-bottom:18px">
+    <div class="rc-card rc-moderate" id="rc-card-gateway-restart">
+      <div class="rc-card-top">
+        <span class="rc-icon">🔄</span>
+        <span class="rc-badge rb-moderate">Moderate</span>
+      </div>
+      <div class="rc-label">Gateway Restart</div>
+      <div class="rc-desc">Restarts the openclaw gateway process. Causes a brief service interruption. All active requests will be dropped during restart.</div>
+      <div class="rc-actions">
+        <button class="rc-btn rc-exec-moderate" onclick="openRcModal('gateway-restart')">Execute</button>
+      </div>
+      <div class="rc-result" id="rc-result-gateway-restart"></div>
+    </div>
+    <div class="rc-card rc-moderate" id="rc-card-agent-kill">
+      <div class="rc-card-top">
+        <span class="rc-icon">💀</span>
+        <span class="rc-badge rb-moderate">Moderate</span>
+      </div>
+      <div class="rc-label">Kill Agent by PID</div>
+      <div class="rc-desc">Sends SIGTERM to a process, then SIGKILL after 5s if still alive. Use for stuck or runaway agent processes. Cannot be undone.</div>
+      <div class="rc-actions">
+        <button class="rc-btn rc-exec-moderate" onclick="openRcModal('agent-kill')">Execute</button>
+      </div>
+      <div class="rc-result" id="rc-result-agent-kill"></div>
+    </div>
+  </div>
+
+  <div class="rc-section-title">Destructive</div>
+  <div class="rc-grid" style="grid-template-columns:1fr;margin-bottom:18px">
+    <div class="rc-card rc-destructive" id="rc-card-session-clear-all">
+      <div class="rc-card-top">
+        <span class="rc-icon">☢️</span>
+        <span class="rc-badge rb-destructive">Destructive</span>
+      </div>
+      <div class="rc-label">Clear ALL Sessions</div>
+      <div class="rc-desc">Wipes every active session. All ongoing conversations will be permanently lost. Requires typing "CLEAR-ALL" to confirm.</div>
+      <div class="rc-actions">
+        <button class="rc-btn rc-exec-destructive" onclick="openRcModal('session-clear-all')">Execute</button>
+      </div>
+      <div class="rc-result" id="rc-result-session-clear-all"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      Audit Log
+      <span class="card-head-right">
+        <button class="act-btn" onclick="fetchAudit()" style="font-size:10px">↻ Refresh</button>
+      </span>
+    </div>
+    ${auditErr?`<div class="card-body"><div class="alert a-warn" style="margin:0">Could not load audit log: ${esc(auditErr)}</div></div>`:''}
+    ${audit.length===0&&!auditErr?`<div class="empty-state"><span class="e-icon">📋</span>No recovery actions logged yet.</div>`:''}
+    ${audit.length>0?`<div class="table-wrap"><table>
+      <thead><tr><th>Time</th><th>Action</th><th>Target</th><th>Result</th><th>Error</th></tr></thead>
+      <tbody class="audit-table">${auditRows}</tbody>
+    </table></div>`:''}
+  </div>`;
+}
+
+// ── Recovery Modal ──────────────────────────────────────────────
+const RC_CONFIGS={
+  'gateway-restart':{
+    title:'Restart Gateway',
+    risk:'moderate',
+    riskLabel:'Moderate Risk',
+    icon:'🔄',
+    desc:'This will restart the openclaw gateway. All active requests will be dropped during restart (~5–30s downtime). Are you sure you want to proceed?',
+    inputType:null,
+  },
+  'session-clear':{
+    title:'Clear Session',
+    risk:'safe',
+    riskLabel:'Safe',
+    icon:'🗑️',
+    desc:'Enter the session ID you want to clear. This will remove the session from memory and cannot be undone.',
+    inputType:'sessionId',
+  },
+  'agent-kill':{
+    title:'Kill Agent Process',
+    risk:'moderate',
+    riskLabel:'Moderate Risk',
+    icon:'💀',
+    desc:'Enter the PID of the agent process to terminate. SIGTERM will be sent first; SIGKILL after 5s if still alive.',
+    inputType:'pid',
+  },
+  'session-clear-all':{
+    title:'Clear ALL Sessions',
+    risk:'destructive',
+    riskLabel:'Destructive',
+    icon:'☢️',
+    desc:'This will permanently destroy ALL active sessions. This cannot be undone. Type CLEAR-ALL in the field below to confirm.',
+    inputType:'confirm',
+    confirmPhrase:'CLEAR-ALL',
+  },
+};
+
+const RISK_COLORS={
+  safe:{bg:'rgba(63,185,80,.08)',border:'rgba(63,185,80,.25)',color:'#3fb950'},
+  moderate:{bg:'rgba(210,153,34,.08)',border:'rgba(210,153,34,.3)',color:'#d29922'},
+  destructive:{bg:'rgba(248,81,73,.08)',border:'rgba(248,81,73,.35)',color:'#f85149'},
+};
+
+function openRcModal(action){
+  const cfg=RC_CONFIGS[action];
+  if(!cfg)return;
+  RC.action=action;
+  RC.busy=false;
+
+  const colors=RISK_COLORS[cfg.risk];
+  const banner=document.getElementById('rc-modal-risk-banner');
+  banner.style.background=colors.bg;
+  banner.style.border='1px solid '+colors.border;
+  banner.style.color=colors.color;
+  banner.textContent=cfg.icon+' '+cfg.riskLabel+' — '+cfg.title;
+
+  document.getElementById('rc-modal-title').textContent=cfg.title;
+  document.getElementById('rc-modal-desc').textContent=cfg.desc;
+  document.getElementById('rc-modal-error').textContent='';
+
+  // Show/hide input fields
+  const inputWrap=document.getElementById('rc-modal-input-wrap');
+  const sidWrap=document.getElementById('rc-modal-sid-wrap');
+  const pidWrap=document.getElementById('rc-modal-pid-wrap');
+  inputWrap.style.display='none';
+  sidWrap.style.display='none';
+  pidWrap.style.display='none';
+
+  if(cfg.inputType==='confirm'){
+    inputWrap.style.display='';
+    document.getElementById('rc-modal-input-label').textContent='Type "'+cfg.confirmPhrase+'" to confirm';
+    document.getElementById('rc-modal-input').value='';
+    document.getElementById('rc-modal-input').placeholder=cfg.confirmPhrase;
+    document.getElementById('rc-modal-input-hint').textContent='Exact match required, case-sensitive.';
+  }else if(cfg.inputType==='sessionId'){
+    sidWrap.style.display='';
+    document.getElementById('rc-modal-sid').value='';
+  }else if(cfg.inputType==='pid'){
+    pidWrap.style.display='';
+    document.getElementById('rc-modal-pid').value='';
+  }
+
+  const execBtn=document.getElementById('rc-modal-exec');
+  execBtn.className='btn-primary';
+  if(cfg.risk==='destructive') execBtn.style.cssText='background:rgba(248,81,73,.15);border-color:rgba(248,81,73,.4);color:#f85149';
+  else if(cfg.risk==='moderate') execBtn.style.cssText='background:rgba(210,153,34,.12);border-color:rgba(210,153,34,.35);color:#d29922';
+  else execBtn.style.cssText='';
+  execBtn.disabled=false;
+  execBtn.textContent='Execute';
+
+  document.getElementById('rc-modal').classList.add('open');
+  // Focus first input
+  setTimeout(()=>{
+    const first=document.querySelector('#rc-modal input:not([style*="display:none"])');
+    if(first)first.focus();
+  },50);
+}
+
+function closeRcModal(){
+  document.getElementById('rc-modal').classList.remove('open');
+  RC.action=null;
+  RC.busy=false;
+}
+
+async function rcModalExecute(){
+  if(RC.busy)return;
+  const action=RC.action;
+  const cfg=RC_CONFIGS[action];
+  if(!action||!cfg)return;
+
+  const errEl=document.getElementById('rc-modal-error');
+  errEl.textContent='';
+
+  let body={};
+  if(cfg.inputType==='confirm'){
+    const val=document.getElementById('rc-modal-input').value.trim();
+    if(val!==cfg.confirmPhrase){errEl.textContent='Must type exactly: '+cfg.confirmPhrase;return;}
+    body={confirmation:val};
+  }else if(cfg.inputType==='sessionId'){
+    const sid=document.getElementById('rc-modal-sid').value.trim();
+    if(!sid){errEl.textContent='Session ID is required.';return;}
+    body={sessionId:sid,confirmed:true};
+  }else if(cfg.inputType==='pid'){
+    const pid=parseInt(document.getElementById('rc-modal-pid').value,10);
+    if(!pid||pid<2){errEl.textContent='Enter a valid PID (≥2).';return;}
+    body={pid,confirmed:true};
+  }else{
+    body={confirmed:true};
+  }
+
+  RC.busy=true;
+  const execBtn=document.getElementById('rc-modal-exec');
+  execBtn.disabled=true;
+  execBtn.textContent='Executing…';
+
+  try{
+    const r=await fetch('/api/recovery/'+action,{
+      method:'POST',
+      headers:{'Authorization':'Bearer '+AUTH_TOKEN,'Content-Type':'application/json'},
+      body:JSON.stringify(body),
+    });
+    const d=await r.json();
+    closeRcModal();
+    showRcResult(action,d.ok,d.ok?'Done'+(d.duration?` (${d.duration}ms)`:''):(d.error||'Failed'));
+    fetchAudit();
+  }catch(e){
+    errEl.textContent='Request failed: '+e.message;
+    execBtn.disabled=false;
+    execBtn.textContent='Execute';
+    RC.busy=false;
+  }
+}
+
+function showRcResult(action,ok,msg){
+  const resEl=document.getElementById('rc-result-'+action);
+  if(!resEl)return;
+  resEl.className='rc-result show '+(ok?'rc-ok':'rc-fail');
+  resEl.textContent=(ok?'✓ ':'✗ ')+msg;
+  setTimeout(()=>{resEl.className='rc-result';resEl.textContent=''},8000);
+}
+
+function boot(){tickClock();S.clockInt=setInterval(tickClock,1000);connectCostWs();switchTab('health')}
 boot();
 </script>
 </body>
