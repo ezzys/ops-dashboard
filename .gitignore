@@ -1,0 +1,21 @@
+# Logs
+*.log
+
+# OS
+.DS_Store
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Environment
+.env
+.env.local
+
+# Build outputs
+dist/
+build/
+
+# Temp files
+*.bak
+*.tmp

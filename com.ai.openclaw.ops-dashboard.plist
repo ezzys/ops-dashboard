@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.ai.openclaw.ops-dashboard</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/opt/homebrew/bin/node</string>
+    <string>/Users/openclaw/.openclaw/workspace/tools/ops-dashboard/dashboard.js</string>
+  </array>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/opt/homebrew/opt/node@22/bin</string>
+  </dict>
+  <key>WorkingDirectory</key>
+  <string>/Users/openclaw/.openclaw/workspace/tools/ops-dashboard</string>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <dict>
+    <key>SuccessfulExit</key>
+    <false/>
+  </dict>
+  <key>StandardOutPath</key>
+  <string>/tmp/openclaw/ops-dashboard.log</string>
+  <key>StandardErrorPath</key>
+  <string>/tmp/openclaw/ops-dashboard.err</string>
+</dict>
+</plist>
