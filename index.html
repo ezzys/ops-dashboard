@@ -456,6 +456,94 @@ select.form-ctrl option{background:#161b22}
 .ha-ok{background:#3fb950}.ha-fail{background:#f85149}
 .ha-action{color:#e6edf3;font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ha-time{color:#484f58;white-space:nowrap;font-variant-numeric:tabular-nums}
+
+/* ── REPLAY / FLIGHT RECORDER ────────────────────────────────────────────────*/
+
+/* Session list filter bar */
+.rp-filter-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.rp-search{background:#161b22;border:1px solid #30363d;border-radius:6px;color:#e6edf3;padding:5px 10px;font-size:12px;font-family:inherit;outline:none;transition:border-color .15s;min-width:160px;flex:1}
+.rp-search:focus{border-color:#58a6ff}
+.rp-search::placeholder{color:#30363d}
+
+/* Surface legend pills */
+.rp-legend{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;font-size:10px}
+.rp-pill{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-weight:600;cursor:pointer;border:1px solid transparent;transition:opacity .15s}
+.rp-pill.active{opacity:1}.rp-pill.inactive{opacity:.4}
+.rp-pill-cog{background:rgba(63,185,80,.1);color:#3fb950;border-color:rgba(63,185,80,.25)}
+.rp-pill-ops{background:rgba(210,153,34,.1);color:#d29922;border-color:rgba(210,153,34,.25)}
+.rp-pill-ctx{background:rgba(163,113,247,.1);color:#a371f7;border-color:rgba(163,113,247,.25)}
+
+/* Session table */
+.rp-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:14px}
+.rp-table-wrap table tr{cursor:pointer}
+.rp-table-wrap table tr:hover td{background:rgba(88,166,255,.04)}
+.rp-table-wrap table tr.selected td{background:rgba(88,166,255,.07)}
+.rp-sid{font-family:monospace;font-size:10px;color:#58a6ff;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block}
+
+/* Player panel */
+.rp-player{background:#161b22;border:1px solid #21262d;border-radius:10px;overflow:hidden;display:none}
+.rp-player.open{display:block}
+.rp-player-hdr{padding:10px 14px;border-bottom:1px solid #21262d;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.rp-player-title{font-size:13px;font-weight:700;color:#e6edf3;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rp-player-meta{font-size:10px;color:#484f58;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.rp-player-close{background:none;border:none;color:#484f58;cursor:pointer;font-size:18px;line-height:1;padding:0 2px;transition:color .15s;font-family:inherit}
+.rp-player-close:hover{color:#e6edf3}
+
+/* Timeline scrubber */
+.rp-scrubber-wrap{padding:10px 14px;border-bottom:1px solid #21262d}
+.rp-scrubber-track{position:relative;height:28px;background:#0d1117;border-radius:4px;overflow:hidden;cursor:pointer;margin-bottom:6px}
+.rp-scrubber-fill{position:absolute;top:0;bottom:0;left:0;background:rgba(88,166,255,.15);transition:width .1s}
+.rp-scrubber-thumb{position:absolute;top:0;bottom:0;width:2px;background:#58a6ff;transition:left .1s}
+.rp-density-bar{position:absolute;bottom:0;width:3px;border-radius:1px 1px 0 0;opacity:.7}
+.rp-density-cog{background:#3fb950}
+.rp-density-ops{background:#d29922}
+.rp-density-ctx{background:#a371f7}
+.rp-scrubber-controls{display:flex;align-items:center;gap:8px}
+.rp-ctrl-btn{background:none;border:1px solid #30363d;color:#484f58;border-radius:5px;padding:3px 9px;cursor:pointer;font-size:10px;font-weight:600;transition:all .15s;font-family:inherit;line-height:1.6}
+.rp-ctrl-btn:hover{color:#8b949e;border-color:#484f58;background:#1c2128}
+.rp-ctrl-btn.active{background:rgba(88,166,255,.1);border-color:#58a6ff;color:#58a6ff}
+.rp-time-label{font-size:10px;color:#484f58;font-variant-numeric:tabular-nums;flex:1;text-align:right}
+
+/* Event list */
+.rp-body{display:grid;grid-template-columns:1fr;gap:0}
+@media(min-width:700px){.rp-body{grid-template-columns:1fr 340px}}
+.rp-event-list{border-right:1px solid #21262d;max-height:420px;overflow-y:auto}
+.rp-event-row{display:flex;align-items:flex-start;gap:8px;padding:7px 12px;border-bottom:1px solid #161b22;cursor:pointer;transition:background .1s;position:relative}
+.rp-event-row:hover{background:rgba(255,255,255,.025)}
+.rp-event-row.active{background:rgba(88,166,255,.06)}
+.rp-event-row.past{opacity:.55}
+.rp-evt-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.rp-evt-cog{background:#3fb950}
+.rp-evt-ops{background:#d29922}
+.rp-evt-ctx{background:#a371f7}
+.rp-evt-type{font-size:11px;font-weight:600;color:#e6edf3;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rp-evt-time{font-size:9px;color:#484f58;font-variant-numeric:tabular-nums;white-space:nowrap}
+.rp-evt-dur{font-size:9px;color:#30363d;white-space:nowrap;margin-left:4px}
+.rp-bookmark-btn{background:none;border:none;color:#30363d;cursor:pointer;padding:0 2px;font-size:11px;transition:color .15s;line-height:1;flex-shrink:0}
+.rp-bookmark-btn:hover,.rp-bookmark-btn.bookmarked{color:#d29922}
+
+/* Detail panel */
+.rp-detail{padding:12px;overflow-y:auto;max-height:420px;background:#0d1117}
+.rp-detail-empty{text-align:center;padding:40px 12px;color:#484f58;font-size:11px}
+.rp-detail-hdr{margin-bottom:10px}
+.rp-detail-type{font-size:13px;font-weight:700;color:#e6edf3;margin-bottom:3px}
+.rp-detail-meta{font-size:10px;color:#484f58;display:flex;flex-wrap:wrap;gap:8px}
+.rp-detail-data{background:#161b22;border:1px solid #21262d;border-radius:6px;padding:9px 10px;font-size:10px;color:#8b949e;white-space:pre-wrap;word-break:break-all;overflow-x:auto;max-height:240px;font-family:monospace;line-height:1.5}
+.rp-export-row{display:flex;gap:6px;padding:8px 14px;border-top:1px solid #21262d}
+.rp-export-btn{background:none;border:1px solid #30363d;color:#484f58;border-radius:5px;padding:3px 9px;cursor:pointer;font-size:10px;font-weight:600;transition:all .15s;font-family:inherit}
+.rp-export-btn:hover{color:#8b949e;border-color:#484f58;background:#1c2128}
+
+/* Log query tab (used within replay tab) */
+.lq-bar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.lq-select{background:#161b22;border:1px solid #30363d;border-radius:6px;color:#e6edf3;padding:4px 24px 4px 9px;font-size:11px;font-family:inherit;outline:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23484f58'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;cursor:pointer;transition:border-color .15s}
+.lq-select:focus{border-color:#58a6ff}
+.lq-input{background:#161b22;border:1px solid #30363d;border-radius:6px;color:#e6edf3;padding:4px 9px;font-size:11px;font-family:inherit;outline:none;transition:border-color .15s}
+.lq-input:focus{border-color:#58a6ff}
+.lq-btn{background:rgba(88,166,255,.1);border:1px solid rgba(88,166,255,.3);color:#58a6ff;border-radius:6px;padding:4px 12px;cursor:pointer;font-size:11px;font-weight:600;transition:all .15s;font-family:inherit}
+.lq-btn:hover{background:rgba(88,166,255,.2)}
+.lq-results{font-size:11px;color:#484f58;margin-bottom:6px}
+.lq-event-row{display:flex;align-items:flex-start;gap:8px;padding:6px 10px;background:#161b22;border:1px solid #21262d;border-radius:6px;margin-bottom:5px;cursor:pointer;transition:border-color .15s}
+.lq-event-row:hover{border-color:#30363d}
 </style>
 </head>
 <body>
@@ -519,6 +607,10 @@ select.form-ctrl option{background:#161b22}
     <span class="tab-badge" id="dtab-agents">—</span>
     <span class="dot red" id="dtab-agents-dot"></span>
   </button>
+  <button class="dtab" data-tab="replay" onclick="switchTab('replay')" role="tab" aria-selected="false" aria-controls="tab-replay" id="dtab-btn-replay" tabindex="-1">
+    🎬<span class="tab-label"> Replay</span>
+    <span class="tab-badge" id="dtab-replay">—</span>
+  </button>
 </div>
 
 <div class="wrap">
@@ -531,6 +623,7 @@ select.form-ctrl option{background:#161b22}
   <div id="tab-logs" class="tab-content" role="tabpanel" aria-labelledby="dtab-btn-logs"></div>
   <div id="tab-recovery" class="tab-content" role="tabpanel" aria-labelledby="dtab-btn-recovery"></div>
   <div id="tab-agents"   class="tab-content" role="tabpanel" aria-labelledby="dtab-btn-agents"></div>
+  <div id="tab-replay"   class="tab-content" role="tabpanel" aria-labelledby="dtab-btn-replay"></div>
 </div>
 
 <!-- Mobile nav -->
@@ -570,6 +663,10 @@ select.form-ctrl option{background:#161b22}
   <button class="mtab" data-tab="agents" onclick="switchTab('agents')" aria-label="Agents">
     <span class="m-icon">🤖</span><span class="m-label">Agents</span>
     <span class="m-badge" id="mtab-agents">—</span>
+  </button>
+  <button class="mtab" data-tab="replay" onclick="switchTab('replay')" aria-label="Replay">
+    <span class="m-icon">🎬</span><span class="m-label">Replay</span>
+    <span class="m-badge" id="mtab-replay">—</span>
   </button>
 </div>
 
@@ -922,6 +1019,9 @@ function doInitialFetch(tab){
       break;
     case'agents':
       fetchAgentHealth();
+      break;
+    case'replay':
+      renderReplayTab();
       break;
   }
 }
@@ -1832,6 +1932,7 @@ function renderTab(tab){
     case'logs':renderLogs();break;
     case'recovery':renderRecovery();break;
     case'agents':renderAgentHealth();break;
+    case'replay':renderReplayTab();break;
   }
 }
 
@@ -2389,6 +2490,547 @@ async function _loadHitlAudit(sid){
       </div>`).join('');
   }catch(_){}
 }
+
+// ══════════════════════════════════════════════════════════════════════════════
+// R2.4 — Session Replay + Log Query UI
+// ══════════════════════════════════════════════════════════════════════════════
+
+const RP = {
+  sessions: [],
+  filtered: [],
+  searchQ: '',
+  surfaceFilter: null, // null = all
+  selectedSession: null,
+  events: [],
+  filteredEvents: [],
+  currentIdx: 0,
+  playing: false,
+  playSpeed: 1,
+  playTimer: null,
+  bookmarks: new Set(),
+};
+
+// ── Surface meta ──────────────────────────────────────────────────────────────
+const SURF_DOT  = { cognitive:'rp-evt-cog', operational:'rp-evt-ops', contextual:'rp-evt-ctx' };
+const SURF_LABEL= { cognitive:'Cognitive', operational:'Operational', contextual:'Contextual' };
+
+function rpDot(surface) {
+  return `<span class="rp-evt-dot ${SURF_DOT[surface]||''}"></span>`;
+}
+
+// ── Tab render ────────────────────────────────────────────────────────────────
+function renderReplayTab() {
+  const el = document.getElementById('tab-replay');
+  if (!el) return;
+  el.innerHTML = `
+<div class="last-updated" id="rp-updated">—</div>
+
+<!-- Session List Card -->
+<div class="card">
+  <div class="card-head">
+    <span>Session List</span>
+    <div class="card-head-right">
+      <span class="cs-ws-pill" id="rp-ws-pill"><span class="cs-ws-dot"></span> Live</span>
+      <button class="act-btn act-run" onclick="rpLoadSessions()">Refresh</button>
+    </div>
+  </div>
+  <div class="card-body" style="padding:10px 13px">
+
+    <!-- Filter row -->
+    <div class="rp-filter-row">
+      <input class="rp-search" id="rp-search" placeholder="Search session ID, agent, model…" oninput="rpApplyFilter()" value="">
+      <button class="fbtn ${RP.surfaceFilter===null?'active':''}" onclick="rpSetSurface(null)">All</button>
+      <button class="fbtn ${RP.surfaceFilter==='cognitive'?'active':''}" onclick="rpSetSurface('cognitive')" style="color:#3fb950">Cognitive</button>
+      <button class="fbtn ${RP.surfaceFilter==='operational'?'active':''}" onclick="rpSetSurface('operational')" style="color:#d29922">Operational</button>
+      <button class="fbtn ${RP.surfaceFilter==='contextual'?'active':''}" onclick="rpSetSurface('contextual')" style="color:#a371f7">Contextual</button>
+    </div>
+
+    <!-- Session table -->
+    <div class="rp-table-wrap">
+      <table>
+        <thead><tr>
+          <th>Session ID</th><th>Agent</th><th>Model</th>
+          <th>Start</th><th>Duration</th><th>Status</th><th>Events</th>
+        </tr></thead>
+        <tbody id="rp-session-tbody">
+          <tr><td colspan="7" class="empty-state">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Replay Player (shown when a session is selected) -->
+<div class="rp-player" id="rp-player">
+  <div class="rp-player-hdr">
+    <div style="min-width:0;flex:1">
+      <div class="rp-player-title" id="rp-player-title">—</div>
+      <div class="rp-player-meta" id="rp-player-meta"></div>
+    </div>
+    <button class="rp-player-close" onclick="rpClosePlayer()" title="Close player">✕</button>
+  </div>
+
+  <!-- Scrubber -->
+  <div class="rp-scrubber-wrap">
+    <div class="rp-scrubber-track" id="rp-track" onclick="rpScrubClick(event)" title="Click to seek">
+      <div class="rp-scrubber-fill" id="rp-fill"></div>
+      <div class="rp-scrubber-thumb" id="rp-thumb"></div>
+      <!-- density bars injected by rpRenderDensity() -->
+    </div>
+    <div class="rp-scrubber-controls">
+      <button class="rp-ctrl-btn" id="rp-play-btn" onclick="rpTogglePlay()">▶ Play</button>
+      <button class="rp-ctrl-btn ${RP.playSpeed===1?'active':''}" onclick="rpSetSpeed(1)">1×</button>
+      <button class="rp-ctrl-btn ${RP.playSpeed===2?'active':''}" onclick="rpSetSpeed(2)">2×</button>
+      <button class="rp-ctrl-btn ${RP.playSpeed===4?'active':''}" onclick="rpSetSpeed(4)">4×</button>
+      <button class="rp-ctrl-btn ${RP.playSpeed===8?'active':''}" onclick="rpSetSpeed(8)">8×</button>
+      <span class="rp-time-label" id="rp-time-label">0 / 0</span>
+    </div>
+  </div>
+
+  <!-- Events + detail pane -->
+  <div class="rp-body">
+    <div class="rp-event-list" id="rp-event-list"></div>
+    <div class="rp-detail" id="rp-detail">
+      <div class="rp-detail-empty">Select an event to inspect</div>
+    </div>
+  </div>
+
+  <!-- Export row -->
+  <div class="rp-export-row">
+    <button class="rp-export-btn" onclick="rpExport('json')">⬇ Export JSON</button>
+    <button class="rp-export-btn" onclick="rpExport('html')">⬇ Export HTML</button>
+  </div>
+</div>
+
+<!-- Log Query Section -->
+<div class="card section-gap">
+  <div class="card-head">
+    <span>Event Log Query</span>
+    <button class="act-btn act-run" onclick="lqRun()">Run Query</button>
+  </div>
+  <div class="card-body">
+    <div class="lq-bar">
+      <select class="lq-select" id="lq-surface" onchange="lqRun()">
+        <option value="">All surfaces</option>
+        <option value="cognitive">Cognitive</option>
+        <option value="operational">Operational</option>
+        <option value="contextual">Contextual</option>
+      </select>
+      <select class="lq-select" id="lq-type" onchange="lqRun()">
+        <option value="">All types</option>
+        <optgroup label="Cognitive"><option>reasoning_step</option><option>tool_selected</option><option>confidence_score</option><option>context_built</option></optgroup>
+        <optgroup label="Operational"><option>tool_call</option><option>tool_result</option><option>function_invoked</option><option>error</option><option>retry</option></optgroup>
+        <optgroup label="Contextual"><option>http_request</option><option>db_query</option><option>cache_hit</option><option>cache_miss</option><option>file_read</option><option>file_write</option></optgroup>
+      </select>
+      <input class="lq-input" id="lq-agent" placeholder="Agent ID" style="width:110px">
+      <input class="lq-input" id="lq-search" placeholder="Search data…" style="width:140px">
+      <input class="lq-input" id="lq-limit" placeholder="Limit" value="50" style="width:60px">
+      <button class="lq-btn" onclick="lqRun()">Query</button>
+    </div>
+    <div class="lq-results" id="lq-results">—</div>
+    <div id="lq-list"></div>
+  </div>
+</div>
+`;
+  rpLoadSessions();
+  lqRun();
+}
+
+// ── Session loading ───────────────────────────────────────────────────────────
+async function rpLoadSessions() {
+  try {
+    const r = await fetch('/api/sessions?limit=100', { headers: { 'Authorization': 'Bearer ' + AUTH_TOKEN } });
+    const d = await r.json();
+    RP.sessions = d.sessions || [];
+    document.getElementById('dtab-replay').textContent = RP.sessions.length;
+    document.getElementById('mtab-replay') && (document.getElementById('mtab-replay').textContent = RP.sessions.length);
+    document.getElementById('rp-updated') && (document.getElementById('rp-updated').textContent = 'Updated ' + new Date().toLocaleTimeString('en-GB', { hour12: false }));
+    rpApplyFilter();
+  } catch (err) {
+    const tbody = document.getElementById('rp-session-tbody');
+    if (tbody) tbody.innerHTML = `<tr><td colspan="7" style="color:#f85149;padding:12px">Error loading sessions: ${esc(err.message)}</td></tr>`;
+  }
+}
+
+function rpApplyFilter() {
+  const q = (document.getElementById('rp-search')?.value || '').toLowerCase();
+  RP.searchQ = q;
+  RP.filtered = RP.sessions.filter(s => {
+    if (q) {
+      const haystack = [(s.id||''),(s.agent||s.agent_id||''),(s.model||'')].join(' ').toLowerCase();
+      if (!haystack.includes(q)) return false;
+    }
+    return true;
+  });
+  rpRenderSessionTable();
+}
+
+function rpSetSurface(surface) {
+  RP.surfaceFilter = surface;
+  // Re-render tab to update button states
+  renderReplayTab();
+}
+
+function rpRenderSessionTable() {
+  const tbody = document.getElementById('rp-session-tbody');
+  if (!tbody) return;
+  if (!RP.filtered.length) {
+    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><span class="e-icon">🎬</span>No sessions found</div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = RP.filtered.map(s => {
+    const sid     = s.id || s.session_id || '—';
+    const agent   = s.agent || s.agent_id || '—';
+    const model   = s.model || '—';
+    const start   = s.start_ts || s.started_at || s.created_at;
+    const startStr= start ? new Date(start).toLocaleString('en-GB', { hour12:false, dateStyle:'short', timeStyle:'medium' }) : '—';
+    const dur     = (s.duration != null) ? fmtDur(s.duration) : '—';
+    const status  = s.status || '—';
+    const evts    = s._event_count != null ? (s._event_count === -1 ? '✓' : s._event_count) : '—';
+    const sel     = RP.selectedSession && (RP.selectedSession.id === sid || RP.selectedSession.id === s.id) ? 'selected' : '';
+    const statusBadge = status === 'done' || status === 'completed' ? '<span class="badge b-ok">done</span>'
+                      : status === 'running' ? '<span class="badge b-blue">running</span>'
+                      : status === 'error'   ? '<span class="badge b-err">error</span>'
+                      : `<span class="badge b-dim">${esc(status)}</span>`;
+    return `<tr class="${sel}" onclick="rpOpenSession(${JSON.stringify(JSON.stringify(s))})">
+      <td><span class="rp-sid" title="${esc(sid)}">${esc(sid)}</span></td>
+      <td>${esc(agent)}</td>
+      <td>${esc(model)}</td>
+      <td style="color:#484f58">${startStr}</td>
+      <td style="font-variant-numeric:tabular-nums">${dur}</td>
+      <td>${statusBadge}</td>
+      <td style="color:#484f58">${evts}</td>
+    </tr>`;
+  }).join('');
+}
+
+function fmtDur(ms) {
+  if (ms == null) return '—';
+  if (ms < 1000) return ms + 'ms';
+  if (ms < 60000) return (ms/1000).toFixed(1) + 's';
+  return Math.floor(ms/60000) + 'm ' + Math.floor((ms%60000)/1000) + 's';
+}
+
+// ── Player ────────────────────────────────────────────────────────────────────
+async function rpOpenSession(sessionJson) {
+  const session = JSON.parse(sessionJson);
+  RP.selectedSession = session;
+  RP.bookmarks = new Set();
+  rpRenderSessionTable();
+
+  const player = document.getElementById('rp-player');
+  if (player) player.classList.add('open');
+
+  const sid = session.id || session.session_id || session.trace_id || '';
+  document.getElementById('rp-player-title').textContent = 'Session: ' + sid;
+  document.getElementById('rp-player-meta').textContent = 'Loading events…';
+  document.getElementById('rp-event-list').innerHTML = '';
+  document.getElementById('rp-detail').innerHTML = '<div class="rp-detail-empty">Loading…</div>';
+  rpStop();
+
+  try {
+    const r = await fetch(`/api/sessions/${encodeURIComponent(sid)}/events`, { headers: { 'Authorization': 'Bearer ' + AUTH_TOKEN } });
+    const d = await r.json();
+    RP.events = d.events || [];
+    RP.filteredEvents = RP.surfaceFilter ? RP.events.filter(e => e.surface === RP.surfaceFilter) : RP.events;
+    RP.currentIdx = 0;
+    rpRenderPlayer(session);
+    player && player.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch (err) {
+    document.getElementById('rp-player-meta').textContent = 'Error: ' + err.message;
+  }
+}
+
+function rpRenderPlayer(session) {
+  const events = RP.filteredEvents;
+  const meta = document.getElementById('rp-player-meta');
+  if (meta) {
+    const agent = session.agent || session.agent_id || '—';
+    const model = session.model || '—';
+    meta.innerHTML = [
+      `<span>Agent: ${esc(agent)}</span>`,
+      `<span>Model: ${esc(model)}</span>`,
+      `<span>${events.length} events</span>`,
+    ].join('');
+  }
+  rpRenderDensity(events);
+  rpRenderEventList(events);
+  rpUpdateScrubber();
+}
+
+function rpRenderDensity(events) {
+  const track = document.getElementById('rp-track');
+  if (!track || !events.length) return;
+  // Remove old density bars
+  track.querySelectorAll('.rp-density-bar').forEach(b => b.remove());
+
+  const first = events[0].timestamp;
+  const last  = events[events.length-1].timestamp;
+  const span  = (last - first) || 1;
+  const W     = track.clientWidth || 400;
+  const BINS  = 40;
+  const bins  = Array.from({ length: BINS }, () => ({ n:0, surface:null }));
+
+  for (const e of events) {
+    const idx = Math.min(Math.floor(((e.timestamp - first) / span) * BINS), BINS-1);
+    bins[idx].n++;
+    if (!bins[idx].surface) bins[idx].surface = e.surface;
+  }
+  const maxN = Math.max(...bins.map(b => b.n), 1);
+  const binW = 100 / BINS;
+
+  for (let i = 0; i < BINS; i++) {
+    if (!bins[i].n) continue;
+    const bar = document.createElement('div');
+    bar.className = `rp-density-bar rp-density-${bins[i].surface === 'cognitive' ? 'cog' : bins[i].surface === 'operational' ? 'ops' : 'ctx'}`;
+    const h = Math.max(4, Math.round((bins[i].n / maxN) * 22));
+    bar.style.cssText = `left:${(i/BINS)*100}%;width:${binW*0.8}%;height:${h}px`;
+    track.appendChild(bar);
+  }
+}
+
+function rpRenderEventList(events) {
+  const list = document.getElementById('rp-event-list');
+  if (!list) return;
+  if (!events.length) {
+    list.innerHTML = '<div class="rp-detail-empty">No events for this session</div>';
+    return;
+  }
+  const first = events[0].timestamp;
+  list.innerHTML = events.map((e, i) => {
+    const relMs = e.timestamp - first;
+    const past  = i < RP.currentIdx ? 'past' : '';
+    const active= i === RP.currentIdx ? 'active' : '';
+    const bm    = RP.bookmarks.has(i) ? 'bookmarked' : '';
+    const dur   = e.duration_ms != null ? `${e.duration_ms}ms` : '';
+    return `<div class="rp-event-row ${past} ${active}" id="rprow-${i}" onclick="rpSelectEvent(${i})">
+      ${rpDot(e.surface)}
+      <span class="rp-evt-type">${esc(e.event_type)}</span>
+      <span class="rp-evt-time">${fmtRelMs(relMs)}</span>
+      ${dur ? `<span class="rp-evt-dur">${esc(dur)}</span>` : ''}
+      <button class="rp-bookmark-btn ${bm}" title="Bookmark" onclick="rpToggleBookmark(event,${i})">★</button>
+    </div>`;
+  }).join('');
+}
+
+function rpSelectEvent(idx) {
+  RP.currentIdx = idx;
+  rpUpdateScrubber();
+  rpHighlightRow(idx);
+  rpShowDetail(RP.filteredEvents[idx]);
+}
+
+function rpHighlightRow(idx) {
+  document.querySelectorAll('.rp-event-row').forEach((r, i) => {
+    r.classList.toggle('active', i === idx);
+    r.classList.toggle('past', i < idx);
+  });
+  const row = document.getElementById(`rprow-${idx}`);
+  if (row) row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+}
+
+function rpShowDetail(event) {
+  const panel = document.getElementById('rp-detail');
+  if (!panel || !event) return;
+  const surfMeta = { cognitive:'#3fb950', operational:'#d29922', contextual:'#a371f7' };
+  const color    = surfMeta[event.surface] || '#8b949e';
+  panel.innerHTML = `
+    <div class="rp-detail-hdr">
+      <div class="rp-detail-type">${rpDot(event.surface)} ${esc(event.event_type)}</div>
+      <div class="rp-detail-meta">
+        <span style="color:${color}">${esc(event.surface)}</span>
+        ${event.agent_id ? `<span>Agent: ${esc(event.agent_id)}</span>` : ''}
+        ${event.model    ? `<span>Model: ${esc(event.model)}</span>` : ''}
+        ${event.duration_ms != null ? `<span>${event.duration_ms}ms</span>` : ''}
+        <span style="color:#484f58">${new Date(event.timestamp).toISOString()}</span>
+        <span class="badge ${event.status==='success'?'b-ok':event.status==='error'?'b-err':'b-dim'}">${esc(event.status||'—')}</span>
+      </div>
+    </div>
+    <div style="margin-bottom:6px;font-size:10px;color:#484f58">
+      Trace: <code style="font-size:9px">${esc(event.trace_id)}</code>
+      Span: <code style="font-size:9px">${esc(event.span_id)}</code>
+    </div>
+    <div class="rp-detail-data">${esc(JSON.stringify(event.data, null, 2))}</div>
+  `;
+}
+
+function rpUpdateScrubber() {
+  const events = RP.filteredEvents;
+  const n = events.length;
+  const pct = n > 1 ? (RP.currentIdx / (n - 1)) * 100 : 0;
+  const fill  = document.getElementById('rp-fill');
+  const thumb = document.getElementById('rp-thumb');
+  const label = document.getElementById('rp-time-label');
+  if (fill)  fill.style.width  = pct + '%';
+  if (thumb) thumb.style.left  = pct + '%';
+  if (label) {
+    const first = n ? events[0].timestamp : 0;
+    const cur   = n ? events[RP.currentIdx]?.timestamp : 0;
+    label.textContent = `${fmtRelMs(cur - first)} / ${fmtRelMs(n > 1 ? events[n-1].timestamp - first : 0)} · ${RP.currentIdx+1}/${n}`;
+  }
+}
+
+function rpScrubClick(e) {
+  const track = document.getElementById('rp-track');
+  if (!track || !RP.filteredEvents.length) return;
+  const rect = track.getBoundingClientRect();
+  const pct  = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+  const idx  = Math.round(pct * (RP.filteredEvents.length - 1));
+  rpSelectEvent(idx);
+}
+
+// Playback
+function rpTogglePlay() {
+  if (RP.playing) rpStop();
+  else rpPlay();
+}
+
+function rpPlay() {
+  if (!RP.filteredEvents.length) return;
+  if (RP.currentIdx >= RP.filteredEvents.length - 1) RP.currentIdx = 0;
+  RP.playing = true;
+  document.getElementById('rp-play-btn').textContent = '⏸ Pause';
+  document.getElementById('rp-play-btn').classList.add('active');
+  rpStep();
+}
+
+function rpStop() {
+  RP.playing = false;
+  if (RP.playTimer) { clearTimeout(RP.playTimer); RP.playTimer = null; }
+  const btn = document.getElementById('rp-play-btn');
+  if (btn) { btn.textContent = '▶ Play'; btn.classList.remove('active'); }
+}
+
+function rpStep() {
+  if (!RP.playing) return;
+  const events = RP.filteredEvents;
+  if (RP.currentIdx >= events.length - 1) { rpStop(); return; }
+
+  rpSelectEvent(RP.currentIdx);
+  const delay = RP.currentIdx < events.length - 1
+    ? Math.min((events[RP.currentIdx + 1].timestamp - events[RP.currentIdx].timestamp) / RP.playSpeed, 2000)
+    : 500;
+  RP.playTimer = setTimeout(() => {
+    RP.currentIdx++;
+    rpStep();
+  }, Math.max(delay, 50));
+}
+
+function rpSetSpeed(s) {
+  RP.playSpeed = s;
+  // Update button states
+  document.querySelectorAll('.rp-ctrl-btn').forEach(b => {
+    const txt = b.textContent.trim();
+    b.classList.toggle('active', txt === s + '×');
+  });
+}
+
+function rpClosePlayer() {
+  rpStop();
+  RP.selectedSession = null;
+  RP.events = [];
+  RP.filteredEvents = [];
+  const player = document.getElementById('rp-player');
+  if (player) player.classList.remove('open');
+  rpRenderSessionTable();
+}
+
+function rpToggleBookmark(e, idx) {
+  e.stopPropagation();
+  if (RP.bookmarks.has(idx)) RP.bookmarks.delete(idx);
+  else RP.bookmarks.add(idx);
+  const btn = e.currentTarget;
+  btn.classList.toggle('bookmarked', RP.bookmarks.has(idx));
+}
+
+function rpExport(fmt) {
+  if (!RP.selectedSession) return;
+  const sid = RP.selectedSession.id || RP.selectedSession.session_id || '';
+  window.open(`/api/sessions/${encodeURIComponent(sid)}/export?format=${fmt}`, '_blank');
+}
+
+function fmtRelMs(ms) {
+  if (!ms) return '0ms';
+  if (ms < 1000) return ms + 'ms';
+  if (ms < 60000) return (ms/1000).toFixed(2) + 's';
+  return Math.floor(ms/60000) + 'm' + Math.floor((ms%60000)/1000) + 's';
+}
+
+// ── Log Query ─────────────────────────────────────────────────────────────────
+async function lqRun() {
+  const surface = document.getElementById('lq-surface')?.value || '';
+  const type    = document.getElementById('lq-type')?.value    || '';
+  const agent   = document.getElementById('lq-agent')?.value   || '';
+  const search  = document.getElementById('lq-search')?.value  || '';
+  const limit   = document.getElementById('lq-limit')?.value   || 50;
+
+  const params = new URLSearchParams();
+  if (surface) params.set('surface', surface);
+  if (type)    params.set('event_type', type);
+  if (agent)   params.set('agent_id', agent);
+  if (search)  params.set('search', search);
+  params.set('limit', limit);
+
+  const resultEl = document.getElementById('lq-results');
+  const listEl   = document.getElementById('lq-list');
+  if (resultEl) resultEl.textContent = 'Querying…';
+  if (listEl)   listEl.innerHTML = '';
+
+  try {
+    const r = await fetch(`/api/logs/query?${params}`, { headers: { 'Authorization': 'Bearer ' + AUTH_TOKEN } });
+    const d = await r.json();
+    if (!d.ok) {
+      if (resultEl) resultEl.textContent = 'Error: ' + (d.error || 'unknown');
+      return;
+    }
+    if (resultEl) resultEl.textContent = `${d.count} event${d.count===1?'':'s'} found`;
+    if (listEl) {
+      if (!d.events.length) {
+        listEl.innerHTML = '<div class="empty-state"><span class="e-icon">🔍</span>No events match</div>';
+        return;
+      }
+      listEl.innerHTML = d.events.map(e => `
+        <div class="lq-event-row" onclick="rpShowLqDetail(${JSON.stringify(JSON.stringify(e))})">
+          ${rpDot(e.surface)}
+          <div style="flex:1;min-width:0">
+            <span style="font-size:11px;font-weight:600;color:#e6edf3">${esc(e.event_type)}</span>
+            <span style="font-size:10px;color:#484f58;margin-left:6px">${esc(e.surface)}</span>
+            ${e.agent_id ? `<span style="font-size:10px;color:#484f58;margin-left:6px">${esc(e.agent_id)}</span>` : ''}
+          </div>
+          <span style="font-size:10px;color:#484f58;font-variant-numeric:tabular-nums">${new Date(e.timestamp).toLocaleString('en-GB',{hour12:false})}</span>
+          <span class="badge ${e.status==='success'?'b-ok':e.status==='error'?'b-err':'b-dim'}">${esc(e.status||'—')}</span>
+        </div>`).join('');
+    }
+  } catch (err) {
+    if (resultEl) resultEl.textContent = 'Error: ' + err.message;
+  }
+}
+
+function rpShowLqDetail(eventJson) {
+  const e = JSON.parse(eventJson);
+  // Open a small inline modal or just highlight the detail panel
+  // Simple approach: open alert-style detail in the lq-list with a detail block
+  const existing = document.getElementById('lq-detail-panel');
+  if (existing) existing.remove();
+
+  const panel = document.createElement('div');
+  panel.id = 'lq-detail-panel';
+  panel.style.cssText = 'margin-top:10px;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:12px';
+  panel.innerHTML = `
+    <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+      <div style="font-size:12px;font-weight:700;color:#e6edf3">${rpDot(e.surface)} ${esc(e.event_type)}</div>
+      <button onclick="document.getElementById('lq-detail-panel').remove()" style="background:none;border:none;color:#484f58;cursor:pointer;font-size:16px;line-height:1">✕</button>
+    </div>
+    <div style="font-size:10px;color:#484f58;margin-bottom:8px">
+      ${new Date(e.timestamp).toISOString()} · ${esc(e.surface)} · ${e.duration_ms != null ? e.duration_ms+'ms' : '—'}
+    </div>
+    <div class="rp-detail-data">${esc(JSON.stringify(e.data, null, 2))}</div>
+  `;
+  document.getElementById('lq-list').appendChild(panel);
+  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// renderReplayTab() is called via doInitialFetch/renderTab case 'replay' above.
 
 function boot(){tickClock();S.clockInt=setInterval(tickClock,1000);connectCostWs();connectHealthWs();switchTab('health')}
 boot();

@@ -40,7 +40,7 @@
     "default": { "input": 0.30, "output": 1.20, "cacheRead": 0.06, "cacheWrite": 0.10 }
   },
   "websocket": {
-    "rooms": ["cost-events", "health-events", "logs"]
+    "rooms": ["cost-events", "health-events", "logs", "events"]
   },
   "agentHealth": {
     "mode": "alert-only",

@@ -155,6 +155,8 @@ fastify.register(require('./routes/cron'));
 fastify.register(require('./routes/cost'));
 fastify.register(require('./routes/recovery'));
 fastify.register(require('./routes/intervention'));
+fastify.register(require('./routes/replay'));
+fastify.register(require('./routes/logs'));
 
 // ── 404 handler ───────────────────────────────────────────────────────────────
 
@@ -257,6 +259,12 @@ function setupWebSocket(server) {
 
     // Pong handler for keep-alive
     ws.on('ping', () => ws.pong());
+
+    // R2.1.3 — Event ingestion via WebSocket 'events' room
+    if (room === 'events') {
+      const { handleWsMessage } = require('./services/event-ingest');
+      ws.on('message', (raw) => handleWsMessage(ws, raw));
+    }
   });
 }
 
@@ -278,6 +286,14 @@ async function start() {
     const healthMonitor = require('./services/health-monitor');
     healthMonitor.init(broadcast);
     log.info({}, 'Agent health monitor started');
+
+    // R2.1 — Initialise event store + retention pruning
+    const eventStore  = require('./services/event-store');
+    const eventIngest = require('./services/event-ingest');
+    eventStore.init();
+    eventStore.startPruning();
+    eventIngest.setBroadcast(broadcast);
+    log.info({}, 'Event store initialised (WAL mode, pruning active)');
   } catch (err) {
     log.error({ err: err.message }, 'Failed to start server');
     process.exit(1);
@@ -290,12 +306,14 @@ process.on('SIGTERM', async () => {
   log.info({}, 'SIGTERM received, shutting down');
   if (wss) wss.close();
   await fastify.close();
+  try { require('./services/event-store').close(); } catch { /* */ }
   process.exit(0);
 });
 
 process.on('SIGINT', async () => {
   if (wss) wss.close();
   await fastify.close();
+  try { require('./services/event-store').close(); } catch { /* */ }
   process.exit(0);
 });
 
