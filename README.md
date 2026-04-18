@@ -1,230 +1,327 @@
-# Claw Ops Dashboard — Audit & Modernization Review
+# Claw Ops Dashboard — Legacy Audit & Modernization Blueprint
 
-> **Status:** Legacy — Current | **Date:** 2026-04-18 | **Reviewer:** OpenClaw Agent
+> **Status:** Legacy | **Date:** 2026-04-18 | **Files:** 3 source files (~108KB)  
+> **Repo:** `~/projects/ops-dashboard/` | **Live:** `http://192.168.1.201:18790/`  
+> **Reviewed by:** Claude Code (x2 parallel tasks) + Gemini CLI research
+
+---
+
+## Table of Contents
+1. [Project Overview](#1-project-overview)
+2. [Architecture](#2-architecture)
+3. [File Inventory](#3-file-inventory)
+4. [Backend Audit: `dashboard.js`](#4-backend-audit-dashboardjs)
+5. [Frontend Audit: `index.html`](#5-frontend-audit-indexhtml)
+6. [Security Issues](#6-security-issues)
+7. [Performance Analysis](#7-performance-analysis)
+8. [Modernization Roadmap](#8-modernization-roadmap)
+9. [Git Commit Log](#9-git-commit-log)
 
 ---
 
 ## 1. Project Overview
 
-**Name:** Claw Ops Dashboard  
-**Type:** Operational monitoring & control dashboard  
-**Location:** `/Users/openclaw/.openclaw/workspace/tools/ops-dashboard/`  
-**Serving:** `http://192.168.1.201:18790/`  
-**Process:** Node.js HTTP server (launchd/plist-managed)  
-**Files:** 3 source files (~108KB total)
+**What it does:** Monitors OpenClaw/Hermes agent system — health, cron jobs, sessions, model token usage/costs, research pipeline, system metrics (CPU/RAM/disk/network on macOS).
 
-### What It Does
-- Monitors OpenClaw agent system health, cron jobs, sessions, model usage, and costs
-- Polls the OpenClaw CLI (`openclaw status --deep --json`, `openclaw cron list`, etc.)
-- Displays research pipeline status (daily research files, findings)
-- Allows cron job enable/disable/edit/run via HTTP API
-- Shows macOS system metrics (CPU, memory, disk, network, battery)
+**Tabs:** Health | Research | Schedule | System | Sessions | Cost | Logs
 
-### Tabs
-| Tab | Function |
-|-----|----------|
-| Health | OpenClaw status + system metrics |
-| Research | Daily research files + findings JSON |
-| Schedule | Cron job management (list, toggle, edit, run) |
-| System | macOS system metrics (CPU, RAM, disk, network, temp) |
-| Sessions | Recent OpenClaw sessions with token counts |
-| Cost | Model usage costs (MiniMax M2.7 pricing hardcoded) |
-| Logs | Rolling log viewer with severity filters |
+**Stack:**
+- **Backend:** Plain Node.js `http` module (no framework), single `dashboard.js`
+- **Frontend:** Vanilla JS SPA (~1339 lines, all CSS+JS embedded in `index.html`)
+- **Serving:** Node.js on port 18790, launchd/plist-managed on macOS
+- **Data source:** Polls `openclaw` CLI every 30s (`openclaw status --deep --json`, `cron list`, etc.)
+- **Auth:** None (open CORS)
 
 ---
 
 ## 2. Architecture
 
 ```
-Browser → HTTP Polling (30s active, 5min idle)
-           ↓
-   dashboard.js (Node.js HTTP server :18790)
-           ↓
-   openclaw CLI (execSync/spawnSync)
-           ↓
-   openclaw gateway (:18789)
+Browser (HTTP polling 30s)
+    ↓
+dashboard.js  (Node.js HTTP :18790)
+    ↓ shell exec (execSync/spawnSync)
+openclaw CLI  →  openclaw gateway (:18789)
 ```
 
-### Key Design Decisions (Original)
-- **No WebSockets** — HTTP polling every 30 seconds
-- **CLI exec pattern** — spawns `openclaw status --deep --json`, parses JSON output
-- **No framework** — plain Node.js `http` module, single file server
-- **Embedded frontend** — all HTML/CSS/JS in `canvas/index.html` served as static file
-- **Hardcoded token prices** — MiniMax M2.7 only
-- **macOS-specific** — system metrics use `osx-cpu-temp`, `netstat -ib`, `pmset`, etc.
-
-### Frontend Architecture
-- Vanilla JS (no React/Vue/Angular)
-- Template literals for DOM rendering
-- Tab-based SPA with skeleton loading states
-- Sparkline history for CPU/memory (last 20 data points)
-- Responsive: mobile bottom nav + desktop top tabs
+**Key design decisions (legacy):**
+- HTTP polling (no WebSockets)
+- CLI exec pattern (parse JSON stdout)
+- No framework — raw `http.createServer`
+- Single HTML file with embedded CSS/JS
+- macOS-only system metrics
 
 ---
 
 ## 3. File Inventory
 
-| File | Lines | Purpose |
-|------|-------|---------|
-| `dashboard.js` | 558 | Node.js HTTP server — all backend logic |
-| `index.html` | ~1339 | Single-file SPA — all frontend (CSS+JS embedded) |
-| `com.ai.openclaw.ops-dashboard.plist` | — | macOS launchd plist for auto-start |
-
-### `dashboard.js` Breakdown
-
-| Section | Lines | Description |
-|---------|-------|-------------|
-| CLI wrappers | 22–37 | `exec()` and `jexec()` — shell exec with timeout/parse |
-| Safe spawn | 39–67 | `spawnCron()` with argument validation |
-| Data fetchers | 87–104 | Wrappers for `openclaw status`, `cron list`, `health`, `logs` |
-| System metrics | 108–226 | macOS-only sysmetrics: CPU, RAM, disk, net, load, uptime, temp, battery |
-| Sysmetrics history | 248–249 | In-memory sparkline history (max 20 points) |
-| Model pricing | 254–267 | Hardcoded MiniMax M2.7 token prices |
-| Model usage | 269–300 | Session aggregation by model, cost calculation |
-| Research pipeline | 304–382 | File-system reads: daily-research*.md, *-findings.json |
-| HTTP route handler | 386–552 | All `/api/*` endpoints + static HTML serving |
-
-### `index.html` Breakdown
-
-| Section | Lines | Description |
-|---------|-------|-------------|
-| CSS | ~400 | Full dark theme (GitHub dark palette), responsive, animations |
-| HTML | ~200 | Header, tab bars, 7 tab content areas |
-| JS: State | — | `S` object: data cache, clock, refresh intervals |
-| JS: Fmt | — | `fmt`: bytes, num, cost, ts, age, countdown formatters |
-| JS: Sparkline | — | `sparkline()`: SVG sparkline renderer |
-| JS: Fetch | — | `fetchData()`: polls all `/api/*` endpoints on 30s interval |
-| JS: Tab renderers | — | `renderHealth()`, `renderResearch()`, `renderSchedule()`, etc. |
-| JS: Schedule CRUD | — | `saveCron()`, `deleteCron()` — modals + POST to `/api/cron/*` |
-| JS: Boot | — | `boot()`: clock start + initial tab switch |
+| File | Lines | Size | Purpose |
+|------|-------|------|---------|
+| `dashboard.js` | 558 | 22KB | Node.js HTTP server — all backend |
+| `index.html` | ~1339 | 84KB | Single-file SPA — all frontend |
+| `com.ai.openclaw.ops-dashboard.plist` | — | 1KB | macOS launchd auto-start |
+| `README.md` | — | this | Audit document |
 
 ---
 
-## 4. Findings & Issues
+## 4. Backend Audit: `dashboard.js`
 
-### 🔴 Critical
+### Code Quality: ⚠️ MEDIUM-LOW
 
-1. **Hardcoded MiniMax M2.7 token pricing** — `MODEL_PRICES` only supports one model. Wrong for multi-model setups (Claude, Gemini, local Ollama, etc.)
+**Good patterns:**
+- Argument arrays for `spawnCron()` (no shell injection in cron calls) — L47–61
+- `validateCronId()` with regex whitelist — L41–45
+- Request body size limit — L72
+- JSON error handling in `jexec()` — L33–37
 
-2. **CLI token embedded in source** — `TOKEN='52700a...1ce6'` is a secret baked into source code. Not used in any route, but indicates credential handling was ad-hoc.
+**Problematic patterns:**
 
-3. **CORS wide open** — `Access-Control-Allow-Origin: *` on all responses. If dashboard were exposed beyond LAN, would be a security issue.
+| # | Issue | Lines | Severity |
+|---|-------|-------|----------|
+| B1 | Hardcoded TOKEN defined but never used — all routes unauthenticated | L18 | 🔴 CRITICAL |
+| B2 | Wildcard CORS (`*`) — any origin can trigger cron mutations | L391–394 | 🔴 CRITICAL |
+| B3 | Shell injection in `getLogs()` — `limit` interpolated into exec string | L100 | 🔴 CRITICAL |
+| B4 | Unauthenticated cron toggle/edit — no ownership check | L453–534 | 🔴 CRITICAL |
+| B5 | Arbitrary file read via grep — `exec()` on hardcoded path every API call | L377 | 🔴 CRITICAL |
+| B6 | `exec()` swallows exit codes — returns error string, passes to `JSON.parse()` | L23–31 | 🟠 HIGH |
+| B7 | Detached spawn with no exit tracking — caller gets `dispatched: true` regardless | L474 | 🟠 HIGH |
+| B8 | No request timeouts — slow client attack possible | L69–76 | 🟠 HIGH |
+| B9 | `sysHistory` race condition — non-atomic push-then-shift | L216–222 | 🟡 MEDIUM |
+| B10 | macOS-only hardcoded paths — `/opt/homebrew/...`, `/Users/openclaw/...` | L80, 83–84, 14, 305 | 🟡 MEDIUM |
+| B11 | Hardcoded MiniMax M2.7 token prices only — no multi-model support | L254–258 | 🟡 MEDIUM |
+| B12 | `description` passed as CLI arg without sanitization | L510 | 🟡 MEDIUM |
+| B13 | `/tmp/claw_sysmetrics.js` written once at startup — silent failure possible | L245 | 🟡 MEDIUM |
+| B14 | No request logging / audit trail | — | 🟢 LOW |
+| B15 | `OPENCLAW_CLI` path not validated | L49 | 🟢 LOW |
 
-4. **`execSync` with shell strings** — `jexec()` calls `execSync(cmd)` with constructed shell strings. Potential injection if any CLI argument were user-derived (currently server-side only, but fragile pattern).
-
-### 🟠 Medium
-
-5. **No authentication** — Dashboard has no auth. Anyone who can reach `:18790` can trigger cron jobs, toggle schedules.
-
-6. **Polling inefficiency** — 7 separate fetch calls per 30s cycle. Each spawns a separate `execSync` to `openclaw` CLI. At 30s intervals = ~20k execSync calls/hour.
-
-7. **No WebSocket/realtime** — 30s polling lag for critical alerts (cron failures, health degradation).
-
-8. **In-memory state only** — `sysHistory` (sparkline data) lives in process memory. Restarts lose history. No persistence.
-
-9. **macOS-specific metrics** — `osx-cpu-temp`, `netstat -ib`, `pmset` are macOS-only. Not portable to Linux/cloud agents.
-
-10. **Research pipeline reads filesystem directly** — Assumes `~/.openclaw/workspace/research/` layout. No error handling if directory doesn't exist.
-
-### 🟡 Low
-
-11. **No test suite** — Zero tests for `dashboard.js` or `index.html`.
-
-12. **No logging** — Server logs to stdout only (launchd redirects to `/tmp/openclaw/ops-dashboard.log`). No structured logging.
-
-13. **HTML file too large** — 84KB single file is hard to navigate. Should be split: CSS file, JS file, HTML file.
-
-14. **Stale socket handling** — No cleanup of idle connections. `server.listen` with no `server.close()` path.
-
-15. **`spawnProcess` for cron run uses detached:false** — Fire-and-forget spawns process but doesn't `unref()`. Process stays in process table until completion.
-
----
-
-## 5. Recommendations for Modernization
-
-### Phase 1: Quick Wins (1–2 days)
-
-1. **Split `index.html`** — Extract CSS to `styles.css`, JS to `app.js`. Enables caching, easier editing.
-2. **Add `.env` config** — Move hardcoded values (`PORT`, `REFRESH_MS`, `MODEL_PRICES`) to environment variables or a `config.json`.
-3. **Add basic auth** — Simple `Authorization: Bearer <token>` header check on all API routes.
-4. **Add structured logging** — Replace `console.log/error` with `pino` or `winston`. Ship JSON logs.
-
-### Phase 2: Multi-Model Support (2–3 days)
-
-5. **Dynamic model pricing** — Read prices from `~/.openclaw/config.yaml` or `openclaw models` CLI output. Support Claude, Gemini, Ollama, etc.
-6. **Model registry** — Fetch available models from `openclaw models --json` and display per-model costs.
-
-### Phase 3: Realtime Architecture (3–5 days)
-
-7. **WebSocket upgrade** — Replace polling with `ws` WebSocket. Server pushes updates on state change (cron event, session start/end, health alert).
-8. **Event-driven updates** — OpenClaw gateway emits events; dashboard subscribes. Eliminates wasteful 30s polling.
-
-### Phase 4: Portability & Production (3–5 days)
-
-9. **Linux/Unix metrics** — Abstract system metrics behind platform detection. Use `os` module + platform-specific scripts for Linux (e.g., `/proc/stat`, `free`, `df`).
-10. **Containerize** — Add `Dockerfile` + `docker-compose.yml`. Run as container on any host.
-11. **Prometheus export** — Add `/metrics` endpoint in Prometheus format. Enables Grafana dashboards.
-12. **Health check endpoint** — `/health` already exists but should return more detail (CLI reachable, disk space, memory pressure).
-
-### Phase 5: Hermes/OpenClaw Integration (2–3 days)
-
-13. **Expose as Hermes tool** — Register dashboard endpoints as Hermes tools (`claw_ops_health`, `claw_ops_cron_*`) so Hermes agents can query it.
-14. **Git-aware cron display** — Show git branch, last commit, uncommitted changes for each project's cron job.
-15. **LLM cost aggregation** — Hermes logs token usage to session store. Dashboard should read from session DB directly instead of `openclaw status`.
-
----
-
-## 6. Suggested New Architecture
+### CLI Exec Pattern Analysis
 
 ```
-OpenClaw/Hermes Gateway (:18789)
-         ↓ (event emission)
-  ops-dashboard-backend/
-    ├── server.js          # Express/Fastify + WebSocket
-    ├── routes/
-    │   ├── health.js      # GET /api/health
-    │   ├── cron.js        # CRUD /api/cron/*
-    │   ├── sessions.js     # GET /api/sessions (from session DB)
-    │   ├── cost.js         # GET /api/cost (aggregated)
-    │   └── research.js     # GET /api/research
-    ├── services/
-    │   ├── openclaw.js     # CLI wrapper (spawn with args array)
-    │   ├── sysmetrics.js   # Platform-abstracted metrics
-    │   └── sessiondb.js    # SQLite session store reader
-    └── config.yaml
+getStatus()     → execSync("openclaw status --deep --json")
+getCronList()   → execSync("openclaw cron list --all --json")
+getHealth()     → execSync("openclaw health --json")
+getLogs(limit)  → execSync("openclaw logs --json --limit ${limit}")  ← ⚠️ INJECTION
+```
 
-  ops-dashboard-frontend/  (React/Vite app)
-    ├── src/
-    │   ├── App.jsx
-    │   ├── pages/
-    │   │   ├── Health.tsx
-    │   │   ├── Schedule.tsx
-    │   │   ├── System.tsx
-    │   │   ├── Sessions.tsx
-    │   │   ├── Cost.tsx
-    │   │   └── Logs.tsx
-    │   ├── hooks/
-    │   │   ├── useWebSocket.ts
-    │   │   └── useMetrics.ts
-    │   └── lib/
-    │       ├── api.ts
-    │       └── formatters.ts
-    └── package.json
+**Problem:** `execSync(cmd)` with string interpolation. While `limit` goes through `parseInt`, the pattern is fragile. Should use `spawn` with array args throughout.
+
+### Cron API Surface
+
+| Endpoint | Method | Auth | Safety |
+|----------|--------|------|--------|
+| `/api/cron/toggle` | POST | ❌ None | ⚠️ format-only validation |
+| `/api/cron/edit` | POST | ❌ None | ⚠️ description not sanitized |
+| `/api/cron/run` | POST | ❌ None | ⚠️ detached spawn, no tracking |
+| `/api/cron/runs` | GET | ❌ None | ✅ args in array |
+
+### System Metrics (macOS-only)
+
+Uses: `os.cpus()`, `os.totalmem()`, `df -k /`, `netstat -ib`, `sysctl vm.loadavg`, `os.uptime()`, `ps -ax`, `osx-cpu-temp`, `pmset -g batt`, `sw_vers`
+
+**Not portable to:** Linux, Docker containers, cloud VMs.
+
+---
+
+## 5. Frontend Audit: `index.html`
+
+### Code Quality: ⚠️ MEDIUM
+
+**Good patterns:**
+- `buildJobRow()` uses `document.createElement` for user data — prevents innerHTML XSS — L1013–1026
+- `esc()` helper defined at L836
+- Lazy loading via `S.loaded[tab]` — L581
+- Visibility-based polling (30s active ↔ 5m idle) — L565
+- iOS safe-area support for mobile nav
+- Skeleton loading states
+- `S.timers` object for interval management
+
+**Problematic patterns:**
+
+| # | Issue | Lines | Severity |
+|---|-------|-------|----------|
+| F1 | `esc()` defined but NEVER USED — all render functions interpolate raw user data | L836, 1070, 813, 1205, 1297 | 🔴 CRITICAL |
+| F2 | Memory leak — tab timers not cleared on switch, only one cleared | L583 | 🔴 CRITICAL |
+| F3 | Duplicate sysmetrics fetch — fetched twice per 30s cycle | L608, L627 | 🟠 HIGH |
+| F4 | Race condition — `deriveIssues()` runs before `rd.research` is set | L614, 618–619 | 🟠 HIGH |
+| F5 | Fragile DOM assumption — `.grid` selector for cron job insertion | L1041 | 🟠 HIGH |
+| F6 | `fmt.num` truncates ≥1K to integer — 1500→`1K`, 9999→`10K` | L482 | 🟡 MEDIUM |
+| F7 | No request deduplication — concurrent refreshes possible | — | 🟡 MEDIUM |
+| F8 | No ARIA live regions for toast announcements | L839–848 | 🟡 MEDIUM |
+| F9 | `accent-color` on checkbox — patchy browser support | L271 | 🟡 MEDIUM |
+| F10 | `sessionId` not coerced to string before `.slice()` | L1205, L1253 | 🟡 MEDIUM |
+| F11 | `fmt.ts` returns `'Invalid Date'` string instead of `'—'` on invalid dates | L487 | 🟢 LOW |
+
+### XSS Attack Vector (Critical — F1)
+
+Cron job names, log messages, and research labels are rendered via template literals without `esc()`:
+
+```javascript
+// renderSchedule() L1070
+`<td><strong style="color:#e6edf3">${f.lines} ln</strong></td>`
+// should be:
+`<td><strong style="color:#e6edf3">${esc(f.lines)}</strong></td>`
+```
+
+If a cron job has name `<script>alert('xss')</script>`, it executes in the browser.
+
+---
+
+## 6. Security Issues
+
+### Summary
+
+| Severity | Count | Description |
+|----------|-------|-------------|
+| 🔴 CRITICAL | 9 | Auth bypass, XSS, shell injection, unauthenticated cron mutations |
+| 🟠 HIGH | 7 | Race conditions, memory leaks, duplicate fetches, swallowed errors |
+| 🟡 MEDIUM | 10 | Fragile DOM, missing ARIA, no request dedup, hardcoded paths |
+| 🟢 LOW | 6 | Logging, invalid date handling, minor UX issues |
+
+### Top 5 Immediate Risks
+
+1. **Unauthenticated cron mutations** — Anyone on the network can enable/disable/edit/run cron jobs
+2. **XSS via unescaped user data** — `esc()` helper exists but unused everywhere
+3. **Shell injection in `getLogs()`** — `limit` param interpolated into exec string
+4. **CORS `*`** — Any origin can make requests; combined with unauth = full control
+5. **Hardcoded TOKEN unused** — Auth infrastructure exists but bypassed
+
+---
+
+## 7. Performance Analysis
+
+### Polling Efficiency
+
+**Per 30-second cycle:**
+- 7 fetch calls: `/api/data`, `/api/logs`, `/api/sysmetrics`, `/api/modelusage`, `/api/research`, + cron runs/history on demand
+- Each spawns `execSync` to `openclaw` CLI → full process spawn overhead
+- ~20,000+ execSync calls per hour
+
+**Duplicate fetches:** `sysmetrics` fetched twice per cycle (in `fetchData` and `fetchSysMetrics`)
+
+### Memory
+
+- `sysHistory`: max 20 data points, 4 arrays → negligible
+- `S.data`: holds latest response from each endpoint
+- Tab timers leak (not cleared on tab switch) → grows with tab switching
+
+### Latency
+
+- CLI exec timeout: 15s (generous)
+- System metrics script: up to 15s if commands block
+- No circuit breakers — one slow command blocks the response
+
+---
+
+## 8. Modernization Roadmap
+
+### Phase 1: Quick Security Fixes (1 day)
+
+| Change | Effort | Impact |
+|--------|--------|--------|
+| Apply `esc()` to all user data interpolation | 30min | Fix XSS |
+| Replace CORS `*` with same-origin restriction | 5min | Close auth bypass |
+| Add `Authorization: Bearer <token>` check to all API routes | 1hr | Close cron mutations |
+| Fix `getLogs()` to use array-form spawn | 15min | Close shell injection |
+| Clear all tab timers on switch | 15min | Fix memory leak |
+
+### Phase 2: Architecture Upgrade (1 week)
+
+**Backend:**
+- Migrate from `http` module to **Express** or **Fastify**
+- Add **WebSocket** (via `ws`) for realtime updates — eliminate 30s polling lag
+- Add **Prometheus `/metrics`** endpoint
+- Move cost calculation to backend (remove from frontend)
+- Abstract system metrics behind platform detection (Linux/macOS)
+- Add structured logging (pino)
+- Read session DB directly (SQLite) instead of CLI exec
+
+**Frontend:**
+- Split `index.html` → `app.js` + `styles.css` + `index.html`
+- Migrate from vanilla JS to **React** (reuse from portfolio-analytics frontend)
+- Add `aria-live` regions for toasts/logs
+- Add request deduplication
+- Add `fmt.num` decimal precision for K values
+
+### Phase 3: Multi-Model Support (2 days)
+
+- Dynamic model registry from `openclaw models --json`
+- Per-model pricing from config file or CLI
+- Support Claude, Gemini, Ollama, and local models
+- Per-session model attribution
+
+### Phase 4: Portability (2 days)
+
+- Add `Dockerfile` + `docker-compose.yml`
+- Abstract macOS-specific metrics to Linux equivalents
+- Environment-based configuration (`.env` file)
+
+### Phase 5: Hermes/OpenClaw Integration (3 days)
+
+- Expose dashboard as Hermes tools (`claw_ops_health`, `claw_ops_cron_*`)
+- Git-aware cron display (branch, last commit, uncommitted changes)
+- Read token usage from session SQLite DB directly
+- Event-driven updates from gateway → dashboard
+
+---
+
+## 9. Git Commit Log
+
+```
+02c5c9d Initial commit: Claw Ops Dashboard legacy files (dashboard.js, index.html, plist)
 ```
 
 ---
 
-## 7. Git History
+## Appendices
 
-All files are currently in a new repo at `~/projects/ops-dashboard/`. No prior git history exists.
+### A. Model Pricing (Hardcoded — L254–258)
+
+```javascript
+const MODEL_PRICES = {
+  'MiniMax-M2.7':     { input: 0.30, output: 1.20, cacheRead: 0.06, cacheWrite: 0.10 },
+  'minimax/MiniMax-M2.7': { input: 0.30, output: 1.20, cacheRead: 0.06, cacheWrite: 0.10 },
+  'default':           { input: 0.30, output: 1.20, cacheRead: 0.06, cacheWrite: 0.10 },
+};
+```
+
+### B. System Metrics Commands (macOS-only)
 
 ```bash
-cd ~/projects/ops-dashboard
-git add .
-git commit -m "Initial commit: Claw Ops Dashboard legacy files"
-git branch -M main
+# CPU idle
+os.cpus() → Object.values(c.times).reduce → 100 - idle%
+
+# Memory
+os.totalmem() - os.freemem()
+
+# Disk
+df -k / | tail -1
+
+# Network I/O
+netstat -ib | grep ^en0
+
+# Load average
+sysctl -n vm.loadavg
+
+# Uptime
+os.uptime()
+
+# CPU temp
+osx-cpu-temp -c
+
+# Battery
+pmset -g batt | grep -E "[0-9]+%"
 ```
+
+### C. Gemini CLI Research Notes
+
+> **SSE over WebSockets:** For Logs/Sessions tabs, implement Server-Sent Events (SSE). Unidirectional (server→browser), easier to add to existing Node.js HTTP server, ideal for token streaming and live logs.
+>
+> **Cost proxy pattern:** Move all `MODEL_PRICES` to backend. Frontend should receive pre-calculated costs only. Consider LiteLLM/Bifrost as middleware for multi-provider normalization.
+>
+> **Prometheus hybrid:** Keep custom UI for orchestration (cron management, live traces). Export aggregated metrics via `/metrics` endpoint for Grafana long-term storage.
+>
+> **Security minimum:** Header-based auth + origin lockdown. `spawn` with argument arrays throughout (not exec strings).
 
 ---
 
-*Generated: 2026-04-18 | OpenClaw Agent Audit*
+*Generated: 2026-04-18 | Claude Code (x2 parallel) + Gemini CLI research | OpenClaw Agent*
