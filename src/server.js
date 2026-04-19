@@ -97,7 +97,7 @@ fastify.options('/*', async (req, reply) => {
 
 fastify.addHook('onRequest', async (req, reply) => {
   if (!checkRateLimit(req.ip)) {
-    reply.code(429).send({ ok: false, error: 'Rate limit exceeded', code: 'RATE_LIMITED' });
+    return reply.code(429).send({ ok: false, error: 'Rate limit exceeded', code: 'RATE_LIMITED' });
   }
 });
 
@@ -110,20 +110,21 @@ function checkAuth(req) {
 }
 
 fastify.addHook('preHandler', async (req, reply) => {
-  // Skip auth for: /, /index.html, /health, OPTIONS, WebSocket upgrade, and skip-auth routes
   const skip =
     req.routeOptions?.config?.skipAuth ||
     req.url === '/' ||
     req.url === '/index.html' ||
     req.url === '/health' ||
-    req.url.startsWith('/health?') ||
+    req.url.startsWith('/health') ||
     req.method === 'OPTIONS' ||
     req.headers.upgrade === 'websocket';
+
+
 
   if (skip) return;
 
   if (!checkAuth(req)) {
-    reply.code(401).send({ ok: false, error: 'Unauthorized', code: 'AUTH_REQUIRED' });
+    return reply.code(401).send({ ok: false, error: 'Unauthorized', code: 'AUTH_REQUIRED' });
   }
 });
 
@@ -170,6 +171,8 @@ fastify.register(require('./routes/annotations'));
 fastify.register(require('./routes/model-analytics'));
 fastify.register(require('./routes/grafana'));
 fastify.register(require('./routes/agent-analytics'));
+fastify.register(require('./routes/cron-dag'));
+fastify.register(require('./routes/git'));
 
 // ── 404 handler ───────────────────────────────────────────────────────────────
 

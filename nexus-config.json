@@ -1,12 +1,12 @@
 {
-  "port": 18791,
+  "port": 18792,
   "host": "0.0.0.0",
   "auth": {
     "token": "52700a12570c54a80cb138b0d2322deb7238875879541ce6"
   },
   "budgets": {
-    "dailyUsd": 1.00,
-    "monthlyUsd": 30.00
+    "dailyUsd": 1.0,
+    "monthlyUsd": 30.0
   },
   "thresholds": {
     "stuckMinutes": 5,
@@ -32,15 +32,50 @@
     "sessionDb": "/Users/openclaw/.openclaw/data/sessions.db"
   },
   "modelPrices": {
-    "MiniMax-M2.7": { "input": 0.30, "output": 1.20, "cacheRead": 0.06, "cacheWrite": 0.10 },
-    "minimax/MiniMax-M2.7": { "input": 0.30, "output": 1.20, "cacheRead": 0.06, "cacheWrite": 0.10 },
-    "claude-opus-4-6": { "input": 15.00, "output": 75.00, "cacheRead": 1.50, "cacheWrite": 18.75 },
-    "claude-sonnet-4-6": { "input": 3.00, "output": 15.00, "cacheRead": 0.30, "cacheWrite": 3.75 },
-    "claude-haiku-4-5-20251001": { "input": 0.80, "output": 4.00, "cacheRead": 0.08, "cacheWrite": 1.00 },
-    "default": { "input": 0.30, "output": 1.20, "cacheRead": 0.06, "cacheWrite": 0.10 }
+    "MiniMax-M2.7": {
+      "input": 0.3,
+      "output": 1.2,
+      "cacheRead": 0.06,
+      "cacheWrite": 0.1
+    },
+    "minimax/MiniMax-M2.7": {
+      "input": 0.3,
+      "output": 1.2,
+      "cacheRead": 0.06,
+      "cacheWrite": 0.1
+    },
+    "claude-opus-4-6": {
+      "input": 15.0,
+      "output": 75.0,
+      "cacheRead": 1.5,
+      "cacheWrite": 18.75
+    },
+    "claude-sonnet-4-6": {
+      "input": 3.0,
+      "output": 15.0,
+      "cacheRead": 0.3,
+      "cacheWrite": 3.75
+    },
+    "claude-haiku-4-5-20251001": {
+      "input": 0.8,
+      "output": 4.0,
+      "cacheRead": 0.08,
+      "cacheWrite": 1.0
+    },
+    "default": {
+      "input": 0.3,
+      "output": 1.2,
+      "cacheRead": 0.06,
+      "cacheWrite": 0.1
+    }
   },
   "websocket": {
-    "rooms": ["cost-events", "health-events", "logs", "events"]
+    "rooms": [
+      "cost-events",
+      "health-events",
+      "logs",
+      "events"
+    ]
   },
   "agentHealth": {
     "mode": "alert-only",

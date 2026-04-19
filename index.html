@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>🦾 Claw Ops</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
 <style>
 /* ── DARK MODE VARIABLES ─────────────────────────────────── */
 :root{
@@ -821,6 +822,14 @@ select.form-ctrl option{background:#161b22}
     <span class="tab-badge" id="dtab-intelligence">—</span>
     <span class="dot red" id="dtab-intelligence-dot"></span>
   </button>
+  <button class="dtab" data-tab="cron-dag" onclick="switchTab('cron-dag')" role="tab" aria-selected="false" aria-controls="tab-cron-dag" id="dtab-btn-cron-dag" tabindex="-1">
+    🕸️<span class="tab-label"> DAG</span>
+    <span class="tab-badge" id="dtab-cron-dag">—</span>
+  </button>
+  <button class="dtab" data-tab="git" onclick="switchTab('git')" role="tab" aria-selected="false" aria-controls="tab-git" id="dtab-btn-git" tabindex="-1">
+    🌿<span class="tab-label"> Git</span>
+    <span class="tab-badge" id="dtab-git">—</span>
+  </button>
 </div>
 
 <div class="wrap">
@@ -839,6 +848,8 @@ select.form-ctrl option{background:#161b22}
   <div id="tab-skills"        class="tab-content" role="tabpanel" aria-labelledby="dtab-btn-skills"></div>
   <div id="tab-orchestration" class="tab-content" role="tabpanel" aria-labelledby="dtab-btn-orchestration"></div>
   <div id="tab-intelligence" class="tab-content" role="tabpanel" aria-labelledby="dtab-btn-intelligence"></div>
+  <div id="tab-cron-dag"    class="tab-content" role="tabpanel" aria-labelledby="dtab-btn-cron-dag"></div>
+  <div id="tab-git"         class="tab-content" role="tabpanel" aria-labelledby="dtab-btn-git"></div>
 </div>
 
 <!-- Mobile nav -->
@@ -902,6 +913,14 @@ select.form-ctrl option{background:#161b22}
   <button class="mtab" data-tab="intelligence" onclick="switchTab('intelligence')" aria-label="Intelligence">
     <span class="m-icon">📊</span><span class="m-label">Intel</span>
     <span class="m-badge" id="mtab-intelligence">—</span>
+  </button>
+  <button class="mtab" data-tab="cron-dag" onclick="switchTab('cron-dag')" aria-label="DAG">
+    <span class="m-icon">🕸️</span><span class="m-label">DAG</span>
+    <span class="m-badge" id="mtab-cron-dag">—</span>
+  </button>
+  <button class="mtab" data-tab="git" onclick="switchTab('git')" aria-label="Git">
+    <span class="m-icon">🌿</span><span class="m-label">Git</span>
+    <span class="m-badge" id="mtab-git">—</span>
   </button>
 </div>
 
@@ -1271,6 +1290,12 @@ function doInitialFetch(tab){
       break;
     case'intelligence':
       if(!S.data.intelligence) fetchIntelligence(); else renderIntelligence();
+      break;
+    case'cron-dag':
+      fetchCronDag();
+      break;
+    case'git':
+      fetchGit();
       break;
   }
 }
@@ -2185,6 +2210,8 @@ function renderTab(tab){
     case'prompts':renderPrompts();break;
     case'skills':renderSkills();break;
     case'orchestration':renderOrchestration();break;
+    case'cron-dag':renderCronDag();break;
+    case'git':renderGit();break;
   }
 }
 
@@ -4031,6 +4058,379 @@ function dismissRec(title,btn){
   const remaining=card?card.querySelectorAll('.rec-card:not(.dismissed)').length:0;
   const head=document.querySelector('#tab-intelligence .card-head .badge');
   if(head)head.textContent=remaining;
+}
+
+// ── CRON DAG TAB ──────────────────────────────────────────────────────────────
+const DAG = { nodes: [], edges: [], status: {}, timeline: [], hasCycles: false, cycles: [], busy: false };
+
+async function fetchCronDag() {
+  DAG.busy = true;
+  try {
+    const [r1, r2, r3] = await Promise.all([
+      fetch('/api/cron/dag',          { headers: { 'Authorization': 'Bearer ' + AUTH_TOKEN } }),
+      fetch('/api/cron/dag/status',   { headers: { 'Authorization': 'Bearer ' + AUTH_TOKEN } }),
+      fetch('/api/cron/dag/timeline', { headers: { 'Authorization': 'Bearer ' + AUTH_TOKEN } }),
+    ]);
+    if (r1.ok) { const d = await r1.json(); DAG.nodes = d.nodes || []; DAG.edges = d.edges || []; DAG.hasCycles = d.hasCycles; DAG.cycles = d.cycles || []; }
+    if (r2.ok) { const d = await r2.json(); DAG.status = d.status || {}; DAG.failed = d.failed || 0; DAG.blocked = d.blocked || 0; }
+    if (r3.ok) { const d = await r3.json(); DAG.timeline = d.timeline || []; }
+  } catch (e) { /* ignore */ }
+  DAG.busy = false;
+  if (S.current === 'cron-dag') renderCronDag();
+  setBadge('cron-dag', DAG.nodes.length || '—');
+}
+
+function dagNodeColor(id) {
+  const st = DAG.status[id] || 'unknown';
+  if (st === 'failed' || st === 'error')    return '#f85149';
+  if (st === 'running')                     return '#d29922';
+  if (st === 'blocked')                     return '#484f58';
+  if (st === 'disabled')                    return '#30363d';
+  if (st === 'ok' || st === 'success')      return '#3fb950';
+  return '#58a6ff';
+}
+
+function renderCronDag() {
+  const el = document.getElementById('tab-cron-dag'); if (!el) return;
+  const nodes = DAG.nodes;
+  const edges = DAG.edges;
+
+  // ── Cycle warning ──
+  const cycleWarn = DAG.hasCycles
+    ? `<div class="scard s-err" style="margin-bottom:12px;padding:10px 13px">
+        <span class="v-err">⚠ Circular dependencies detected:</span>
+        <span style="font-size:10px;color:#8b949e;margin-left:6px">${DAG.cycles.map(c=>c.join('→')).join(' | ')}</span>
+       </div>`
+    : '';
+
+  // ── Stats row ──
+  const statsHtml = `
+    <div class="grid" style="margin-bottom:12px">
+      <div class="scard"><div class="sc-label">Jobs</div><div class="sc-val v-neutral">${nodes.length}</div></div>
+      <div class="scard"><div class="sc-label">Edges</div><div class="sc-val v-neutral">${edges.length}</div></div>
+      <div class="scard ${DAG.failed?'s-err':'s-ok'}"><div class="sc-label">Failed</div><div class="sc-val ${DAG.failed?'v-err':'v-ok'}">${DAG.failed||0}</div></div>
+      <div class="scard ${DAG.blocked?'s-warn':''}"><div class="sc-label">Blocked</div><div class="sc-val ${DAG.blocked?'v-warn':'v-dim'}">${DAG.blocked||0}</div></div>
+    </div>`;
+
+  // ── Timeline ──
+  const tlRows = DAG.timeline.length
+    ? DAG.timeline.slice(0, 15).map((t, i) => {
+        const st   = DAG.status[t.id] || 'ok';
+        const cls  = st === 'failed' || st === 'error' ? 'v-err' : st === 'blocked' ? 'v-dim' : 'v-ok';
+        const deps = t.deps.length ? `<span class="dim" style="font-size:9px">after: ${esc(t.deps.join(', '))}</span>` : '';
+        return `<tr>
+          <td class="dim" style="font-variant-numeric:tabular-nums">${i + 1}</td>
+          <td><code>${esc(t.id)}</code></td>
+          <td class="${cls}">${esc(st)}</td>
+          <td style="font-size:10px">${t.nextRun ? new Date(t.nextRun).toLocaleTimeString() : '—'}</td>
+          <td>${deps}</td>
+        </tr>`;
+      }).join('')
+    : `<tr><td colspan="5" style="color:#484f58;text-align:center;padding:16px">No jobs in next 24h window</td></tr>`;
+
+  el.innerHTML = `
+    <div class="last-updated">Jobs: ${nodes.length} · Edges: ${edges.length} · ${DAG.hasCycles ? '⚠ Cycles detected' : 'No cycles'}</div>
+    ${cycleWarn}
+    ${statsHtml}
+
+    <!-- D3 force graph -->
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-head">
+        Dependency Graph
+        <span style="font-size:9px;color:#484f58;font-weight:400">green=ok · yellow=running · red=failed · gray=blocked</span>
+      </div>
+      <div class="card-body" style="padding:0">
+        <svg id="dag-svg" style="width:100%;min-height:320px;background:#0d1117;border-radius:0 0 8px 8px;display:block"></svg>
+      </div>
+    </div>
+
+    <!-- 24h Timeline -->
+    <div class="card">
+      <div class="card-head">24h Execution Timeline <span class="badge b-dim">${DAG.timeline.length}</span></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Job</th><th>Status</th><th>Next Run</th><th>Dependencies</th></tr></thead>
+          <tbody>${tlRows}</tbody>
+        </table>
+      </div>
+    </div>`;
+
+  // ── D3 force-directed graph ──
+  if (typeof d3 !== 'undefined' && nodes.length > 0) {
+    renderDagGraph(nodes, edges);
+  }
+}
+
+function renderDagGraph(nodes, edges) {
+  const svgEl = document.getElementById('dag-svg');
+  if (!svgEl) return;
+  const W = svgEl.parentElement.clientWidth || 600;
+  const H = Math.max(320, Math.min(500, nodes.length * 50));
+  svgEl.setAttribute('height', H);
+
+  d3.select('#dag-svg').selectAll('*').remove();
+
+  const svg = d3.select('#dag-svg')
+    .attr('viewBox', `0 0 ${W} ${H}`)
+    .attr('preserveAspectRatio', 'xMidYMid meet');
+
+  // Arrow marker
+  svg.append('defs').append('marker')
+    .attr('id', 'arrowhead')
+    .attr('viewBox', '-0 -5 10 10')
+    .attr('refX', 20)
+    .attr('refY', 0)
+    .attr('orient', 'auto')
+    .attr('markerWidth', 8)
+    .attr('markerHeight', 8)
+    .append('path')
+    .attr('d', 'M 0,-5 L 10,0 L 0,5')
+    .attr('fill', '#484f58');
+
+  const nodeMap = new Map(nodes.map(n => [n.id, n]));
+
+  const simNodes = nodes.map(n => ({ ...n }));
+  const simLinks = edges.map(e => ({ source: e.from, target: e.to }))
+    .filter(e => nodeMap.has(e.source) && nodeMap.has(e.target));
+
+  const sim = d3.forceSimulation(simNodes)
+    .force('link', d3.forceLink(simLinks).id(d => d.id).distance(100))
+    .force('charge', d3.forceManyBody().strength(-200))
+    .force('center', d3.forceCenter(W / 2, H / 2))
+    .force('collision', d3.forceCollide(30));
+
+  const link = svg.append('g').selectAll('line')
+    .data(simLinks).join('line')
+    .attr('stroke', '#30363d')
+    .attr('stroke-width', 1.5)
+    .attr('marker-end', 'url(#arrowhead)');
+
+  const node = svg.append('g').selectAll('g')
+    .data(simNodes).join('g')
+    .style('cursor', 'pointer')
+    .call(d3.drag()
+      .on('start', (ev, d) => { if (!ev.active) sim.alphaTarget(0.3).restart(); d.fx = d.x; d.fy = d.y; })
+      .on('drag',  (ev, d) => { d.fx = ev.x; d.fy = ev.y; })
+      .on('end',   (ev, d) => { if (!ev.active) sim.alphaTarget(0); d.fx = null; d.fy = null; })
+    );
+
+  node.append('circle')
+    .attr('r', 14)
+    .attr('fill', d => dagNodeColor(d.id))
+    .attr('fill-opacity', 0.25)
+    .attr('stroke', d => dagNodeColor(d.id))
+    .attr('stroke-width', 2);
+
+  node.append('text')
+    .attr('text-anchor', 'middle')
+    .attr('dy', '0.35em')
+    .attr('font-size', 9)
+    .attr('fill', '#c9d1d9')
+    .text(d => (d.name || d.id).slice(0, 10));
+
+  // Tooltip on click
+  node.on('click', (ev, d) => {
+    const st  = DAG.status[d.id] || 'unknown';
+    const dep = (d.deps || []).join(', ') || 'none';
+    const ds  = (d.downstream || []).join(', ') || 'none';
+    alert(`Job: ${d.id}\nStatus: ${st}\nDepends on: ${dep}\nDownstream: ${ds}\nEnabled: ${d.enabled}`);
+  });
+
+  sim.on('tick', () => {
+    link
+      .attr('x1', d => d.source.x)
+      .attr('y1', d => d.source.y)
+      .attr('x2', d => d.target.x)
+      .attr('y2', d => d.target.y);
+    node.attr('transform', d => `translate(${d.x},${d.y})`);
+  });
+}
+
+// ── GIT TAB ────────────────────────────────────────────────────────────────────
+const GIT = { commits: [], changes: [], prs: [], attribution: [], heatmap: [], busy: false };
+
+async function fetchGit() {
+  GIT.busy = true;
+  try {
+    const [r1, r2, r3, r4] = await Promise.all([
+      fetch('/api/git/log?limit=30',     { headers: { 'Authorization': 'Bearer ' + AUTH_TOKEN } }),
+      fetch('/api/git/status',           { headers: { 'Authorization': 'Bearer ' + AUTH_TOKEN } }),
+      fetch('/api/git/prs',              { headers: { 'Authorization': 'Bearer ' + AUTH_TOKEN } }),
+      fetch('/api/git/attribution',      { headers: { 'Authorization': 'Bearer ' + AUTH_TOKEN } }),
+    ]);
+    if (r1.ok) { const d = await r1.json(); GIT.commits = d.commits || []; }
+    if (r2.ok) { const d = await r2.json(); GIT.changes = d.changes || []; GIT.statSummary = d.statSummary || ''; }
+    if (r3.ok) { const d = await r3.json(); GIT.prs = d.prs || []; }
+    if (r4.ok) { const d = await r4.json(); GIT.attribution = d.attribution || []; GIT.heatmap = d.heatmap || []; }
+  } catch (e) { /* ignore */ }
+  GIT.busy = false;
+  if (S.current === 'git') renderGit();
+  setBadge('git', GIT.commits.length || '—');
+}
+
+function agentInitials(name) {
+  if (!name) return '?';
+  const parts = name.replace(/[^a-zA-Z0-9\s\-]/g, '').split(/[\s\-]+/);
+  return parts.slice(0, 2).map(p => p[0]).join('').toUpperCase().slice(0, 2) || '?';
+}
+
+function agentColor(name) {
+  let h = 0;
+  for (let i = 0; i < (name || '').length; i++) h = (h * 31 + name.charCodeAt(i)) & 0xffffffff;
+  const hue = Math.abs(h) % 360;
+  return `hsl(${hue},55%,55%)`;
+}
+
+function renderGit() {
+  const el = document.getElementById('tab-git'); if (!el) return;
+
+  // ── Commit list ──
+  const commitRows = GIT.commits.length
+    ? GIT.commits.slice(0, 25).map(c => {
+        const ago = c.timestamp ? relTime(new Date(c.timestamp)) : '?';
+        const initials = agentInitials(c.agent);
+        const color = agentColor(c.agent);
+        return `<tr>
+          <td>
+            <div style="display:flex;align-items:center;gap:7px">
+              <div style="width:24px;height:24px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;flex-shrink:0">${esc(initials)}</div>
+              <div style="min-width:0">
+                <div style="font-size:11px;color:#e6edf3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:280px">${esc(c.subject)}</div>
+                <div style="font-size:9px;color:#484f58">${esc(c.agent)} · ${ago}</div>
+              </div>
+            </div>
+          </td>
+          <td><code style="font-size:9px">${esc(c.hash.slice(0,7))}</code></td>
+          <td style="font-size:10px;color:#484f58;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(c.files.slice(0,2).join(', '))}${c.files.length>2?'…':''}</td>
+        </tr>`;
+      }).join('')
+    : '<tr><td colspan="3" style="color:#484f58;text-align:center;padding:16px">No commits found</td></tr>';
+
+  // ── Working tree ──
+  const wtHtml = GIT.changes.length
+    ? GIT.changes.slice(0, 20).map(ch => {
+        const cls = ch.staged ? 'v-ok' : 'v-warn';
+        return `<div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid #161b22">
+          <span class="badge ${ch.staged?'b-ok':'b-warn'}" style="min-width:52px;text-align:center">${esc(ch.status)}</span>
+          <span style="font-size:11px;color:#c9d1d9;font-family:monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(ch.file)}</span>
+        </div>`;
+      }).join('')
+    : '<div style="color:#484f58;padding:8px 0;font-size:11px">Working tree clean</div>';
+
+  // ── PR cards ──
+  const prCards = GIT.prs.length
+    ? GIT.prs.map(pr => {
+        const rdCls = pr.reviewDecision === 'APPROVED' ? 'b-ok' : pr.reviewDecision === 'CHANGES_REQUESTED' ? 'b-err' : 'b-dim';
+        const rdTxt = pr.reviewDecision || 'PENDING';
+        const initials = agentInitials(pr.agent);
+        const color = agentColor(pr.agent);
+        return `<div class="scard" style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;margin-bottom:8px">
+          <div style="width:28px;height:28px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0">${esc(initials)}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:12px;font-weight:600;color:#e6edf3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">#${pr.number} ${esc(pr.title)}</div>
+            <div style="font-size:10px;color:#484f58;margin-top:2px">${esc(pr.agent)} · <code style="font-size:9px">${esc(pr.headRefName)}</code></div>
+          </div>
+          <span class="badge ${rdCls}">${esc(rdTxt)}</span>
+        </div>`;
+      }).join('')
+    : '<div class="empty-state" style="padding:16px"><span class="e-icon">🔍</span>No open PRs (or gh CLI unavailable)</div>';
+
+  // ── Attribution ──
+  const attrRows = GIT.attribution.length
+    ? GIT.attribution.slice(0, 10).map(a => {
+        const initials = agentInitials(a.agent);
+        const color = agentColor(a.agent);
+        const barW = Math.round((a.commits / (GIT.attribution[0]?.commits || 1)) * 100);
+        return `<tr>
+          <td style="width:30px">
+            <div style="width:22px;height:22px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff">${esc(initials)}</div>
+          </td>
+          <td style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(a.agent)}</td>
+          <td>
+            <div style="display:flex;align-items:center;gap:6px">
+              <div style="height:6px;width:${barW}px;max-width:80px;background:${color};border-radius:3px;opacity:0.8"></div>
+              <span class="dim">${a.commits}</span>
+            </div>
+          </td>
+          <td class="dim">${a.fileCount}</td>
+          <td class="dim" style="font-size:10px">${a.lastCommit ? relTime(new Date(a.lastCommit)) : '—'}</td>
+        </tr>`;
+      }).join('')
+    : '<tr><td colspan="5" style="color:#484f58;text-align:center;padding:12px">No data</td></tr>';
+
+  // ── File heatmap ──
+  const maxCount = GIT.heatmap[0]?.count || 1;
+  const heatmapHtml = GIT.heatmap.length
+    ? GIT.heatmap.slice(0, 20).map(f => {
+        const pct = Math.round((f.count / maxCount) * 100);
+        const heat = pct > 66 ? '#f85149' : pct > 33 ? '#d29922' : '#3fb950';
+        return `<div style="display:flex;align-items:center;gap:8px;padding:3px 0;border-bottom:1px solid #161b22">
+          <div style="width:${Math.max(6,pct*0.6)}px;height:8px;background:${heat};border-radius:2px;flex-shrink:0;opacity:0.8"></div>
+          <span style="font-size:10px;font-family:monospace;color:#8b949e;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1">${esc(f.file)}</span>
+          <span style="font-size:10px;color:#484f58;flex-shrink:0">${f.count}</span>
+        </div>`;
+      }).join('')
+    : '<div style="color:#484f58;padding:8px;font-size:11px">No file data</div>';
+
+  el.innerHTML = `
+    <div class="last-updated">Commits: ${GIT.commits.length} · PRs: ${GIT.prs.length} · Authors: ${GIT.attribution.length}</div>
+
+    <div class="two-col">
+      <div>
+        <!-- Commit log -->
+        <div class="card" style="margin-bottom:14px">
+          <div class="card-head">Recent Commits <span class="badge b-dim">${GIT.commits.length}</span></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Commit</th><th>Hash</th><th>Files</th></tr></thead>
+              <tbody>${commitRows}</tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- PR status cards -->
+        <div class="card">
+          <div class="card-head">Open Pull Requests <span class="badge b-dim">${GIT.prs.length}</span></div>
+          <div class="card-body">${prCards}</div>
+        </div>
+      </div>
+
+      <div>
+        <!-- Working tree -->
+        <div class="card" style="margin-bottom:14px">
+          <div class="card-head">
+            Working Tree
+            <span style="font-size:9px;color:#484f58;font-weight:400">${esc(GIT.statSummary||'clean')}</span>
+          </div>
+          <div class="card-body" style="max-height:200px;overflow-y:auto">${wtHtml}</div>
+        </div>
+
+        <!-- Agent attribution -->
+        <div class="card" style="margin-bottom:14px">
+          <div class="card-head">Agent Attribution <span style="font-size:9px;font-weight:400;color:#484f58">last 100 commits</span></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th></th><th>Agent</th><th>Commits</th><th>Files</th><th>Last</th></tr></thead>
+              <tbody>${attrRows}</tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- File heatmap -->
+        <div class="card">
+          <div class="card-head">File Change Heatmap <span style="font-size:9px;font-weight:400;color:#484f58">top 20 files</span></div>
+          <div class="card-body">${heatmapHtml}</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function relTime(date) {
+  const diff = Date.now() - date.getTime();
+  if (diff < 60000)      return Math.floor(diff/1000) + 's ago';
+  if (diff < 3600000)    return Math.floor(diff/60000) + 'm ago';
+  if (diff < 86400000)   return Math.floor(diff/3600000) + 'h ago';
+  return Math.floor(diff/86400000) + 'd ago';
 }
 
 function boot(){
